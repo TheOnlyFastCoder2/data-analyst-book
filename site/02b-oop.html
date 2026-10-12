@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 2Б. Объектно-ориентированное программирование</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">6 из 19 · Глава 2Б. Объектно-ориентированное программирование</span>
+</div><div class="progress"><i style="width:32%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="02a-python-dalshe.html"><small>← Назад</small><b>Глава 2А. Python: следующий уровень</b></a><a class="next" href="02c-chistyj-kod.html"><small>Вперёд →</small><b>Глава 2В. Красивый код и паттерны</b></a></nav><h1 id="глава-2б-объектно-ориентированное-программирование">Глава 2Б. Объектно-ориентированное программирование</h1>
+<p>ООП часто объясняют на кошках и собаках, и после этого непонятно, зачем оно нужно. Здесь мы пойдём от практики: ты <strong>уже пользуешься</strong> объектами каждый день, а к концу главы научишься создавать свои — там, где это упрощает код.</p>
+<h2 id="2б1-ты-уже-работаешь-с-объектами">2Б.1. Ты уже работаешь с объектами</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>text = <span class="t-str">&quot;москва&quot;</span>
+<span class="t-fn">print</span>(text.upper())          <span class="t-com"># строка — объект, upper — его метод</span>
+
+numbers = [<span class="t-num">3</span>, <span class="t-num">1</span>, <span class="t-num">2</span>]
+numbers.sort()               <span class="t-com"># список — объект, sort — его метод</span>
+<span class="t-fn">print</span>(numbers)
+
+<span class="t-fn">print</span>(<span class="t-fn">type</span>(text), <span class="t-fn">type</span>(numbers))    <span class="t-com"># &lt;class &#x27;str&#x27;&gt; &lt;class &#x27;list&#x27;&gt;</span></code></pre></div>
+<p>В pandas то же самое: <code>df</code> — объект класса <code>DataFrame</code>, <code>df.shape</code> — его <strong>атрибут</strong> (данные), <code>df.head()</code> — его <strong>метод</strong> (действие).</p>
+<p>Термины:</p>
+<ul>
+<li><strong>Класс</strong> — чертёж, описание: какие данные есть у объекта и что он умеет.</li>
+<li><strong>Объект</strong> (экземпляр) — конкретная вещь, созданная по чертежу.</li>
+<li><strong>Атрибут</strong> — данные объекта: <code>df.shape</code>, <code>df.columns</code>.</li>
+<li><strong>Метод</strong> — функция, принадлежащая объекту: <code>df.head()</code>.</li>
+</ul>
+<p>Идея ООП: <strong>держать данные и функции для работы с ними в одном месте</strong>.</p>
+<h2 id="2б2-зачем-свой-класс-проблема-и-решение">2Б.2. Зачем свой класс: проблема и решение</h2>
+<p>Допустим, мы описываем заказ словарём и набором функций:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>order = {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">1</span>, <span class="t-str">&quot;items&quot;</span>: [(<span class="t-str">&quot;Книга&quot;</span>, <span class="t-num">600</span>, <span class="t-num">2</span>), (<span class="t-str">&quot;Ручка&quot;</span>, <span class="t-num">50</span>, <span class="t-num">4</span>)], <span class="t-str">&quot;discount&quot;</span>: <span class="t-num">0.1</span>}
+
+<span class="t-kw">def</span> <span class="t-def">order_total</span>(order):
+    subtotal = <span class="t-fn">sum</span>(price * qty <span class="t-kw">for</span> _, price, qty <span class="t-kw">in</span> order[<span class="t-str">&quot;items&quot;</span>])
+    <span class="t-kw">return</span> subtotal * (<span class="t-num">1</span> - order[<span class="t-str">&quot;discount&quot;</span>])
+
+<span class="t-fn">print</span>(order_total(order))    <span class="t-com"># 1260.0</span></code></pre></div>
+<p>Что здесь неудобно:</p>
+<ul>
+<li>структуру словаря нужно помнить: что лежит в <code>items</code>, в каком порядке;</li>
+<li>опечатка в ключе (<code>&quot;discont&quot;</code>) обнаружится только при запуске;</li>
+<li>ничто не мешает положить в <code>discount</code> значение <code>5</code> или <code>&quot;десять&quot;</code>;</li>
+<li>функции для заказа разбросаны по коду и никак с ним не связаны.</li>
+</ul>
+<p>Класс собирает всё это вместе.</p>
+<h2 id="2б3-первый-класс">2Б.3. Первый класс</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Order</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, order_id, discount=<span class="t-num">0.0</span>):
+        <span class="t-num">self</span>.order_id = order_id        <span class="t-com"># атрибуты объекта</span>
+        <span class="t-num">self</span>.discount = discount
+        <span class="t-num">self</span>.items = []
+
+    <span class="t-kw">def</span> <span class="t-def">add_item</span>(<span class="t-num">self</span>, name, price, quantity=<span class="t-num">1</span>):
+        <span class="t-num">self</span>.items.append((name, price, quantity))
+
+    <span class="t-kw">def</span> <span class="t-def">subtotal</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-fn">sum</span>(price * qty <span class="t-kw">for</span> _, price, qty <span class="t-kw">in</span> <span class="t-num">self</span>.items)
+
+    <span class="t-kw">def</span> <span class="t-def">total</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">self</span>.subtotal() * (<span class="t-num">1</span> - <span class="t-num">self</span>.discount)
+
+
+order = Order(<span class="t-num">1</span>, discount=<span class="t-num">0.1</span>)          <span class="t-com"># создание объекта: вызывается __init__</span>
+order.add_item(<span class="t-str">&quot;Книга&quot;</span>, <span class="t-num">600</span>, <span class="t-num">2</span>)
+order.add_item(<span class="t-str">&quot;Ручка&quot;</span>, <span class="t-num">50</span>, <span class="t-num">4</span>)
+
+<span class="t-fn">print</span>(order.total())                    <span class="t-com"># 1260.0</span>
+<span class="t-fn">print</span>(order.order_id, <span class="t-fn">len</span>(order.items))</code></pre></div>
+<p>Разбор:</p>
+<ul>
+<li><code>class Order:</code> — объявление класса. Имена классов пишут с заглавной буквы, слитно: <code>Order</code>, <code>DataLoader</code>.</li>
+<li><code>__init__</code> — <strong>конструктор</strong>. Вызывается автоматически при создании объекта и задаёт его начальное состояние.</li>
+<li><code>self</code> — <strong>сам объект</strong>. Через <code>self.что-то</code> метод обращается к данным именно того объекта, у которого он вызван.</li>
+</ul>
+<h3 id="что-такое-self-на-самом-деле">Что такое self на самом деле</h3>
+<p>Запись <code>order.total()</code> — это сокращение. Python превращает её в <code>Order.total(order)</code>, то есть передаёт объект первым аргументом:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(order.total() == Order.total(order))    <span class="t-com"># True</span></code></pre></div>
+<p>Поэтому первый параметр у каждого метода — <code>self</code>, а при вызове его писать не нужно. Забыл <code>self</code> в определении — получишь ошибку <code>takes 0 positional arguments but 1 was given</code>. Она означает именно это.</p>
+<p>У каждого объекта свои данные:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>first = Order(<span class="t-num">1</span>)
+second = Order(<span class="t-num">2</span>)
+first.add_item(<span class="t-str">&quot;Книга&quot;</span>, <span class="t-num">600</span>)
+
+<span class="t-fn">print</span>(<span class="t-fn">len</span>(first.items), <span class="t-fn">len</span>(second.items))    <span class="t-com"># 1 0</span></code></pre></div>
+<h2 id="2б4-атрибуты-класса-и-атрибуты-объекта">2Б.4. Атрибуты класса и атрибуты объекта</h2>
+<p>Атрибут, объявленный прямо в теле класса, общий для всех объектов:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Order</span>:
+    VAT_RATE = <span class="t-num">0.2</span>                      <span class="t-com"># атрибут КЛАССА: один на всех</span>
+    created = <span class="t-num">0</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, order_id):
+        <span class="t-num">self</span>.order_id = order_id        <span class="t-com"># атрибут ОБЪЕКТА: у каждого свой</span>
+        Order.created += <span class="t-num">1</span>
+
+    <span class="t-kw">def</span> <span class="t-def">vat</span>(<span class="t-num">self</span>, amount):
+        <span class="t-kw">return</span> amount * <span class="t-num">self</span>.VAT_RATE
+
+
+a, b = Order(<span class="t-num">1</span>), Order(<span class="t-num">2</span>)
+<span class="t-fn">print</span>(Order.created)                    <span class="t-com"># 2</span>
+<span class="t-fn">print</span>(a.vat(<span class="t-num">1000</span>), b.VAT_RATE)          <span class="t-com"># 200.0 0.2</span></code></pre></div>
+<p>Атрибуты класса используют для констант и общих настроек.</p>
+<p>Ловушка: изменяемый атрибут класса становится общим для всех объектов — та же история, что со значением по умолчанию <code>[]</code> в главе 2А.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Bad</span>:
+    items = []                          <span class="t-com"># один список на ВСЕ объекты</span>
+
+    <span class="t-kw">def</span> <span class="t-def">add</span>(<span class="t-num">self</span>, item):
+        <span class="t-num">self</span>.items.append(item)
+
+x, y = Bad(), Bad()
+x.add(<span class="t-str">&quot;книга&quot;</span>)
+<span class="t-fn">print</span>(y.items)                          <span class="t-com"># [&#x27;книга&#x27;] — попало и в y</span>
+
+<span class="t-kw">class</span> <span class="t-def">Good</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>):
+        <span class="t-num">self</span>.items = []                 <span class="t-com"># у каждого объекта свой список</span></code></pre></div>
+<p>Правило: всё изменяемое создавай в <code>__init__</code>.</p>
+<h2 id="2б5-магические-методы">2Б.5. Магические методы</h2>
+<p>Методы с двумя подчёркиваниями по краям (<code>__init__</code>, <code>__repr__</code>) Python вызывает сам в определённых ситуациях. Через них объект учится вести себя как встроенные типы: печататься, сравниваться, складываться, работать в цикле <code>for</code>.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Money</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, amount, currency=<span class="t-str">&quot;RUB&quot;</span>):
+        <span class="t-num">self</span>.amount = amount
+        <span class="t-num">self</span>.currency = currency
+
+    <span class="t-kw">def</span> <span class="t-def">__repr__</span>(<span class="t-num">self</span>):                         <span class="t-com"># как объект выглядит при печати и в отладке</span>
+        <span class="t-kw">return</span> <span class="t-str">f&quot;Money({self.amount}, {self.currency!r})&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__str__</span>(<span class="t-num">self</span>):                          <span class="t-com"># «красивый» вид для print и f-строк</span>
+        <span class="t-kw">return</span> <span class="t-str">f&quot;{self.amount:,.2f} {self.currency}&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__eq__</span>(<span class="t-num">self</span>, other):                    <span class="t-com"># ==</span>
+        <span class="t-kw">return</span> (<span class="t-num">self</span>.amount, <span class="t-num">self</span>.currency) == (other.amount, other.currency)
+
+    <span class="t-kw">def</span> <span class="t-def">__lt__</span>(<span class="t-num">self</span>, other):                    <span class="t-com"># &lt;  (этого достаточно для sorted и min)</span>
+        <span class="t-num">self</span>._check(other)
+        <span class="t-kw">return</span> <span class="t-num">self</span>.amount &lt; other.amount
+
+    <span class="t-kw">def</span> <span class="t-def">__add__</span>(<span class="t-num">self</span>, other):                   <span class="t-com"># +</span>
+        <span class="t-num">self</span>._check(other)
+        <span class="t-kw">return</span> Money(<span class="t-num">self</span>.amount + other.amount, <span class="t-num">self</span>.currency)
+
+    <span class="t-kw">def</span> <span class="t-def">__mul__</span>(<span class="t-num">self</span>, factor):                  <span class="t-com"># *</span>
+        <span class="t-kw">return</span> Money(<span class="t-num">self</span>.amount * factor, <span class="t-num">self</span>.currency)
+
+    <span class="t-kw">def</span> <span class="t-def">_check</span>(<span class="t-num">self</span>, other):
+        <span class="t-kw">if</span> <span class="t-num">self</span>.currency != other.currency:
+            <span class="t-kw">raise</span> <span class="t-fn">ValueError</span>(<span class="t-str">f&quot;нельзя смешивать {self.currency} и {other.currency}&quot;</span>)
+
+
+price = Money(<span class="t-num">1200</span>)
+<span class="t-fn">print</span>(price)                        <span class="t-com"># 1,200.00 RUB        — сработал __str__</span>
+<span class="t-fn">print</span>([price])                      <span class="t-com"># [Money(1200, &#x27;RUB&#x27;)] — в списке работает __repr__</span>
+<span class="t-fn">print</span>(price + Money(<span class="t-num">300</span>))           <span class="t-com"># 1,500.00 RUB</span>
+<span class="t-fn">print</span>(price * <span class="t-num">2</span> == Money(<span class="t-num">2400</span>))     <span class="t-com"># True</span>
+<span class="t-fn">print</span>(<span class="t-fn">max</span>(Money(<span class="t-num">5</span>), Money(<span class="t-num">9</span>)))      <span class="t-com"># 9.00 RUB</span>
+
+<span class="t-kw">try</span>:
+    price + Money(<span class="t-num">10</span>, <span class="t-str">&quot;USD&quot;</span>)
+<span class="t-kw">except</span> <span class="t-fn">ValueError</span> <span class="t-kw">as</span> error:
+    <span class="t-fn">print</span>(error)                    <span class="t-com"># нельзя смешивать RUB и USD</span></code></pre></div>
+<p>Обрати внимание на последний пример: класс не просто хранит данные, а <strong>защищает от бессмысленных операций</strong>. Словарь <code>{&quot;amount&quot;: 1200, &quot;currency&quot;: &quot;RUB&quot;}</code> так не умеет.</p>
+<p>Самые полезные магические методы:</p>
+<div class="table"><table><thead><tr><th>Метод</th><th>Когда вызывается</th></tr></thead><tbody><tr><td><code>__init__(self, ...)</code></td><td>Создание объекта</td></tr><tr><td><code>__repr__(self)</code></td><td>Вывод в консоли и в отладке — <strong>пиши всегда</strong></td></tr><tr><td><code>__str__(self)</code></td><td><code>print(obj)</code>, <code>str(obj)</code>, f-строки</td></tr><tr><td><code>__eq__(self, other)</code></td><td><code>a == b</code></td></tr><tr><td><code>__lt__(self, other)</code></td><td><code>a &lt; b</code>, сортировка</td></tr><tr><td><code>__add__</code>, <code>__sub__</code>, <code>__mul__</code></td><td><code>a + b</code>, <code>a - b</code>, <code>a * b</code></td></tr><tr><td><code>__len__(self)</code></td><td><code>len(obj)</code></td></tr><tr><td><code>__getitem__(self, key)</code></td><td><code>obj[key]</code></td></tr><tr><td><code>__contains__(self, item)</code></td><td><code>item in obj</code></td></tr><tr><td><code>__iter__(self)</code></td><td><code>for x in obj</code></td></tr><tr><td><code>__enter__</code>, <code>__exit__</code></td><td><code>with obj:</code></td></tr></tbody></table></div>
+<p>Сделаем коллекцию, которая ведёт себя как встроенная:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Basket</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>):
+        <span class="t-num">self</span>._items = {}
+
+    <span class="t-kw">def</span> <span class="t-def">add</span>(<span class="t-num">self</span>, name, price):
+        <span class="t-num">self</span>._items[name] = price
+
+    <span class="t-kw">def</span> <span class="t-def">__len__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-fn">len</span>(<span class="t-num">self</span>._items)
+
+    <span class="t-kw">def</span> <span class="t-def">__contains__</span>(<span class="t-num">self</span>, name):
+        <span class="t-kw">return</span> name <span class="t-kw">in</span> <span class="t-num">self</span>._items
+
+    <span class="t-kw">def</span> <span class="t-def">__getitem__</span>(<span class="t-num">self</span>, name):
+        <span class="t-kw">return</span> <span class="t-num">self</span>._items[name]
+
+    <span class="t-kw">def</span> <span class="t-def">__iter__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-fn">iter</span>(<span class="t-num">self</span>._items.items())
+
+    <span class="t-kw">def</span> <span class="t-def">__repr__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-str">f&quot;Basket({self._items})&quot;</span>
+
+
+basket = Basket()
+basket.add(<span class="t-str">&quot;Книга&quot;</span>, <span class="t-num">600</span>)
+basket.add(<span class="t-str">&quot;Ручка&quot;</span>, <span class="t-num">50</span>)
+
+<span class="t-fn">print</span>(<span class="t-fn">len</span>(basket), <span class="t-str">&quot;Книга&quot;</span> <span class="t-kw">in</span> basket, basket[<span class="t-str">&quot;Ручка&quot;</span>])
+<span class="t-kw">for</span> name, price <span class="t-kw">in</span> basket:
+    <span class="t-fn">print</span>(name, price)
+<span class="t-fn">print</span>(<span class="t-fn">sum</span>(price <span class="t-kw">for</span> _, price <span class="t-kw">in</span> basket))</code></pre></div>
+<p>Именно так устроен <code>DataFrame</code>: <code>len(df)</code>, <code>&quot;city&quot; in df</code>, <code>df[&quot;city&quot;]</code>, <code>for column in df</code> — это всё магические методы.</p>
+<h2 id="2б6-инкапсуляция-и-свойства">2Б.6. Инкапсуляция и свойства</h2>
+<p><strong>Инкапсуляция</strong> — идея о том, что объект сам отвечает за корректность своих данных, а снаружи с ним работают через понятный интерфейс.</p>
+<p>В Python нет настоящих закрытых атрибутов, есть соглашение:</p>
+<ul>
+<li><code>name</code> — публичный атрибут, пользуйся свободно;</li>
+<li><code>_name</code> — «внутренний, не трогай снаружи». Технически доступен, но менять его извне — дурной тон.</li>
+</ul>
+<p><strong>Свойство</strong> (<code>property</code>) выглядит как атрибут, а работает как метод. Оно даёт два умения: вычисляемые атрибуты и проверку при присваивании.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Product</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, name, price, cost):
+        <span class="t-num">self</span>.name = name
+        <span class="t-num">self</span>.price = price            <span class="t-com"># сработает проверка из setter ниже</span>
+        <span class="t-num">self</span>.cost = cost
+
+    <span class="t-def">@property</span>
+    <span class="t-kw">def</span> <span class="t-def">price</span>(<span class="t-num">self</span>):                  <span class="t-com"># чтение: product.price</span>
+        <span class="t-kw">return</span> <span class="t-num">self</span>._price
+
+    <span class="t-def">@price.setter</span>
+    <span class="t-kw">def</span> <span class="t-def">price</span>(<span class="t-num">self</span>, value):           <span class="t-com"># запись: product.price = 100</span>
+        <span class="t-kw">if</span> value &lt;= <span class="t-num">0</span>:
+            <span class="t-kw">raise</span> <span class="t-fn">ValueError</span>(<span class="t-str">f&quot;цена должна быть положительной, получено {value}&quot;</span>)
+        <span class="t-num">self</span>._price = value
+
+    <span class="t-def">@property</span>
+    <span class="t-kw">def</span> <span class="t-def">margin</span>(<span class="t-num">self</span>):                 <span class="t-com"># вычисляемое свойство, только для чтения</span>
+        <span class="t-kw">return</span> (<span class="t-num">self</span>.price - <span class="t-num">self</span>.cost) / <span class="t-num">self</span>.price
+
+
+book = Product(<span class="t-str">&quot;Книга&quot;</span>, price=<span class="t-num">600</span>, cost=<span class="t-num">420</span>)
+<span class="t-fn">print</span>(book.margin)                    <span class="t-com"># 0.3 — без скобок, как обычный атрибут</span>
+
+book.price = <span class="t-num">700</span>                      <span class="t-com"># проверка пройдена</span>
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(book.margin, <span class="t-num">2</span>))          <span class="t-com"># 0.4 — пересчиталось само</span>
+
+<span class="t-kw">try</span>:
+    book.price = -<span class="t-num">5</span>
+<span class="t-kw">except</span> <span class="t-fn">ValueError</span> <span class="t-kw">as</span> error:
+    <span class="t-fn">print</span>(error)</code></pre></div>
+<p>Преимущество вычисляемого свойства: маржа никогда не «устареет». Если бы мы хранили её обычным атрибутом, после смены цены в объекте лежало бы старое значение.</p>
+<h2 id="2б7-наследование">2Б.7. Наследование</h2>
+<p>Наследование позволяет создать класс на основе существующего: взять всё, что есть у родителя, и добавить или изменить часть.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Employee</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, name, salary):
+        <span class="t-num">self</span>.name = name
+        <span class="t-num">self</span>.salary = salary
+
+    <span class="t-kw">def</span> <span class="t-def">monthly_cost</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">self</span>.salary
+
+    <span class="t-kw">def</span> <span class="t-def">__repr__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-str">f&quot;{type(self).__name__}({self.name!r})&quot;</span>
+
+
+<span class="t-kw">class</span> <span class="t-def">Manager</span>(Employee):                       <span class="t-com"># Manager наследует Employee</span>
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, name, salary, bonus):
+        <span class="t-fn">super</span>().__init__(name, salary)         <span class="t-com"># вызвать конструктор родителя</span>
+        <span class="t-num">self</span>.bonus = bonus
+
+    <span class="t-kw">def</span> <span class="t-def">monthly_cost</span>(<span class="t-num">self</span>):                    <span class="t-com"># переопределение метода</span>
+        <span class="t-kw">return</span> <span class="t-fn">super</span>().monthly_cost() + <span class="t-num">self</span>.bonus
+
+
+<span class="t-kw">class</span> <span class="t-def">Contractor</span>(Employee):
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, name, hourly_rate, hours):
+        <span class="t-fn">super</span>().__init__(name, salary=<span class="t-num">0</span>)
+        <span class="t-num">self</span>.hourly_rate = hourly_rate
+        <span class="t-num">self</span>.hours = hours
+
+    <span class="t-kw">def</span> <span class="t-def">monthly_cost</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">self</span>.hourly_rate * <span class="t-num">self</span>.hours
+
+
+team = [Employee(<span class="t-str">&quot;Анна&quot;</span>, <span class="t-num">120</span>), Manager(<span class="t-str">&quot;Борис&quot;</span>, <span class="t-num">200</span>, bonus=<span class="t-num">50</span>), Contractor(<span class="t-str">&quot;Вера&quot;</span>, <span class="t-num">1.5</span>, <span class="t-num">80</span>)]
+
+<span class="t-kw">for</span> person <span class="t-kw">in</span> team:
+    <span class="t-fn">print</span>(person, person.monthly_cost())
+
+<span class="t-fn">print</span>(<span class="t-fn">sum</span>(p.monthly_cost() <span class="t-kw">for</span> p <span class="t-kw">in</span> team))     <span class="t-com"># 490.0</span></code></pre></div>
+<ul>
+<li><code>super()</code> — обращение к родительскому классу. Не дублируй код родителя, вызывай его.</li>
+<li>Метод <code>__repr__</code> написан один раз в <code>Employee</code> и работает для всех наследников.</li>
+</ul>
+<h3 id="полиморфизм">Полиморфизм</h3>
+<p>Посмотри на цикл: мы вызываем <code>person.monthly_cost()</code>, не зная и не проверяя, кто перед нами. Каждый объект сам знает, как себя посчитать. Это и есть <strong>полиморфизм</strong>: один интерфейс — разное поведение.</p>
+<p>Сравни с кодом без него:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">monthly_cost</span>(person):                       <span class="t-com"># так делать не надо</span>
+    <span class="t-kw">if</span> person[<span class="t-str">&quot;type&quot;</span>] == <span class="t-str">&quot;employee&quot;</span>:
+        <span class="t-kw">return</span> person[<span class="t-str">&quot;salary&quot;</span>]
+    <span class="t-kw">elif</span> person[<span class="t-str">&quot;type&quot;</span>] == <span class="t-str">&quot;manager&quot;</span>:
+        <span class="t-kw">return</span> person[<span class="t-str">&quot;salary&quot;</span>] + person[<span class="t-str">&quot;bonus&quot;</span>]
+    <span class="t-kw">elif</span> person[<span class="t-str">&quot;type&quot;</span>] == <span class="t-str">&quot;contractor&quot;</span>:
+        <span class="t-kw">return</span> person[<span class="t-str">&quot;rate&quot;</span>] * person[<span class="t-str">&quot;hours&quot;</span>]</code></pre></div>
+<p>Чтобы добавить новый тип сотрудника, придётся найти и поправить все такие <code>if / elif</code> по всему коду. В объектном варианте достаточно добавить один новый класс, а существующий код не меняется.</p>
+<h3 id="проверка-типов">Проверка типов</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>boss = Manager(<span class="t-str">&quot;Борис&quot;</span>, <span class="t-num">200</span>, bonus=<span class="t-num">50</span>)
+
+<span class="t-fn">print</span>(<span class="t-fn">isinstance</span>(boss, Manager))      <span class="t-com"># True</span>
+<span class="t-fn">print</span>(<span class="t-fn">isinstance</span>(boss, Employee))     <span class="t-com"># True — менеджер тоже сотрудник</span>
+<span class="t-fn">print</span>(<span class="t-fn">type</span>(boss) <span class="t-kw">is</span> Employee)         <span class="t-com"># False — точный тип другой</span></code></pre></div>
+<p>Для проверок используй <code>isinstance</code>: он учитывает наследование.</p>
+<h2 id="2б8-абстрактные-классы-и-утиная-типизация">2Б.8. Абстрактные классы и утиная типизация</h2>
+<h3 id="абстрактный-класс-контракт-для-наследников">Абстрактный класс: контракт для наследников</h3>
+<p>Иногда родительский класс существует только для того, чтобы задать общий интерфейс. <strong>Абстрактный класс</strong> нельзя создать напрямую, а его наследники обязаны реализовать отмеченные методы.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> abc <span class="t-kw">import</span> ABC, abstractmethod
+
+
+<span class="t-kw">class</span> <span class="t-def">DataSource</span>(ABC):
+    <span class="t-str">&quot;&quot;&quot;Любой источник данных умеет отдавать список словарей.&quot;&quot;&quot;</span>
+
+    <span class="t-def">@abstractmethod</span>
+    <span class="t-kw">def</span> <span class="t-def">load</span>(<span class="t-num">self</span>) -&gt; <span class="t-fn">list</span>[<span class="t-fn">dict</span>]:
+        ...
+
+    <span class="t-kw">def</span> <span class="t-def">count</span>(<span class="t-num">self</span>) -&gt; <span class="t-fn">int</span>:              <span class="t-com"># обычный метод: общий для всех наследников</span>
+        <span class="t-kw">return</span> <span class="t-fn">len</span>(<span class="t-num">self</span>.load())
+
+
+<span class="t-kw">class</span> <span class="t-def">ListSource</span>(DataSource):
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, rows):
+        <span class="t-num">self</span>.rows = rows
+
+    <span class="t-kw">def</span> <span class="t-def">load</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-fn">list</span>(<span class="t-num">self</span>.rows)
+
+
+<span class="t-kw">class</span> <span class="t-def">CsvTextSource</span>(DataSource):
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, text, sep=<span class="t-str">&quot;,&quot;</span>):
+        <span class="t-num">self</span>.text = text
+        <span class="t-num">self</span>.sep = sep
+
+    <span class="t-kw">def</span> <span class="t-def">load</span>(<span class="t-num">self</span>):
+        header, *lines = <span class="t-num">self</span>.text.strip().splitlines()
+        keys = header.split(<span class="t-num">self</span>.sep)
+        <span class="t-kw">return</span> [<span class="t-fn">dict</span>(<span class="t-fn">zip</span>(keys, line.split(<span class="t-num">self</span>.sep))) <span class="t-kw">for</span> line <span class="t-kw">in</span> lines]
+
+
+sources = [
+    ListSource([{<span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-str">&quot;1200&quot;</span>}]),
+    CsvTextSource(<span class="t-str">&quot;city,amount\nКазань,15400\nУфа,700&quot;</span>),
+]
+<span class="t-kw">for</span> source <span class="t-kw">in</span> sources:
+    <span class="t-fn">print</span>(<span class="t-fn">type</span>(source).__name__, source.count(), source.load()[<span class="t-num">0</span>])
+
+<span class="t-kw">try</span>:
+    DataSource()
+<span class="t-kw">except</span> <span class="t-fn">TypeError</span> <span class="t-kw">as</span> error:
+    <span class="t-fn">print</span>(<span class="t-str">&quot;Нельзя:&quot;</span>, error)</code></pre></div>
+<p>Если в наследнике забыть метод <code>load</code>, ошибка появится сразу при создании объекта, а не через час работы программы.</p>
+<h3 id="утиная-типизация">Утиная типизация</h3>
+<p>В Python часто обходятся без общего родителя. Принцип: «если нечто ходит как утка и крякает как утка — это утка». Функции неважно, какого класса объект; важно, что у него есть нужный метод.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">ApiSource</span>:                         <span class="t-com"># не наследует DataSource вообще</span>
+    <span class="t-kw">def</span> <span class="t-def">load</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> [{<span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;Самара&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-str">&quot;900&quot;</span>}]
+
+
+<span class="t-kw">def</span> <span class="t-def">total_amount</span>(source):
+    <span class="t-kw">return</span> <span class="t-fn">sum</span>(<span class="t-fn">float</span>(row[<span class="t-str">&quot;amount&quot;</span>]) <span class="t-kw">for</span> row <span class="t-kw">in</span> source.load())
+
+<span class="t-fn">print</span>(total_amount(ApiSource()))                                       <span class="t-com"># 900.0</span>
+<span class="t-fn">print</span>(total_amount(CsvTextSource(<span class="t-str">&quot;city,amount\nКазань,15400\nУфа,700&quot;</span>)))  <span class="t-com"># 16100.0</span></code></pre></div>
+<p>Именно поэтому функция <code>len()</code> работает и со списком, и с DataFrame, и с нашим <code>Basket</code>: ей нужен только метод <code>__len__</code>.</p>
+<p>Описать такой «неявный интерфейс» для подсказок редактора можно через <code>Protocol</code>:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> typing <span class="t-kw">import</span> Protocol
+
+
+<span class="t-kw">class</span> <span class="t-def">Loadable</span>(Protocol):
+    <span class="t-kw">def</span> <span class="t-def">load</span>(<span class="t-num">self</span>) -&gt; <span class="t-fn">list</span>[<span class="t-fn">dict</span>]: ...
+
+
+<span class="t-kw">def</span> <span class="t-def">first_row</span>(source: Loadable) -&gt; <span class="t-fn">dict</span>:
+    <span class="t-kw">return</span> source.load()[<span class="t-num">0</span>]
+
+<span class="t-fn">print</span>(first_row(ApiSource()))</code></pre></div>
+<h2 id="2б9-композиция-вместо-наследования">2Б.9. Композиция вместо наследования</h2>
+<p>Наследование выражает отношение <strong>«является»</strong> (менеджер является сотрудником). Композиция — отношение <strong>«содержит»</strong> (отчёт содержит источник данных).</p>
+<p>Новички злоупотребляют наследованием. Проверочный вопрос: можно ли честно сказать «A — это разновидность B»? Если нет — нужна композиция.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Report</span>:
+    <span class="t-str">&quot;&quot;&quot;Отчёт СОДЕРЖИТ источник и набор метрик, а не наследует их.&quot;&quot;&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, source, metrics):
+        <span class="t-num">self</span>.source = source                <span class="t-com"># любой объект с методом load()</span>
+        <span class="t-num">self</span>.metrics = metrics              <span class="t-com"># словарь: название → функция</span>
+
+    <span class="t-kw">def</span> <span class="t-def">build</span>(<span class="t-num">self</span>):
+        amounts = [<span class="t-fn">float</span>(row[<span class="t-str">&quot;amount&quot;</span>]) <span class="t-kw">for</span> row <span class="t-kw">in</span> <span class="t-num">self</span>.source.load()]
+        <span class="t-kw">return</span> {name: func(amounts) <span class="t-kw">for</span> name, func <span class="t-kw">in</span> <span class="t-num">self</span>.metrics.items()}
+
+
+metrics = {
+    <span class="t-str">&quot;заказов&quot;</span>: <span class="t-fn">len</span>,
+    <span class="t-str">&quot;выручка&quot;</span>: <span class="t-fn">sum</span>,
+    <span class="t-str">&quot;средний чек&quot;</span>: <span class="t-kw">lambda</span> values: <span class="t-fn">sum</span>(values) / <span class="t-fn">len</span>(values),
+}
+
+report = Report(CsvTextSource(<span class="t-str">&quot;city,amount\nКазань,15400\nУфа,700&quot;</span>), metrics)
+<span class="t-fn">print</span>(report.build())
+
+report.source = ApiSource()                 <span class="t-com"># подменили источник — отчёт не изменился</span>
+<span class="t-fn">print</span>(report.build())</code></pre></div>
+<p>Отчёту всё равно, откуда данные: из файла, из API или из тестового списка. Части можно менять независимо. Это главный приём построения гибкого кода, и на нём основаны паттерны главы 2В.</p>
+<p>Правило, которое стоит запомнить: <strong>предпочитай композицию наследованию</strong>. Глубокие иерархии классов трудно понимать и ещё труднее менять.</p>
+<h2 id="2б10-dataclass-классы-для-данных">2Б.10. dataclass: классы для данных</h2>
+<p>Большинство классов у аналитика — это просто «записи» с полями. Писать для них <code>__init__</code>, <code>__repr__</code> и <code>__eq__</code> вручную скучно. Декоратор <code>@dataclass</code> генерирует их сам.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> dataclasses <span class="t-kw">import</span> dataclass, field
+<span class="t-kw">from</span> datetime <span class="t-kw">import</span> date
+
+
+<span class="t-def">@dataclass</span>
+<span class="t-kw">class</span> <span class="t-def">OrderLine</span>:
+    name: <span class="t-fn">str</span>
+    price: <span class="t-fn">float</span>
+    quantity: <span class="t-fn">int</span> = <span class="t-num">1</span>
+
+    <span class="t-def">@property</span>
+    <span class="t-kw">def</span> <span class="t-def">total</span>(<span class="t-num">self</span>) -&gt; <span class="t-fn">float</span>:
+        <span class="t-kw">return</span> <span class="t-num">self</span>.price * <span class="t-num">self</span>.quantity
+
+
+<span class="t-def">@dataclass</span>
+<span class="t-kw">class</span> <span class="t-def">CustomerOrder</span>:
+    order_id: <span class="t-fn">int</span>
+    customer: <span class="t-fn">str</span>
+    created: date
+    lines: <span class="t-fn">list</span>[OrderLine] = field(default_factory=<span class="t-fn">list</span>)    <span class="t-com"># изменяемое значение по умолчанию</span>
+    discount: <span class="t-fn">float</span> = <span class="t-num">0.0</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__post_init__</span>(<span class="t-num">self</span>):                 <span class="t-com"># выполняется сразу после __init__: место для проверок</span>
+        <span class="t-kw">if</span> <span class="t-kw">not</span> <span class="t-num">0</span> &lt;= <span class="t-num">self</span>.discount &lt; <span class="t-num">1</span>:
+            <span class="t-kw">raise</span> <span class="t-fn">ValueError</span>(<span class="t-str">f&quot;скидка должна быть от 0 до 1, получено {self.discount}&quot;</span>)
+
+    <span class="t-def">@property</span>
+    <span class="t-kw">def</span> <span class="t-def">total</span>(<span class="t-num">self</span>) -&gt; <span class="t-fn">float</span>:
+        <span class="t-kw">return</span> <span class="t-fn">sum</span>(line.total <span class="t-kw">for</span> line <span class="t-kw">in</span> <span class="t-num">self</span>.lines) * (<span class="t-num">1</span> - <span class="t-num">self</span>.discount)
+
+
+order = CustomerOrder(<span class="t-num">1</span>, <span class="t-str">&quot;Анна&quot;</span>, date(<span class="t-num">2026</span>, <span class="t-num">3</span>, <span class="t-num">15</span>), discount=<span class="t-num">0.1</span>)
+order.lines.append(OrderLine(<span class="t-str">&quot;Книга&quot;</span>, <span class="t-num">600</span>, <span class="t-num">2</span>))
+order.lines.append(OrderLine(<span class="t-str">&quot;Ручка&quot;</span>, <span class="t-num">50</span>, <span class="t-num">4</span>))
+
+<span class="t-fn">print</span>(order)                                  <span class="t-com"># готовый __repr__ со всеми полями</span>
+<span class="t-fn">print</span>(order.total)                            <span class="t-com"># 1260.0</span>
+<span class="t-fn">print</span>(OrderLine(<span class="t-str">&quot;Ручка&quot;</span>, <span class="t-num">50</span>) == OrderLine(<span class="t-str">&quot;Ручка&quot;</span>, <span class="t-num">50</span>))    <span class="t-com"># True — готовый __eq__</span></code></pre></div>
+<p>Что нужно знать:</p>
+<ul>
+<li>поля описываются с аннотациями типов;</li>
+<li>поля со значением по умолчанию идут после полей без него;</li>
+<li>для списков и словарей используется <code>field(default_factory=list)</code> — защита от той самой ловушки с общим списком;</li>
+<li><code>__post_init__</code> — место для проверки данных.</li>
+</ul>
+<h3 id="неизменяемые-объекты">Неизменяемые объекты</h3>
+<p><code>frozen=True</code> запрещает менять поля после создания. Такие объекты безопасно передавать куда угодно, и их можно использовать как ключи словаря.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-def">@dataclass</span>(frozen=<span class="t-num">True</span>, order=<span class="t-num">True</span>)
+<span class="t-kw">class</span> <span class="t-def">Period</span>:
+    year: <span class="t-fn">int</span>
+    month: <span class="t-fn">int</span>
+
+    <span class="t-kw">def</span> <span class="t-def">label</span>(<span class="t-num">self</span>) -&gt; <span class="t-fn">str</span>:
+        <span class="t-kw">return</span> <span class="t-str">f&quot;{self.year}-{self.month:02d}&quot;</span>
+
+
+revenue = {Period(<span class="t-num">2026</span>, <span class="t-num">1</span>): <span class="t-num">1_200_000</span>, Period(<span class="t-num">2026</span>, <span class="t-num">2</span>): <span class="t-num">1_350_000</span>}
+<span class="t-fn">print</span>(revenue[Period(<span class="t-num">2026</span>, <span class="t-num">2</span>)])
+<span class="t-fn">print</span>(<span class="t-fn">sorted</span>([Period(<span class="t-num">2026</span>, <span class="t-num">3</span>), Period(<span class="t-num">2025</span>, <span class="t-num">12</span>)]))     <span class="t-com"># order=True даёт сравнение</span>
+
+<span class="t-kw">try</span>:
+    Period(<span class="t-num">2026</span>, <span class="t-num">1</span>).month = <span class="t-num">5</span>
+<span class="t-kw">except</span> <span class="t-fn">Exception</span> <span class="t-kw">as</span> error:
+    <span class="t-fn">print</span>(<span class="t-fn">type</span>(error).__name__)                        <span class="t-com"># FrozenInstanceError</span></code></pre></div>
+<h3 id="enum-фиксированный-набор-значений">Enum: фиксированный набор значений</h3>
+<p>Вместо строк <code>&quot;paid&quot;</code>, <code>&quot;Paid&quot;</code>, <code>&quot;оплачен&quot;</code>, в которых легко опечататься:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> enum <span class="t-kw">import</span> Enum
+
+
+<span class="t-kw">class</span> <span class="t-def">Status</span>(Enum):
+    NEW = <span class="t-str">&quot;new&quot;</span>
+    PAID = <span class="t-str">&quot;paid&quot;</span>
+    CANCELLED = <span class="t-str">&quot;cancelled&quot;</span>
+
+
+status = Status(<span class="t-str">&quot;paid&quot;</span>)                 <span class="t-com"># из строки, например из базы</span>
+<span class="t-fn">print</span>(status, status.value, status <span class="t-kw">is</span> Status.PAID)
+<span class="t-fn">print</span>([s.value <span class="t-kw">for</span> s <span class="t-kw">in</span> Status])
+
+<span class="t-kw">try</span>:
+    Status(<span class="t-str">&quot;Paid&quot;</span>)                      <span class="t-com"># опечатка ловится сразу</span>
+<span class="t-kw">except</span> <span class="t-fn">ValueError</span> <span class="t-kw">as</span> error:
+    <span class="t-fn">print</span>(error)</code></pre></div>
+<h2 id="2б11-методы-класса-и-статические-методы">2Б.11. Методы класса и статические методы</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-def">@dataclass</span>
+<span class="t-kw">class</span> <span class="t-def">Point</span>:
+    lat: <span class="t-fn">float</span>
+    lon: <span class="t-fn">float</span>
+
+    <span class="t-def">@classmethod</span>
+    <span class="t-kw">def</span> <span class="t-def">from_string</span>(<span class="t-num">cls</span>, text):               <span class="t-com"># альтернативный конструктор</span>
+        lat, lon = (<span class="t-fn">float</span>(part) <span class="t-kw">for</span> part <span class="t-kw">in</span> text.split(<span class="t-str">&quot;,&quot;</span>))
+        <span class="t-kw">return</span> <span class="t-num">cls</span>(lat, lon)
+
+    <span class="t-def">@staticmethod</span>
+    <span class="t-kw">def</span> <span class="t-def">is_valid</span>(lat, lon):                   <span class="t-com"># функция «по теме», объект не нужен</span>
+        <span class="t-kw">return</span> -<span class="t-num">90</span> &lt;= lat &lt;= <span class="t-num">90</span> <span class="t-kw">and</span> -<span class="t-num">180</span> &lt;= lon &lt;= <span class="t-num">180</span>
+
+
+moscow = Point.from_string(<span class="t-str">&quot;55.75, 37.62&quot;</span>)
+<span class="t-fn">print</span>(moscow, Point.is_valid(<span class="t-num">95</span>, <span class="t-num">10</span>))</code></pre></div>
+<div class="table"><table><thead><tr><th>Вид метода</th><th>Первый аргумент</th><th>Зачем</th></tr></thead><tbody><tr><td>Обычный</td><td><code>self</code> — объект</td><td>Работает с данными объекта</td></tr><tr><td><code>@classmethod</code></td><td><code>cls</code> — класс</td><td>Альтернативные конструкторы: <code>from_string</code>, <code>from_dict</code>, <code>from_csv</code></td></tr><tr><td><code>@staticmethod</code></td><td>нет</td><td>Вспомогательная функция, логически относящаяся к классу</td></tr></tbody></table></div>
+<p>Ты уже встречал методы класса: <code>pd.DataFrame.from_dict(...)</code>, <code>datetime.strptime(...)</code>, <code>date.today()</code>.</p>
+<h2 id="2б12-сквозной-пример-конвейер-проверки-качества-данных">2Б.12. Сквозной пример: конвейер проверки качества данных</h2>
+<p>Соберём всё вместе. Задача из жизни: перед анализом таблицу нужно прогнать через набор проверок и получить отчёт.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> abc <span class="t-kw">import</span> ABC, abstractmethod
+<span class="t-kw">from</span> dataclasses <span class="t-kw">import</span> dataclass
+
+
+<span class="t-def">@dataclass</span>(frozen=<span class="t-num">True</span>)
+<span class="t-kw">class</span> <span class="t-def">CheckResult</span>:
+    name: <span class="t-fn">str</span>
+    passed: <span class="t-fn">bool</span>
+    details: <span class="t-fn">str</span> = <span class="t-str">&quot;&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__str__</span>(<span class="t-num">self</span>):
+        mark = <span class="t-str">&quot;OK  &quot;</span> <span class="t-kw">if</span> <span class="t-num">self</span>.passed <span class="t-kw">else</span> <span class="t-str">&quot;FAIL&quot;</span>
+        <span class="t-kw">return</span> <span class="t-str">f&quot;[{mark}] {self.name}&quot;</span> + (<span class="t-str">f&quot; — {self.details}&quot;</span> <span class="t-kw">if</span> <span class="t-num">self</span>.details <span class="t-kw">else</span> <span class="t-str">&quot;&quot;</span>)
+
+
+<span class="t-kw">class</span> <span class="t-def">Check</span>(ABC):
+    <span class="t-str">&quot;&quot;&quot;Одна проверка. Наследники реализуют run().&quot;&quot;&quot;</span>
+
+    name = <span class="t-str">&quot;проверка&quot;</span>
+
+    <span class="t-def">@abstractmethod</span>
+    <span class="t-kw">def</span> <span class="t-def">run</span>(<span class="t-num">self</span>, rows: <span class="t-fn">list</span>[<span class="t-fn">dict</span>]) -&gt; CheckResult:
+        ...
+
+
+<span class="t-kw">class</span> <span class="t-def">NotEmpty</span>(Check):
+    name = <span class="t-str">&quot;таблица не пустая&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">run</span>(<span class="t-num">self</span>, rows):
+        <span class="t-kw">return</span> CheckResult(<span class="t-num">self</span>.name, passed=<span class="t-fn">len</span>(rows) &gt; <span class="t-num">0</span>, details=<span class="t-str">f&quot;строк: {len(rows)}&quot;</span>)
+
+
+<span class="t-kw">class</span> <span class="t-def">NoMissing</span>(Check):
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, column):
+        <span class="t-num">self</span>.column = column
+        <span class="t-num">self</span>.name = <span class="t-str">f&quot;нет пропусков в «{column}»&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">run</span>(<span class="t-num">self</span>, rows):
+        missing = <span class="t-fn">sum</span>(<span class="t-num">1</span> <span class="t-kw">for</span> row <span class="t-kw">in</span> rows <span class="t-kw">if</span> row.get(<span class="t-num">self</span>.column) <span class="t-kw">in</span> (<span class="t-num">None</span>, <span class="t-str">&quot;&quot;</span>))
+        <span class="t-kw">return</span> CheckResult(<span class="t-num">self</span>.name, missing == <span class="t-num">0</span>, <span class="t-str">f&quot;пропусков: {missing}&quot;</span>)
+
+
+<span class="t-kw">class</span> <span class="t-def">Unique</span>(Check):
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, column):
+        <span class="t-num">self</span>.column = column
+        <span class="t-num">self</span>.name = <span class="t-str">f&quot;значения «{column}» уникальны&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">run</span>(<span class="t-num">self</span>, rows):
+        values = [row[<span class="t-num">self</span>.column] <span class="t-kw">for</span> row <span class="t-kw">in</span> rows]
+        duplicates = <span class="t-fn">len</span>(values) - <span class="t-fn">len</span>(<span class="t-fn">set</span>(values))
+        <span class="t-kw">return</span> CheckResult(<span class="t-num">self</span>.name, duplicates == <span class="t-num">0</span>, <span class="t-str">f&quot;дубликатов: {duplicates}&quot;</span>)
+
+
+<span class="t-kw">class</span> <span class="t-def">InRange</span>(Check):
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, column, low, high):
+        <span class="t-num">self</span>.column, <span class="t-num">self</span>.low, <span class="t-num">self</span>.high = column, low, high
+        <span class="t-num">self</span>.name = <span class="t-str">f&quot;«{column}» в диапазоне [{low}, {high}]&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">run</span>(<span class="t-num">self</span>, rows):
+        bad = [row[<span class="t-num">self</span>.column] <span class="t-kw">for</span> row <span class="t-kw">in</span> rows
+               <span class="t-kw">if</span> row[<span class="t-num">self</span>.column] <span class="t-kw">is</span> <span class="t-kw">not</span> <span class="t-num">None</span> <span class="t-kw">and</span> <span class="t-kw">not</span> <span class="t-num">self</span>.low &lt;= row[<span class="t-num">self</span>.column] &lt;= <span class="t-num">self</span>.high]
+        <span class="t-kw">return</span> CheckResult(<span class="t-num">self</span>.name, <span class="t-kw">not</span> bad, <span class="t-str">f&quot;вне диапазона: {bad}&quot;</span> <span class="t-kw">if</span> bad <span class="t-kw">else</span> <span class="t-str">&quot;&quot;</span>)
+
+
+<span class="t-kw">class</span> <span class="t-def">QualityReport</span>:
+    <span class="t-str">&quot;&quot;&quot;Содержит набор проверок (композиция) и запускает их все.&quot;&quot;&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, checks: <span class="t-fn">list</span>[Check]):
+        <span class="t-num">self</span>.checks = checks
+
+    <span class="t-kw">def</span> <span class="t-def">run</span>(<span class="t-num">self</span>, rows) -&gt; <span class="t-fn">list</span>[CheckResult]:
+        <span class="t-kw">return</span> [check.run(rows) <span class="t-kw">for</span> check <span class="t-kw">in</span> <span class="t-num">self</span>.checks]
+
+    <span class="t-kw">def</span> <span class="t-def">is_ok</span>(<span class="t-num">self</span>, rows) -&gt; <span class="t-fn">bool</span>:
+        <span class="t-kw">return</span> <span class="t-fn">all</span>(result.passed <span class="t-kw">for</span> result <span class="t-kw">in</span> <span class="t-num">self</span>.run(rows))
+
+
+orders = [
+    {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">1</span>, <span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">1200</span>},
+    {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">2</span>, <span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">15400</span>},
+    {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">2</span>, <span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;Уфа&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: -<span class="t-num">500</span>},
+    {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">4</span>, <span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;Казань&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">None</span>},
+]
+
+report = QualityReport([
+    NotEmpty(),
+    NoMissing(<span class="t-str">&quot;city&quot;</span>),
+    NoMissing(<span class="t-str">&quot;amount&quot;</span>),
+    Unique(<span class="t-str">&quot;id&quot;</span>),
+    InRange(<span class="t-str">&quot;amount&quot;</span>, <span class="t-num">0</span>, <span class="t-num">1_000_000</span>),
+])
+
+<span class="t-kw">for</span> result <span class="t-kw">in</span> report.run(orders):
+    <span class="t-fn">print</span>(result)
+<span class="t-fn">print</span>(<span class="t-str">&quot;Данные годятся для анализа:&quot;</span>, report.is_ok(orders))</code></pre></div>
+<p>Что здесь использовано:</p>
+<ul>
+<li><strong>абстрактный класс</strong> <code>Check</code> задаёт контракт: у любой проверки есть <code>run</code>;</li>
+<li><strong>наследование и полиморфизм</strong>: <code>QualityReport</code> вызывает <code>check.run(rows)</code>, не зная, какая это проверка;</li>
+<li><strong>композиция</strong>: отчёт содержит список проверок;</li>
+<li><strong>dataclass</strong> для результата и <code>__str__</code> для красивого вывода.</li>
+</ul>
+<p>Главное достоинство: чтобы добавить новую проверку, нужно написать один маленький класс. Ни <code>QualityReport</code>, ни остальные проверки менять не придётся.</p>
+<h2 id="2б13-когда-ооп-не-нужно">2Б.13. Когда ООП не нужно</h2>
+<p>Объекты — инструмент, а не цель. Аналитический код в основном состоит из преобразований данных, и для них обычные функции подходят лучше.</p>
+<p>Класс <strong>не нужен</strong>, если:</p>
+<ul>
+<li>у него один метод кроме <code>__init__</code> — это просто функция;</li>
+<li>он не хранит состояния между вызовами;</li>
+<li>это ноутбук с разовым исследованием.</li>
+</ul>
+<p>Класс <strong>полезен</strong>, когда:</p>
+<ul>
+<li>есть данные и набор операций, которые имеют смысл только вместе (<code>Money</code>, <code>Order</code>);</li>
+<li>нужно гарантировать корректность данных (проверки в конструкторе и свойствах);</li>
+<li>есть несколько взаимозаменяемых вариантов одного поведения (источники данных, проверки, способы расчёта);</li>
+<li>объект держит ресурс или состояние: соединение с базой, кэш, настройки.</li>
+</ul>
+<p>Разумный порядок: начинай с функций. Когда заметишь, что несколько функций всё время принимают один и тот же набор аргументов, — это кандидат в класс.</p>
+<h2 id="задания">Задания</h2>
+<ol>
+<li><strong>Класс <code>Rectangle</code>.</strong> Атрибуты <code>width</code> и <code>height</code>, методы <code>area()</code> и <code>perimeter()</code>, понятный <code>__repr__</code>. Запрети отрицательные размеры.</li>
+<li><strong>Класс <code>Temperature</code>.</strong> Хранит градусы Цельсия. Свойство <code>fahrenheit</code> (чтение и запись), проверка, что температура не ниже −273,15. Объекты должны сравниваться через <code>&lt;</code> и <code>==</code>.</li>
+<li><strong>Класс <code>Stats</code>.</strong> Принимает список чисел. Поддерживает <code>len(stats)</code>, <code>stats[i]</code>, цикл <code>for</code>, оператор <code>in</code>; свойства <code>mean</code> и <code>median</code>.</li>
+<li><strong>Наследование.</strong> Базовый класс <code>Shape</code> с абстрактным методом <code>area()</code>. Наследники <code>Circle</code> и <code>Square</code>. Напиши функцию, которая считает суммарную площадь списка фигур.</li>
+<li><strong>dataclass.</strong> Опиши <code>Transaction</code> с полями <code>id</code>, <code>user_id</code>, <code>amount</code>, <code>created</code> (дата). Сделай его неизменяемым, добавь проверку <code>amount != 0</code> и метод класса <code>from_dict</code>.</li>
+<li><strong>Композиция.</strong> Класс <code>Funnel</code> принимает список названий шагов и словарь «шаг → число пользователей». Метод <code>conversions()</code> возвращает конверсию каждого шага от предыдущего, <code>bottleneck()</code> — шаг с самой низкой конверсией.</li>
+<li><strong>Расширение примера.</strong> Добавь в конвейер из раздела 2Б.12 проверку <code>AllowedValues(column, allowed)</code>, которая убеждается, что в столбце только разрешённые значения.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Чем класс отличается от объекта?</li>
+<li>Что такое <code>self</code>? Почему его нет при вызове метода?</li>
+<li>Чем атрибут класса отличается от атрибута объекта?</li>
+<li>Зачем нужен <code>__repr__</code>?</li>
+<li>Что даёт <code>@property</code>?</li>
+<li>Что такое полиморфизм? Приведи пример из pandas или встроенных функций.</li>
+<li>Чем композиция отличается от наследования и что предпочитать?</li>
+<li>Что генерирует <code>@dataclass</code>? Зачем нужен <code>field(default_factory=list)</code>?</li>
+<li>Когда вместо класса лучше написать функцию?</li>
+</ul>
+<h2 id="решения">Решения</h2>
+
+<details class="sol"><summary>Задание 1. Rectangle</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Rectangle</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, width, height):
+        <span class="t-kw">if</span> width &lt;= <span class="t-num">0</span> <span class="t-kw">or</span> height &lt;= <span class="t-num">0</span>:
+            <span class="t-kw">raise</span> <span class="t-fn">ValueError</span>(<span class="t-str">&quot;размеры должны быть положительными&quot;</span>)
+        <span class="t-num">self</span>.width = width
+        <span class="t-num">self</span>.height = height
+
+    <span class="t-kw">def</span> <span class="t-def">area</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">self</span>.width * <span class="t-num">self</span>.height
+
+    <span class="t-kw">def</span> <span class="t-def">perimeter</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">2</span> * (<span class="t-num">self</span>.width + <span class="t-num">self</span>.height)
+
+    <span class="t-kw">def</span> <span class="t-def">__repr__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-str">f&quot;Rectangle({self.width}, {self.height})&quot;</span>
+
+
+r = Rectangle(<span class="t-num">3</span>, <span class="t-num">4</span>)
+<span class="t-fn">print</span>(r, r.area(), r.perimeter())     <span class="t-com"># Rectangle(3, 4) 12 14</span></code></pre></div>
+<p>Проверка стоит в конструкторе: объект с неверными размерами просто не может появиться. Недостаток — после создания можно написать <code>r.width = -1</code>. Чтобы закрыть и эту дыру, нужны свойства, как в следующем решении.</p></details>
+<details class="sol"><summary>Задание 2. Temperature</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> functools
+
+ABSOLUTE_ZERO = -<span class="t-num">273.15</span>
+
+
+<span class="t-def">@functools.total_ordering</span>                 <span class="t-com"># по __eq__ и __lt__ достраивает &lt;=, &gt;, &gt;=</span>
+<span class="t-kw">class</span> <span class="t-def">Temperature</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, celsius):
+        <span class="t-num">self</span>.celsius = celsius            <span class="t-com"># идёт через setter, проверка сработает</span>
+
+    <span class="t-def">@property</span>
+    <span class="t-kw">def</span> <span class="t-def">celsius</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">self</span>._celsius
+
+    <span class="t-def">@celsius.setter</span>
+    <span class="t-kw">def</span> <span class="t-def">celsius</span>(<span class="t-num">self</span>, value):
+        <span class="t-kw">if</span> value &lt; ABSOLUTE_ZERO:
+            <span class="t-kw">raise</span> <span class="t-fn">ValueError</span>(<span class="t-str">f&quot;ниже абсолютного нуля: {value}&quot;</span>)
+        <span class="t-num">self</span>._celsius = value
+
+    <span class="t-def">@property</span>
+    <span class="t-kw">def</span> <span class="t-def">fahrenheit</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">self</span>._celsius * <span class="t-num">9</span> / <span class="t-num">5</span> + <span class="t-num">32</span>
+
+    <span class="t-def">@fahrenheit.setter</span>
+    <span class="t-kw">def</span> <span class="t-def">fahrenheit</span>(<span class="t-num">self</span>, value):
+        <span class="t-num">self</span>.celsius = (value - <span class="t-num">32</span>) * <span class="t-num">5</span> / <span class="t-num">9</span>     <span class="t-com"># снова через проверку</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__eq__</span>(<span class="t-num">self</span>, other):
+        <span class="t-kw">return</span> <span class="t-num">self</span>.celsius == other.celsius
+
+    <span class="t-kw">def</span> <span class="t-def">__lt__</span>(<span class="t-num">self</span>, other):
+        <span class="t-kw">return</span> <span class="t-num">self</span>.celsius &lt; other.celsius
+
+    <span class="t-kw">def</span> <span class="t-def">__repr__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-str">f&quot;Temperature({self.celsius:.1f}°C)&quot;</span>
+
+
+t = Temperature(<span class="t-num">25</span>)
+<span class="t-fn">print</span>(t.fahrenheit)                       <span class="t-com"># 77.0</span>
+t.fahrenheit = <span class="t-num">212</span>
+<span class="t-fn">print</span>(t, t &gt; Temperature(<span class="t-num">30</span>), <span class="t-fn">max</span>(Temperature(<span class="t-num">5</span>), Temperature(-<span class="t-num">3</span>)))</code></pre></div>
+<p>Хранится одно значение (<code>_celsius</code>), а Фаренгейт вычисляется из него. Хранить оба числа было бы ошибкой: они могли бы разойтись.</p></details>
+<details class="sol"><summary>Задание 3. Stats</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Stats</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, values):
+        <span class="t-kw">if</span> <span class="t-kw">not</span> values:
+            <span class="t-kw">raise</span> <span class="t-fn">ValueError</span>(<span class="t-str">&quot;нужен непустой список&quot;</span>)
+        <span class="t-num">self</span>._values = <span class="t-fn">list</span>(values)            <span class="t-com"># копия: внешний список нас не изменит</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__len__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-fn">len</span>(<span class="t-num">self</span>._values)
+
+    <span class="t-kw">def</span> <span class="t-def">__getitem__</span>(<span class="t-num">self</span>, index):
+        <span class="t-kw">return</span> <span class="t-num">self</span>._values[index]
+
+    <span class="t-kw">def</span> <span class="t-def">__iter__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-fn">iter</span>(<span class="t-num">self</span>._values)
+
+    <span class="t-kw">def</span> <span class="t-def">__contains__</span>(<span class="t-num">self</span>, value):
+        <span class="t-kw">return</span> value <span class="t-kw">in</span> <span class="t-num">self</span>._values
+
+    <span class="t-def">@property</span>
+    <span class="t-kw">def</span> <span class="t-def">mean</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-fn">sum</span>(<span class="t-num">self</span>._values) / <span class="t-fn">len</span>(<span class="t-num">self</span>._values)
+
+    <span class="t-def">@property</span>
+    <span class="t-kw">def</span> <span class="t-def">median</span>(<span class="t-num">self</span>):
+        ordered = <span class="t-fn">sorted</span>(<span class="t-num">self</span>._values)
+        middle = <span class="t-fn">len</span>(ordered) // <span class="t-num">2</span>
+        <span class="t-kw">if</span> <span class="t-fn">len</span>(ordered) % <span class="t-num">2</span>:
+            <span class="t-kw">return</span> ordered[middle]
+        <span class="t-kw">return</span> (ordered[middle - <span class="t-num">1</span>] + ordered[middle]) / <span class="t-num">2</span>
+
+    <span class="t-kw">def</span> <span class="t-def">__repr__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-str">f&quot;Stats(n={len(self)}, mean={self.mean:.2f})&quot;</span>
+
+
+s = Stats([<span class="t-num">12</span>, <span class="t-num">15</span>, <span class="t-num">11</span>, <span class="t-num">19</span>, <span class="t-num">95</span>])
+<span class="t-fn">print</span>(s, <span class="t-fn">len</span>(s), s[<span class="t-num">0</span>], <span class="t-num">19</span> <span class="t-kw">in</span> s, s.median)
+<span class="t-fn">print</span>([x <span class="t-kw">for</span> x <span class="t-kw">in</span> s <span class="t-kw">if</span> x &gt; <span class="t-num">12</span>])</code></pre></div></details>
+<details class="sol"><summary>Задание 4. Наследование</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> math
+<span class="t-kw">from</span> abc <span class="t-kw">import</span> ABC, abstractmethod
+
+
+<span class="t-kw">class</span> <span class="t-def">Shape</span>(ABC):
+    <span class="t-def">@abstractmethod</span>
+    <span class="t-kw">def</span> <span class="t-def">area</span>(<span class="t-num">self</span>) -&gt; <span class="t-fn">float</span>:
+        ...
+
+
+<span class="t-kw">class</span> <span class="t-def">Circle</span>(Shape):
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, radius):
+        <span class="t-num">self</span>.radius = radius
+
+    <span class="t-kw">def</span> <span class="t-def">area</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> math.pi * <span class="t-num">self</span>.radius ** <span class="t-num">2</span>
+
+
+<span class="t-kw">class</span> <span class="t-def">Square</span>(Shape):
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, side):
+        <span class="t-num">self</span>.side = side
+
+    <span class="t-kw">def</span> <span class="t-def">area</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">self</span>.side ** <span class="t-num">2</span>
+
+
+<span class="t-kw">def</span> <span class="t-def">total_area</span>(shapes):
+    <span class="t-kw">return</span> <span class="t-fn">sum</span>(shape.area() <span class="t-kw">for</span> shape <span class="t-kw">in</span> shapes)
+
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(total_area([Circle(<span class="t-num">1</span>), Square(<span class="t-num">2</span>)]), <span class="t-num">2</span>))     <span class="t-com"># 7.14</span></code></pre></div>
+<p>Функция <code>total_area</code> не знает о существовании кругов и квадратов. Добавишь <code>Triangle</code> — она продолжит работать без изменений.</p></details>
+<details class="sol"><summary>Задание 5. dataclass</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> dataclasses <span class="t-kw">import</span> dataclass
+<span class="t-kw">from</span> datetime <span class="t-kw">import</span> date
+
+
+<span class="t-def">@dataclass</span>(frozen=<span class="t-num">True</span>)
+<span class="t-kw">class</span> <span class="t-def">Transaction</span>:
+    id: <span class="t-fn">int</span>
+    user_id: <span class="t-fn">int</span>
+    amount: <span class="t-fn">float</span>
+    created: date
+
+    <span class="t-kw">def</span> <span class="t-def">__post_init__</span>(<span class="t-num">self</span>):
+        <span class="t-kw">if</span> <span class="t-num">self</span>.amount == <span class="t-num">0</span>:
+            <span class="t-kw">raise</span> <span class="t-fn">ValueError</span>(<span class="t-str">&quot;сумма транзакции не может быть нулевой&quot;</span>)
+
+    <span class="t-def">@classmethod</span>
+    <span class="t-kw">def</span> <span class="t-def">from_dict</span>(<span class="t-num">cls</span>, data):
+        <span class="t-kw">return</span> <span class="t-num">cls</span>(
+            id=<span class="t-fn">int</span>(data[<span class="t-str">&quot;id&quot;</span>]),
+            user_id=<span class="t-fn">int</span>(data[<span class="t-str">&quot;user_id&quot;</span>]),
+            amount=<span class="t-fn">float</span>(data[<span class="t-str">&quot;amount&quot;</span>]),
+            created=date.fromisoformat(data[<span class="t-str">&quot;created&quot;</span>]),
+        )
+
+    <span class="t-def">@property</span>
+    <span class="t-kw">def</span> <span class="t-def">is_refund</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">self</span>.amount &lt; <span class="t-num">0</span>
+
+
+t = Transaction.from_dict({<span class="t-str">&quot;id&quot;</span>: <span class="t-str">&quot;7&quot;</span>, <span class="t-str">&quot;user_id&quot;</span>: <span class="t-str">&quot;42&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-str">&quot;-350.5&quot;</span>, <span class="t-str">&quot;created&quot;</span>: <span class="t-str">&quot;2026-03-15&quot;</span>})
+<span class="t-fn">print</span>(t, t.is_refund)</code></pre></div>
+<p><code>from_dict</code> — место, где «сырые» строки превращаются в правильные типы. Дальше по коду гуляет объект, в корректности которого можно не сомневаться.</p></details>
+<details class="sol"><summary>Задание 6. Композиция</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">Funnel</span>:
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, steps, users):
+        missing = [step <span class="t-kw">for</span> step <span class="t-kw">in</span> steps <span class="t-kw">if</span> step <span class="t-kw">not</span> <span class="t-kw">in</span> users]
+        <span class="t-kw">if</span> missing:
+            <span class="t-kw">raise</span> <span class="t-fn">ValueError</span>(<span class="t-str">f&quot;нет данных для шагов: {missing}&quot;</span>)
+        <span class="t-num">self</span>.steps = <span class="t-fn">list</span>(steps)
+        <span class="t-num">self</span>.users = <span class="t-fn">dict</span>(users)
+
+    <span class="t-kw">def</span> <span class="t-def">conversions</span>(<span class="t-num">self</span>):
+        pairs = <span class="t-fn">zip</span>(<span class="t-num">self</span>.steps, <span class="t-num">self</span>.steps[<span class="t-num">1</span>:])
+        <span class="t-kw">return</span> {<span class="t-str">f&quot;{a} → {b}&quot;</span>: <span class="t-num">self</span>.users[b] / <span class="t-num">self</span>.users[a] <span class="t-kw">for</span> a, b <span class="t-kw">in</span> pairs}
+
+    <span class="t-kw">def</span> <span class="t-def">bottleneck</span>(<span class="t-num">self</span>):
+        conversions = <span class="t-num">self</span>.conversions()
+        <span class="t-kw">return</span> <span class="t-fn">min</span>(conversions, key=conversions.get)
+
+    <span class="t-kw">def</span> <span class="t-def">total_conversion</span>(<span class="t-num">self</span>):
+        <span class="t-kw">return</span> <span class="t-num">self</span>.users[<span class="t-num">self</span>.steps[-<span class="t-num">1</span>]] / <span class="t-num">self</span>.users[<span class="t-num">self</span>.steps[<span class="t-num">0</span>]]
+
+
+funnel = Funnel(
+    [<span class="t-str">&quot;визит&quot;</span>, <span class="t-str">&quot;товар&quot;</span>, <span class="t-str">&quot;корзина&quot;</span>, <span class="t-str">&quot;оплата&quot;</span>],
+    {<span class="t-str">&quot;визит&quot;</span>: <span class="t-num">10000</span>, <span class="t-str">&quot;товар&quot;</span>: <span class="t-num">4200</span>, <span class="t-str">&quot;корзина&quot;</span>: <span class="t-num">1300</span>, <span class="t-str">&quot;оплата&quot;</span>: <span class="t-num">520</span>},
+)
+<span class="t-kw">for</span> step, value <span class="t-kw">in</span> funnel.conversions().items():
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;{step}: {value:.1%}&quot;</span>)
+<span class="t-fn">print</span>(<span class="t-str">&quot;Узкое место:&quot;</span>, funnel.bottleneck())
+<span class="t-fn">print</span>(<span class="t-str">f&quot;Общая конверсия: {funnel.total_conversion():.1%}&quot;</span>)</code></pre></div>
+<p>Приём <code>zip(steps, steps[1:])</code> даёт пары соседних элементов — запомни его, он нужен постоянно.</p></details>
+<details class="sol"><summary>Задание 7. Расширение примера</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">AllowedValues</span>(Check):
+    <span class="t-kw">def</span> <span class="t-def">__init__</span>(<span class="t-num">self</span>, column, allowed):
+        <span class="t-num">self</span>.column = column
+        <span class="t-num">self</span>.allowed = <span class="t-fn">set</span>(allowed)
+        <span class="t-num">self</span>.name = <span class="t-str">f&quot;«{column}» содержит только разрешённые значения&quot;</span>
+
+    <span class="t-kw">def</span> <span class="t-def">run</span>(<span class="t-num">self</span>, rows):
+        unexpected = <span class="t-fn">sorted</span>({row[<span class="t-num">self</span>.column] <span class="t-kw">for</span> row <span class="t-kw">in</span> rows} - <span class="t-num">self</span>.allowed)
+        <span class="t-kw">return</span> CheckResult(<span class="t-num">self</span>.name, <span class="t-kw">not</span> unexpected,
+                           <span class="t-str">f&quot;неожиданные значения: {unexpected}&quot;</span> <span class="t-kw">if</span> unexpected <span class="t-kw">else</span> <span class="t-str">&quot;&quot;</span>)
+
+
+report = QualityReport([NotEmpty(), AllowedValues(<span class="t-str">&quot;city&quot;</span>, [<span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>])])
+<span class="t-kw">for</span> result <span class="t-kw">in</span> report.run(orders):
+    <span class="t-fn">print</span>(result)</code></pre></div>
+<p>Мы не изменили ни одной строки существующего кода — только добавили класс. Это называют принципом открытости-закрытости: код открыт для расширения и закрыт для изменения.</p></details><nav class="nav "><a class="prev" href="02a-python-dalshe.html" id=prev><small>← Назад</small><b>Глава 2А. Python: следующий уровень</b></a><a class="next" href="02c-chistyj-kod.html" id=next><small>Вперёд →</small><b>Глава 2В. Красивый код и паттерны</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

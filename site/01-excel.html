@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 1. Таблицы: Excel и Google Sheets</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">3 из 19 · Глава 1. Таблицы: Excel и Google Sheets</span>
+</div><div class="progress"><i style="width:16%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="ustanovka.html"><small>← Назад</small><b>Установка и настройка: полное руководство</b></a><a class="next" href="02-python-osnovy.html"><small>Вперёд →</small><b>Глава 2. Основы Python</b></a></nav><h1 id="глава-1-таблицы-excel-и-google-sheets">Глава 1. Таблицы: Excel и Google Sheets</h1>
+<p>Excel кажется несерьёзным рядом с Python, но это самый распространённый инструмент анализа в мире. Заказчик пришлёт тебе файл <code>.xlsx</code>, а отчёт попросит «в экселе». К тому же сводная таблица — лучший способ понять идею группировки, на которой стоят и SQL, и pandas.</p>
+<p>Всё в этой главе работает и в бесплатных Google Sheets. Названия функций даны на английском, в скобках — русские.</p>
+<h2 id="11-как-устроена-правильная-таблица">1.1. Как устроена «правильная» таблица</h2>
+<p>Аналитик работает с данными в <strong>длинном формате</strong>:</p>
+<ul>
+<li>одна строка — одно событие или объект (заказ, клиент, визит);</li>
+<li>один столбец — один признак (дата, город, сумма);</li>
+<li>в ячейке — одно значение;</li>
+<li>никаких объединённых ячеек, пустых строк и итогов внутри данных.</li>
+</ul>
+<div class="table"><table><thead><tr><th>order_id</th><th>date</th><th>city</th><th>category</th><th>amount</th></tr></thead><tbody><tr><td>1</td><td>2026-03-01</td><td>Москва</td><td>Книги</td><td>1200</td></tr><tr><td>2</td><td>2026-03-01</td><td>Казань</td><td>Техника</td><td>15400</td></tr><tr><td>3</td><td>2026-03-02</td><td>Москва</td><td>Техника</td><td>8900</td></tr></tbody></table></div>
+<p>Запомни этот вид — так же выглядят таблицы в базах данных и датафреймы в pandas.</p>
+<h2 id="12-функции-которые-нужно-знать">1.2. Функции, которые нужно знать</h2>
+<h3 id="агрегаты">Агрегаты</h3>
+<div class="table"><table><thead><tr><th>Функция</th><th>Что делает</th><th>Пример</th></tr></thead><tbody><tr><td><code>SUM</code> (СУММ)</td><td>Сумма</td><td><code>=SUM(E2:E100)</code></td></tr><tr><td><code>AVERAGE</code> (СРЗНАЧ)</td><td>Среднее</td><td><code>=AVERAGE(E2:E100)</code></td></tr><tr><td><code>COUNT</code> (СЧЁТ)</td><td>Количество чисел</td><td><code>=COUNT(E2:E100)</code></td></tr><tr><td><code>MIN</code> / <code>MAX</code> (МИН / МАКС)</td><td>Минимум / максимум</td><td><code>=MAX(E2:E100)</code></td></tr><tr><td><code>SUMIFS</code> (СУММЕСЛИМН)</td><td>Сумма по условиям</td><td><code>=SUMIFS(E:E, C:C, &quot;Москва&quot;)</code></td></tr><tr><td><code>COUNTIFS</code> (СЧЁТЕСЛИМН)</td><td>Количество по условиям</td><td><code>=COUNTIFS(C:C, &quot;Москва&quot;, D:D, &quot;Книги&quot;)</code></td></tr></tbody></table></div>
+<h3 id="логика">Логика</h3>
+<p><code>IF</code> (ЕСЛИ) — выбор из двух вариантов:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>=IF(E2 &gt;= 10000; &quot;Крупный&quot;; &quot;Обычный&quot;)</code></pre></div>
+<p>Разделитель аргументов зависит от региональных настроек: в русской локали — точка с запятой, в английской — запятая.</p>
+<h3 id="поиск">Поиск</h3>
+<p><code>VLOOKUP</code> (ВПР) подтягивает значение из другой таблицы по ключу. Это тот же <code>JOIN</code> из SQL, только вручную.</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>=VLOOKUP(A2; Клиенты!A:C; 3; FALSE)</code></pre></div>
+<p>Читается так: найди значение из <code>A2</code> в первом столбце диапазона <code>Клиенты!A:C</code> и верни значение из третьего столбца. <code>FALSE</code> (ЛОЖЬ) означает точное совпадение — всегда указывай его, иначе получишь тихую ошибку.</p>
+<p><code>HLOOKUP</code> (ГПР) — то же самое, но поиск идёт по строке. В новых версиях обе функции заменяет <code>XLOOKUP</code> (ПРОСМОТРX).</p>
+<h3 id="текст">Текст</h3>
+<div class="table"><table><thead><tr><th>Функция</th><th>Что делает</th></tr></thead><tbody><tr><td><code>TRIM</code> (СЖПРОБЕЛЫ)</td><td>Убирает лишние пробелы</td></tr><tr><td><code>UPPER</code> / <code>LOWER</code> / <code>PROPER</code> (ПРОПИСН / СТРОЧН / ПРОПНАЧ)</td><td>Меняет регистр</td></tr><tr><td><code>CONCAT</code> (СЦЕП)</td><td>Склеивает строки</td></tr><tr><td><code>SUBSTITUTE</code> (ПОДСТАВИТЬ)</td><td>Заменяет подстроку по тексту</td></tr><tr><td><code>REPLACE</code> (ЗАМЕНИТЬ)</td><td>Заменяет символы по позиции</td></tr></tbody></table></div>
+<p><code>TRIM</code> и <code>LOWER</code> — первые помощники при очистке: «Москва », «москва» и «Москва» для компьютера — три разных города.</p>
+<h3 id="даты">Даты</h3>
+<p><code>DATEDIF</code> (РАЗНДАТ) считает разницу между датами:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>=DATEDIF(A2; B2; &quot;D&quot;)</code></pre></div>
+<p>Третий аргумент: <code>&quot;D&quot;</code> — дни, <code>&quot;M&quot;</code> — месяцы, <code>&quot;Y&quot;</code> — годы.</p>
+<h2 id="13-сводные-таблицы">1.3. Сводные таблицы</h2>
+<p>Сводная таблица (Pivot Table) отвечает на вопрос вида «посчитай <strong>что-то</strong> в разрезе <strong>чего-то</strong>»: выручку по городам, число заказов по месяцам, средний чек по категориям.</p>
+<p>Как построить:</p>
+<ol>
+<li>Выдели данные вместе с заголовками.</li>
+<li>Вставка → Сводная таблица.</li>
+<li>Перетащи поля в четыре области:<ul>
+<li><strong>Строки</strong> — по чему группируем (город);</li>
+<li><strong>Столбцы</strong> — второй разрез (категория);</li>
+<li><strong>Значения</strong> — что считаем (сумма по <code>amount</code>);</li>
+<li><strong>Фильтры</strong> — что отсекаем (только март).</li>
+</ul></li>
+</ol>
+<p>Запомни соответствие, оно пригодится дальше:</p>
+<div class="table"><table><thead><tr><th>Сводная таблица</th><th>SQL</th><th>pandas</th></tr></thead><tbody><tr><td>Строки</td><td><code>GROUP BY</code></td><td><code>groupby()</code></td></tr><tr><td>Значения</td><td><code>SUM()</code>, <code>COUNT()</code></td><td><code>.agg()</code></td></tr><tr><td>Фильтры</td><td><code>WHERE</code></td><td><code>df[условие]</code></td></tr><tr><td>Строки + Столбцы</td><td><code>GROUP BY</code> + <code>CASE</code></td><td><code>pivot_table()</code></td></tr></tbody></table></div>
+<h2 id="14-графики">1.4. Графики</h2>
+<p>Четыре графика закрывают большую часть задач:</p>
+<ul>
+<li><strong>Линейный</strong> — как показатель меняется во времени.</li>
+<li><strong>Столбчатый</strong> — сравнение категорий.</li>
+<li><strong>Гистограмма</strong> — как распределены значения.</li>
+<li><strong>Точечный</strong> — связь двух числовых показателей.</li>
+</ul>
+<p>Круговую диаграмму используй, только если долей не больше четырёх. Подробно о выборе графика — в главе 7.</p>
+<h2 id="15-где-excel-заканчивается">1.5. Где Excel заканчивается</h2>
+<p>Переходи на SQL и Python, когда:</p>
+<ul>
+<li>строк больше нескольких сотен тысяч (предел листа — 1 048 576 строк, тормозить начнёт раньше);</li>
+<li>один и тот же отчёт нужно делать каждую неделю;</li>
+<li>нужно объединить много файлов;</li>
+<li>нужны статистические тесты.</li>
+</ul>
+<p>Главный недостаток Excel — <strong>невоспроизводимость</strong>: по готовому файлу не видно, какие действия и в каком порядке с ним сделали. Код это видно всегда.</p>
+<h2 id="практика-на-github">Практика на GitHub</h2>
+<ul>
+<li>В <a href="https://github.com/awesomedata/awesome-public-datasets" target="_blank" rel="noopener">awesome-public-datasets</a> выбери любой небольшой датасет в формате CSV и открой его в Excel или Google Sheets.</li>
+<li>В <a href="https://github.com/noztas/DataAnalystProjects" target="_blank" rel="noopener">noztas/DataAnalystProjects</a> посмотри проект с дашбордом в Excel: как из сводных таблиц и срезов собирается одна страница с ответами.</li>
+</ul>
+<h2 id="задания">Задания</h2>
+<ol>
+<li>Создай таблицу из 30 заказов по образцу из раздела 1.1 (или возьми датасет из каталога).</li>
+<li>Посчитай выручку по Москве через <code>SUMIFS</code>.</li>
+<li>Добавь столбец «Размер заказа» через <code>IF</code>.</li>
+<li>Сделай второй лист «Города» с населением и подтяни население через <code>VLOOKUP</code>.</li>
+<li>Построй сводную таблицу: города в строках, категории в столбцах, сумма в значениях.</li>
+<li>Построй столбчатый график выручки по городам.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Что такое длинный формат данных?</li>
+<li>Зачем в <code>VLOOKUP</code> последний аргумент <code>FALSE</code>?</li>
+<li>Какой области сводной таблицы соответствует <code>GROUP BY</code>?</li>
+</ul>
+<h2 id="решения">Решения</h2>
+<p>Формулы даны для английской локали с запятой-разделителем. В русской локали замени запятые между аргументами на точку с запятой. Предполагается, что данные лежат в столбцах: A — <code>order_id</code>, B — <code>date</code>, C — <code>city</code>, D — <code>category</code>, E — <code>amount</code>, заголовки — в первой строке.</p>
+<details class="sol"><summary>Задание 2. Выручка по Москве</summary><div class="code"><button class="copy" type="button">Копировать</button><pre><code>=SUMIFS(E:E, C:C, &quot;Москва&quot;)</code></pre></div>
+<p>Первый аргумент — что суммируем, дальше идут пары «диапазон условия, условие». Чтобы не вписывать город в формулу, вынеси его в ячейку, например <code>H1</code>, и сошлись на неё: <code>=SUMIFS(E:E, C:C, H1)</code>. Тогда город меняется без правки формулы.</p>
+<p>Проверка: сумма по всем городам должна совпасть с <code>=SUM(E:E)</code>. Если не совпала — в названиях городов есть лишние пробелы или разный регистр.</p></details>
+<details class="sol"><summary>Задание 3. Размер заказа</summary><p>В ячейку <code>F2</code>, затем протянуть вниз:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>=IF(E2&gt;=10000, &quot;Крупный&quot;, &quot;Обычный&quot;)</code></pre></div>
+<p>Три градации получаются вложением:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>=IF(E2&gt;=10000, &quot;Крупный&quot;, IF(E2&gt;=3000, &quot;Средний&quot;, &quot;Мелкий&quot;))</code></pre></div>
+<p>Условия проверяются по порядку, поэтому во втором <code>IF</code> уже не нужно писать «меньше 10000».</p></details>
+<details class="sol"><summary>Задание 4. Население через VLOOKUP</summary><p>На листе «Города» в столбце A — город, в столбце B — население. В ячейку <code>G2</code> основного листа:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>=VLOOKUP(C2, Города!A:B, 2, FALSE)</code></pre></div>
+<p>Если появилась ошибка <code>#N/A</code> (<code>#Н/Д</code>), значит, город не найден. Причины почти всегда две: лишние пробелы или разное написание. Лечится очисткой ключа:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>=VLOOKUP(TRIM(C2), Города!A:B, 2, FALSE)</code></pre></div>
+<p>Чтобы вместо ошибки выводился текст:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>=IFERROR(VLOOKUP(C2, Города!A:B, 2, FALSE), &quot;нет в справочнике&quot;)</code></pre></div></details>
+<details class="sol"><summary>Задание 5. Сводная таблица</summary><ol>
+<li>Щёлкни в любую ячейку данных.</li>
+<li>Вставка → Сводная таблица → На новый лист.</li>
+<li>Поле <code>city</code> перетащи в «Строки», <code>category</code> — в «Столбцы», <code>amount</code> — в «Значения».</li>
+<li>Убедись, что в «Значениях» написано «Сумма по полю amount». Если там «Количество», значит, в столбце есть текст или пустые ячейки: щёлкни по полю → Параметры поля значений → Сумма.</li>
+</ol>
+<p>Общий итог сводной должен совпасть с <code>=SUM(E:E)</code>. Это стандартная проверка, которую стоит делать всегда.</p></details>
+<details class="sol"><summary>Задание 6. График</summary><ol>
+<li>Построй сводную: <code>city</code> в строках, сумма <code>amount</code> в значениях.</li>
+<li>Отсортируй по убыванию: правый клик по числу → Сортировка → По убыванию.</li>
+<li>Выдели сводную → Вставка → Гистограмма (столбчатая).</li>
+<li>Дай графику заголовок-вывод («Москва приносит половину выручки») и убери легенду из одного пункта.</li>
+</ol>
+<p>Сортировка обязательна: по отсортированным столбцам лидер и отстающий видны сразу.</p></details><nav class="nav "><a class="prev" href="ustanovka.html" id=prev><small>← Назад</small><b>Установка и настройка: полное руководство</b></a><a class="next" href="02-python-osnovy.html" id=next><small>Вперёд →</small><b>Глава 2. Основы Python</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

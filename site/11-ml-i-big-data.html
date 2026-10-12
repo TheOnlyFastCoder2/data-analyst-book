@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 11. Машинное обучение и большие данные</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">16 из 19 · Глава 11. Машинное обучение и большие данные</span>
+</div><div class="progress"><i style="width:84%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="10-produktovaya-analitika.html"><small>← Назад</small><b>Глава 10. Продуктовая аналитика</b></a><a class="next" href="12-portfolio.html"><small>Вперёд →</small><b>Глава 12. Проекты и портфолио</b></a></nav><h1 id="глава-11-машинное-обучение-и-большие-данные">Глава 11. Машинное обучение и большие данные</h1>
+<p>На карте roadmap.sh это раздел Advanced Topics. Для первой работы аналитиком он не обязателен, но базовое понимание нужно: ты будешь работать рядом с дата-сайентистами, а простые модели пригодятся и в анализе.</p>
+<p>Цель главы — обзор: какие бывают задачи, как устроен процесс и как понять, хороша ли модель.</p>
+<h2 id="111-что-такое-машинное-обучение">11.1. Что такое машинное обучение</h2>
+<p>В обычной программе человек пишет правила: «если сумма больше 10 000 — заказ крупный». В машинном обучении правила находит алгоритм — по примерам с известными ответами.</p>
+<p>Термины:</p>
+<ul>
+<li><strong>Признаки (features, X)</strong> — то, что мы знаем об объекте: возраст клиента, число заказов, город.</li>
+<li><strong>Целевая переменная (target, y)</strong> — то, что хотим предсказать: уйдёт ли клиент.</li>
+<li><strong>Обучение</strong> — подбор параметров модели по данным.</li>
+<li><strong>Предсказание</strong> — применение обученной модели к новым объектам.</li>
+</ul>
+<h3 id="типы-машинного-обучения">Типы машинного обучения</h3>
+<div class="table"><table><thead><tr><th>Тип</th><th>Суть</th><th>Задачи</th><th>Примеры</th></tr></thead><tbody><tr><td><strong>С учителем</strong> (supervised)</td><td>Есть правильные ответы</td><td>Регрессия — предсказать число. Классификация — предсказать класс</td><td>Прогноз продаж, отток клиентов, кредитный скоринг</td></tr><tr><td><strong>Без учителя</strong> (unsupervised)</td><td>Ответов нет, ищем структуру</td><td>Кластеризация, снижение размерности</td><td>Сегментация клиентов, поиск аномалий</td></tr><tr><td><strong>С подкреплением</strong> (reinforcement)</td><td>Агент учится на наградах за действия</td><td>Управление, игры</td><td>Роботы, рекомендательные стратегии</td></tr></tbody></table></div>
+<p>Аналитику нужны первые два.</p>
+<h2 id="112-процесс-от-данных-до-оценки">11.2. Процесс: от данных до оценки</h2>
+<p>Главная идея: <strong>модель нужно проверять на данных, которых она не видела</strong>. Иначе она может просто «зазубрить» обучающие примеры. Поэтому данные делят на обучающую и тестовую части.</p>
+<p>Смоделируем данные об оттоке клиентов и обучим классификатор:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+<span class="t-kw">from</span> sklearn.model_selection <span class="t-kw">import</span> train_test_split
+<span class="t-kw">from</span> sklearn.linear_model <span class="t-kw">import</span> LogisticRegression
+<span class="t-kw">from</span> sklearn.tree <span class="t-kw">import</span> DecisionTreeClassifier
+<span class="t-kw">from</span> sklearn.metrics <span class="t-kw">import</span> accuracy_score, precision_score, recall_score, roc_auc_score, confusion_matrix
+
+rng = np.random.default_rng(<span class="t-num">42</span>)
+n = <span class="t-num">2000</span>
+
+data = pd.DataFrame({
+    <span class="t-str">&quot;months_with_us&quot;</span>: rng.integers(<span class="t-num">1</span>, <span class="t-num">48</span>, n),
+    <span class="t-str">&quot;orders_last_90d&quot;</span>: rng.poisson(<span class="t-num">3</span>, n),
+    <span class="t-str">&quot;support_tickets&quot;</span>: rng.poisson(<span class="t-num">1</span>, n),
+    <span class="t-str">&quot;avg_check&quot;</span>: rng.gamma(<span class="t-num">2.0</span>, <span class="t-num">1500</span>, n).<span class="t-fn">round</span>(<span class="t-num">0</span>),
+})
+
+<span class="t-com"># Чем меньше стаж и заказов и чем больше обращений в поддержку, тем выше шанс ухода</span>
+score = -<span class="t-num">0.5</span> - <span class="t-num">0.04</span> * data[<span class="t-str">&quot;months_with_us&quot;</span>] - <span class="t-num">0.4</span> * data[<span class="t-str">&quot;orders_last_90d&quot;</span>] + <span class="t-num">0.7</span> * data[<span class="t-str">&quot;support_tickets&quot;</span>]
+data[<span class="t-str">&quot;churn&quot;</span>] = (rng.random(n) &lt; <span class="t-num">1</span> / (<span class="t-num">1</span> + np.exp(-score))).astype(<span class="t-fn">int</span>)
+<span class="t-fn">print</span>(data[<span class="t-str">&quot;churn&quot;</span>].mean())      <span class="t-com"># доля ушедших</span>
+
+X = data.drop(columns=<span class="t-str">&quot;churn&quot;</span>)
+y = data[<span class="t-str">&quot;churn&quot;</span>]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=<span class="t-num">0.25</span>, random_state=<span class="t-num">42</span>, stratify=y
+)
+
+model = LogisticRegression(max_iter=<span class="t-num">1000</span>)
+model.fit(X_train, y_train)
+
+pred = model.predict(X_test)                  <span class="t-com"># класс: 0 или 1</span>
+proba = model.predict_proba(X_test)[:, <span class="t-num">1</span>]     <span class="t-com"># вероятность ухода</span></code></pre></div>
+<p>В библиотеке scikit-learn у всех моделей одинаковый интерфейс: <code>fit</code> — обучить, <code>predict</code> — предсказать. Поменять алгоритм — это поменять одну строку.</p>
+<h2 id="113-как-оценивать-модель">11.3. Как оценивать модель</h2>
+<h3 id="классификация">Классификация</h3>
+<p>Начинают с <strong>матрицы ошибок</strong>:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(confusion_matrix(y_test, pred))
+<span class="t-fn">print</span>(<span class="t-str">&quot;accuracy:&quot;</span>, <span class="t-fn">round</span>(accuracy_score(y_test, pred), <span class="t-num">3</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;precision:&quot;</span>, <span class="t-fn">round</span>(precision_score(y_test, pred), <span class="t-num">3</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;recall:&quot;</span>, <span class="t-fn">round</span>(recall_score(y_test, pred), <span class="t-num">3</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;ROC AUC:&quot;</span>, <span class="t-fn">round</span>(roc_auc_score(y_test, proba), <span class="t-num">3</span>))</code></pre></div>
+<div class="table"><table><thead><tr><th>Метрика</th><th>Вопрос, на который отвечает</th></tr></thead><tbody><tr><td><strong>Accuracy</strong></td><td>Какая доля предсказаний верна?</td></tr><tr><td><strong>Precision</strong> (точность)</td><td>Из тех, кого модель назвала уходящими, сколько действительно ушли?</td></tr><tr><td><strong>Recall</strong> (полнота)</td><td>Из тех, кто действительно ушёл, скольких модель нашла?</td></tr><tr><td><strong>F1</strong></td><td>Среднее гармоническое precision и recall</td></tr><tr><td><strong>ROC AUC</strong></td><td>Насколько хорошо модель в целом отделяет один класс от другого (0,5 — случайно, 1 — идеально)</td></tr></tbody></table></div>
+<p><strong>Ловушка accuracy.</strong> Если уходит 5 % клиентов, то модель, которая всем предсказывает «останется», получит accuracy 95 % — и будет абсолютно бесполезной. При несбалансированных классах смотри на precision, recall и ROC AUC.</p>
+<p>Выбор между precision и recall — это вопрос бизнеса: что дороже — зря дать скидку лояльному клиенту или пропустить уходящего?</p>
+<h3 id="регрессия">Регрессия</h3>
+<div class="table"><table><thead><tr><th>Метрика</th><th>Смысл</th></tr></thead><tbody><tr><td><strong>MAE</strong></td><td>Средняя абсолютная ошибка — в единицах целевой переменной: «ошибаемся в среднем на 300 рублей»</td></tr><tr><td><strong>RMSE</strong></td><td>Корень из среднего квадрата ошибки — сильнее штрафует за большие промахи</td></tr><tr><td><strong>R²</strong></td><td>Доля разброса, объяснённая моделью</td></tr></tbody></table></div>
+<h3 id="базовая-модель">Базовая модель</h3>
+<p>Любую модель сравнивай с самым простым решением — бейзлайном: для регрессии — предсказывать среднее, для классификации — самый частый класс. Если сложная модель не лучше бейзлайна, она не нужна.</p>
+<h2 id="114-переобучение">11.4. Переобучение</h2>
+<p><strong>Переобучение (overfitting)</strong> — модель запомнила обучающие данные вместе с шумом и плохо работает на новых. Признак: на обучающей выборке качество намного выше, чем на тестовой.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">for</span> depth <span class="t-kw">in</span> [<span class="t-num">2</span>, <span class="t-num">5</span>, <span class="t-num">None</span>]:
+    tree = DecisionTreeClassifier(max_depth=depth, random_state=<span class="t-num">42</span>)
+    tree.fit(X_train, y_train)
+    train_auc = roc_auc_score(y_train, tree.predict_proba(X_train)[:, <span class="t-num">1</span>])
+    test_auc = roc_auc_score(y_test, tree.predict_proba(X_test)[:, <span class="t-num">1</span>])
+    <span class="t-fn">print</span>(depth, <span class="t-fn">round</span>(train_auc, <span class="t-num">3</span>), <span class="t-fn">round</span>(test_auc, <span class="t-num">3</span>))</code></pre></div>
+<p>Дерево без ограничения глубины показывает идеальный результат на обучении и заметно худший на тесте — оно заучило данные.</p>
+<p>Более надёжная оценка — <strong>кросс-валидация</strong>: данные делят на несколько частей, по очереди каждая служит тестовой, результат усредняют. В scikit-learn это функция <code>cross_val_score</code>.</p>
+<h2 id="115-алгоритмы-с-карты">11.5. Алгоритмы с карты</h2>
+<div class="table"><table><thead><tr><th>Алгоритм</th><th>Задача</th><th>Идея в одном предложении</th></tr></thead><tbody><tr><td><strong>Линейная регрессия</strong></td><td>Регрессия</td><td>Подбирает прямую (плоскость), минимизируя квадраты ошибок</td></tr><tr><td><strong>Логистическая регрессия</strong></td><td>Классификация</td><td>Линейная модель, выход которой превращён в вероятность от 0 до 1</td></tr><tr><td><strong>Дерево решений</strong></td><td>Обе</td><td>Последовательность вопросов «признак больше порога?»</td></tr><tr><td><strong>KNN</strong> (k ближайших соседей)</td><td>Обе</td><td>Смотрит на k самых похожих объектов и берёт их ответ</td></tr><tr><td><strong>Наивный Байес</strong></td><td>Классификация</td><td>Считает вероятности классов по теореме Байеса, предполагая независимость признаков</td></tr><tr><td><strong>K-means</strong></td><td>Кластеризация</td><td>Делит объекты на k групп вокруг центров</td></tr></tbody></table></div>
+<p>На практике лучшие результаты на табличных данных дают ансамбли деревьев — случайный лес и градиентный бустинг. Но начинать всегда стоит с простой интерпретируемой модели.</p>
+<h3 id="что-модель-говорит-о-данных">Что модель говорит о данных</h3>
+<p>Аналитику модель часто нужна не для предсказаний, а для понимания: какие факторы связаны с результатом.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>coefs = pd.Series(model.coef_[<span class="t-num">0</span>], index=X.columns).sort_values()
+<span class="t-fn">print</span>(coefs.<span class="t-fn">round</span>(<span class="t-num">3</span>))</code></pre></div>
+<p>Знак коэффициента показывает направление связи: отрицательный у <code>orders_last_90d</code> — чем больше заказов, тем ниже вероятность ухода. Сравнивать величины коэффициентов между собой можно только после приведения признаков к одному масштабу (<code>StandardScaler</code>).</p>
+<h3 id="кластеризация">Кластеризация</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> sklearn.cluster <span class="t-kw">import</span> KMeans
+<span class="t-kw">from</span> sklearn.preprocessing <span class="t-kw">import</span> StandardScaler
+
+features = data[[<span class="t-str">&quot;months_with_us&quot;</span>, <span class="t-str">&quot;orders_last_90d&quot;</span>, <span class="t-str">&quot;avg_check&quot;</span>]]
+scaled = StandardScaler().fit_transform(features)
+
+kmeans = KMeans(n_clusters=<span class="t-num">3</span>, n_init=<span class="t-num">10</span>, random_state=<span class="t-num">42</span>)
+data[<span class="t-str">&quot;cluster&quot;</span>] = kmeans.fit_predict(scaled)
+
+<span class="t-fn">print</span>(data.groupby(<span class="t-str">&quot;cluster&quot;</span>)[features.columns.tolist()].mean().<span class="t-fn">round</span>(<span class="t-num">1</span>))
+<span class="t-fn">print</span>(data[<span class="t-str">&quot;cluster&quot;</span>].value_counts())</code></pre></div>
+<p>Масштабирование обязательно: K-means работает с расстояниями, и без него признак с большими числами (средний чек в тысячах) полностью подавит остальные.</p>
+<p>Алгоритм найдёт кластеры всегда, даже в полностью случайных данных. Осмысленны ли они — решает аналитик, глядя на средние значения признаков в каждой группе. Сравни этот подход с RFM-сегментацией из главы 10.</p>
+<h2 id="116-типичные-ошибки">11.6. Типичные ошибки</h2>
+<ul>
+<li><strong>Утечка данных (data leakage).</strong> В признаки попала информация, которой в момент предсказания ещё не будет. Пример: признак «дата расторжения договора» в модели оттока. Качество получается фантастическим — и бесполезным.</li>
+<li><strong>Оценка на обучающих данных.</strong></li>
+<li><strong>Случайное разбиение временных данных.</strong> Если данные упорядочены во времени, тест должен быть позже обучения, иначе модель «подглядывает в будущее».</li>
+<li><strong>Сложная модель там, где хватило бы группировки.</strong> Сначала попробуй решить задачу средствами глав 5–10.</li>
+</ul>
+<h2 id="117-глубокое-обучение-что-нужно-знать">11.7. Глубокое обучение: что нужно знать</h2>
+<p>Нейронная сеть — модель из слоёв простых элементов, способная находить очень сложные зависимости.</p>
+<ul>
+<li><strong>CNN</strong> (свёрточные сети) — изображения.</li>
+<li><strong>RNN</strong> и трансформеры — последовательности: текст, временные ряды.</li>
+<li><strong>TensorFlow</strong> и <strong>PyTorch</strong> — основные библиотеки.</li>
+</ul>
+<p>На карте этот раздел помечен как необязательный, и это справедливо. Глубокое обучение нужно для картинок, текста и звука. С таблицами, с которыми работает аналитик, лучше справляются модели из раздела 11.5.</p>
+<h2 id="118-большие-данные-что-нужно-знать">11.8. Большие данные: что нужно знать</h2>
+<p>Когда данные не помещаются в память одного компьютера, pandas перестаёт работать, и нужны распределённые системы — они делят данные и вычисления между многими машинами.</p>
+<div class="table"><table><thead><tr><th>Термин</th><th>Что это</th></tr></thead><tbody><tr><td><strong>Hadoop</strong></td><td>Экосистема для хранения (HDFS) и обработки больших данных на кластере</td></tr><tr><td><strong>MapReduce</strong></td><td>Модель вычислений: разбить задачу на части (map), выполнить параллельно, собрать результат (reduce)</td></tr><tr><td><strong>Spark</strong></td><td>Современный и быстрый движок распределённых вычислений; есть Python-интерфейс PySpark</td></tr><tr><td><strong>MPI</strong></td><td>Стандарт обмена сообщениями для параллельных вычислений, в основном в научных расчётах</td></tr><tr><td><strong>Хранилище данных (DWH)</strong></td><td>База, оптимизированная под аналитические запросы: ClickHouse, BigQuery, Snowflake, Greenplum</td></tr></tbody></table></div>
+<p>Хорошая новость: для аналитика большие данные выглядят почти так же, как маленькие. В ClickHouse и BigQuery пишут обычный SQL, а PySpark похож на pandas — та же логика «отфильтровал, сгруппировал, соединил». Идея MapReduce — это split–apply–combine из главы 5, только на многих машинах.</p>
+<p>Что действительно меняется: нельзя бездумно писать <code>SELECT *</code>, нужно фильтровать как можно раньше и помнить, что запрос стоит денег и времени.</p>
+<h2 id="практика-на-github">Практика на GitHub</h2>
+<ul>
+<li><a href="https://github.com/Yorko/mlcourse.ai" target="_blank" rel="noopener">Yorko/mlcourse.ai</a> — открытый курс машинного обучения от сообщества ODS. Первые темы посвящены анализу и визуализации данных, дальше идут деревья решений и kNN, линейные модели, ансамбли. К каждой теме — статья, ноутбук и домашнее задание. Лучший следующий шаг после этой главы.</li>
+<li><a href="https://github.com/jakevdp/PythonDataScienceHandbook" target="_blank" rel="noopener">jakevdp/PythonDataScienceHandbook</a> — глава 5 (ноутбуки с префиксом <code>05</code>): введение в scikit-learn, проверка моделей, обзор основных алгоритмов.</li>
+<li><a href="https://github.com/DataTalksClub" target="_blank" rel="noopener">DataTalksClub</a> — бесплатные курсы с домашними заданиями: по машинному обучению и по инженерии данных (хранилища, Spark, конвейеры обработки).</li>
+<li><a href="https://github.com/academic/awesome-datascience" target="_blank" rel="noopener">academic/awesome-datascience</a> — каталог: открывай, когда решишь идти глубже в Data Science.</li>
+</ul>
+<h2 id="задания">Задания</h2>
+<ol>
+<li>Обучи на данных из раздела 11.2 дерево решений глубины 3 и сравни ROC AUC с логистической регрессией.</li>
+<li>Посчитай бейзлайн: какой accuracy у модели, всегда предсказывающей «останется»?</li>
+<li>Меняй порог вероятности, выше которого клиент считается уходящим (0,2; 0,3; 0,5). Как меняются precision и recall?</li>
+<li>Оцени логистическую регрессию через <code>cross_val_score</code> на пяти частях.</li>
+<li>Сделай K-means на RFM-признаках из главы 10 и сравни результат с сегментами, полученными вручную.</li>
+<li>Найди в <a href="https://github.com/awesomedata/awesome-public-datasets" target="_blank" rel="noopener">awesome-public-datasets</a> табличный датасет с понятной целевой переменной и пройди весь путь: EDA → бейзлайн → модель → оценка → выводы.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Чем обучение с учителем отличается от обучения без учителя?</li>
+<li>Чем регрессия отличается от классификации?</li>
+<li>Зачем делить данные на обучающую и тестовую части?</li>
+<li>Что такое переобучение и как его заметить?</li>
+<li>Почему accuracy — плохая метрика при несбалансированных классах?</li>
+<li>Чем precision отличается от recall?</li>
+<li>Что такое утечка данных?</li>
+</ul>
+<h2 id="решения">Решения</h2>
+<p>Решения продолжают код раздела 11.2: предполагается, что <code>data</code>, <code>X</code>, <code>y</code>, <code>X_train</code>, <code>X_test</code>, <code>y_train</code>, <code>y_test</code>, <code>model</code> и <code>proba</code> уже созданы.</p>
+<details class="sol"><summary>Задание 1. Дерево против логистической регрессии</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> sklearn.tree <span class="t-kw">import</span> DecisionTreeClassifier, export_text
+
+tree = DecisionTreeClassifier(max_depth=<span class="t-num">3</span>, random_state=<span class="t-num">42</span>)
+tree.fit(X_train, y_train)
+tree_proba = tree.predict_proba(X_test)[:, <span class="t-num">1</span>]
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;ROC AUC, логистическая регрессия:&quot;</span>, <span class="t-fn">round</span>(roc_auc_score(y_test, proba), <span class="t-num">3</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;ROC AUC, дерево глубины 3:&quot;</span>, <span class="t-fn">round</span>(roc_auc_score(y_test, tree_proba), <span class="t-num">3</span>))
+<span class="t-fn">print</span>(export_text(tree, feature_names=<span class="t-fn">list</span>(X.columns)))</code></pre></div>
+<p>Логистическая регрессия здесь, скорее всего, окажется лучше. Это ожидаемо: данные мы сами сгенерировали по логистической формуле, и линейная модель описывает их идеально. Дерево глубины 3 делит пространство всего на восемь областей и приближает плавную зависимость «ступеньками».</p>
+<p><code>export_text</code> печатает правила дерева — главное достоинство этого алгоритма: его можно прочитать и объяснить менеджеру.</p>
+<p>Вывод шире конкретного примера: нет «лучшего алгоритма вообще», есть алгоритм, подходящий под структуру данных.</p></details>
+<details class="sol"><summary>Задание 2. Бейзлайн</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> sklearn.dummy <span class="t-kw">import</span> DummyClassifier
+
+baseline = DummyClassifier(strategy=<span class="t-str">&quot;most_frequent&quot;</span>).fit(X_train, y_train)
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;Доля ушедших:&quot;</span>, <span class="t-fn">round</span>(y_test.mean(), <span class="t-num">3</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;Accuracy бейзлайна:&quot;</span>, <span class="t-fn">round</span>(accuracy_score(y_test, baseline.predict(X_test)), <span class="t-num">3</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;Accuracy модели:&quot;</span>, <span class="t-fn">round</span>(accuracy_score(y_test, pred), <span class="t-num">3</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;Recall бейзлайна:&quot;</span>, recall_score(y_test, baseline.predict(X_test)))      <span class="t-com"># 0.0</span></code></pre></div>
+<p>Accuracy бейзлайна равна <code>1 − доля ушедших</code>. Модель, которая никого не находит (recall = 0), получает высокую accuracy просто потому, что ушедших мало. Если accuracy нашей модели лишь немного выше — это не значит, что модель плохая: это значит, что accuracy здесь ни о чём не говорит. Смотрим на recall, precision и ROC AUC.</p></details>
+<details class="sol"><summary>Задание 3. Порог вероятности</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>rows = []
+<span class="t-kw">for</span> threshold <span class="t-kw">in</span> (<span class="t-num">0.2</span>, <span class="t-num">0.3</span>, <span class="t-num">0.5</span>):
+    predicted = (proba &gt;= threshold).astype(<span class="t-fn">int</span>)
+    rows.append({
+        <span class="t-str">&quot;порог&quot;</span>: threshold,
+        <span class="t-str">&quot;помечено уходящими&quot;</span>: <span class="t-fn">int</span>(predicted.<span class="t-fn">sum</span>()),
+        <span class="t-str">&quot;precision&quot;</span>: <span class="t-fn">round</span>(precision_score(y_test, predicted, zero_division=<span class="t-num">0</span>), <span class="t-num">3</span>),
+        <span class="t-str">&quot;recall&quot;</span>: <span class="t-fn">round</span>(recall_score(y_test, predicted), <span class="t-num">3</span>),
+    })
+
+<span class="t-fn">print</span>(pd.DataFrame(rows))</code></pre></div>
+<p>Чем ниже порог, тем больше клиентов модель помечает как уходящих: recall растёт (находим больше настоящих уходящих), precision падает (больше ложных тревог). Улучшить обе метрики одновременно сдвигом порога нельзя.</p>
+<p>Какой порог выбрать — решает экономика. Если удержание — это дешёвое письмо, выгоден низкий порог: лучше написать лишним, чем пропустить уходящего. Если удержание — дорогая скидка или звонок менеджера, порог поднимают.</p>
+<p>Метод <code>predict</code> всегда использует порог 0,5. Для несбалансированных классов он почти никогда не оптимален, поэтому работать нужно с <code>predict_proba</code>.</p></details>
+<details class="sol"><summary>Задание 4. Кросс-валидация</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> sklearn.model_selection <span class="t-kw">import</span> cross_val_score
+
+scores = cross_val_score(LogisticRegression(max_iter=<span class="t-num">1000</span>), X, y, cv=<span class="t-num">5</span>, scoring=<span class="t-str">&quot;roc_auc&quot;</span>)
+
+<span class="t-fn">print</span>(scores.<span class="t-fn">round</span>(<span class="t-num">3</span>))
+<span class="t-fn">print</span>(<span class="t-str">f&quot;ROC AUC: {scores.mean():.3f} ± {scores.std():.3f}&quot;</span>)</code></pre></div>
+<p>Получаем пять оценок вместо одной. Среднее — более надёжная оценка качества, а разброс показывает, насколько результат зависит от того, какие объекты попали в тест. Если бы оценка на одном разбиении сильно отличалась от среднего по пяти, мы бы знали, что нам просто повезло или не повезло с разбиением.</p></details>
+<details class="sol"><summary>Задание 5. K-means на RFM-признаках</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> sklearn.cluster <span class="t-kw">import</span> KMeans
+<span class="t-kw">from</span> sklearn.preprocessing <span class="t-kw">import</span> StandardScaler
+
+events = pd.read_csv(<span class="t-str">&quot;events.csv&quot;</span>, parse_dates=[<span class="t-str">&quot;date&quot;</span>])
+purchases = events[events[<span class="t-str">&quot;event&quot;</span>] == <span class="t-str">&quot;purchase&quot;</span>]
+today = purchases[<span class="t-str">&quot;date&quot;</span>].<span class="t-fn">max</span>() + pd.Timedelta(days=<span class="t-num">1</span>)
+
+rfm = purchases.groupby(<span class="t-str">&quot;user_id&quot;</span>).agg(
+    recency=(<span class="t-str">&quot;date&quot;</span>, <span class="t-kw">lambda</span> d: (today - d.<span class="t-fn">max</span>()).days),
+    frequency=(<span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;count&quot;</span>),
+    monetary=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;sum&quot;</span>),
+)
+
+features = rfm[[<span class="t-str">&quot;recency&quot;</span>, <span class="t-str">&quot;frequency&quot;</span>, <span class="t-str">&quot;monetary&quot;</span>]].copy()
+features[<span class="t-str">&quot;monetary&quot;</span>] = np.log1p(features[<span class="t-str">&quot;monetary&quot;</span>])          <span class="t-com"># сжать длинный хвост</span>
+scaled = StandardScaler().fit_transform(features)
+
+rfm[<span class="t-str">&quot;cluster&quot;</span>] = KMeans(n_clusters=<span class="t-num">4</span>, n_init=<span class="t-num">10</span>, random_state=<span class="t-num">42</span>).fit_predict(scaled)
+
+profile = rfm.groupby(<span class="t-str">&quot;cluster&quot;</span>).agg(
+    users=(<span class="t-str">&quot;monetary&quot;</span>, <span class="t-str">&quot;count&quot;</span>),
+    recency=(<span class="t-str">&quot;recency&quot;</span>, <span class="t-str">&quot;mean&quot;</span>),
+    frequency=(<span class="t-str">&quot;frequency&quot;</span>, <span class="t-str">&quot;mean&quot;</span>),
+    monetary=(<span class="t-str">&quot;monetary&quot;</span>, <span class="t-str">&quot;mean&quot;</span>),
+    revenue_share=(<span class="t-str">&quot;monetary&quot;</span>, <span class="t-kw">lambda</span> m: m.<span class="t-fn">sum</span>() / rfm[<span class="t-str">&quot;monetary&quot;</span>].<span class="t-fn">sum</span>()),
+)
+<span class="t-fn">print</span>(profile.<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<p>Два шага подготовки обязательны: логарифм для суммы покупок (иначе несколько крупных клиентов образуют отдельный кластер) и стандартизация (иначе рубли в тысячах задавят частоту в единицах).</p>
+<p>Кластеры нужно <strong>назвать</strong>, глядя на таблицу <code>profile</code>: например, «недавние разовые», «давно ушедшие», «постоянные крупные». Если кластеру не получается дать осмысленное имя и предложить для него действие — он бесполезен, и число кластеров стоит поменять.</p>
+<p>Сравнение с ручной RFM-сегментацией:</p>
+<div class="table"><table><thead><tr><th></th><th>Ручные RFM-сегменты</th><th>K-means</th></tr></thead><tbody><tr><td>Границы</td><td>Задаёшь сам, их легко объяснить</td><td>Находит алгоритм</td></tr><tr><td>Объяснимость</td><td>«Покупал в последние 30 дней»</td><td>«Ближе к центру кластера 2»</td></tr><tr><td>Устойчивость</td><td>Не меняются при обновлении данных</td><td>Могут сдвинуться при переобучении</td></tr><tr><td>Когда выбирать</td><td>Почти всегда для RFM</td><td>Когда признаков много и границы неочевидны</td></tr></tbody></table></div>
+<p>Для трёх понятных признаков ручная сегментация обычно практичнее.</p></details>
+<details class="sol"><summary>Задание 6. Полный цикл на своём датасете</summary><p>Каркас решения. Ключевая идея — объединить подготовку признаков и модель в <code>Pipeline</code>: это тот самый паттерн «конвейер» из главы 2В, и он защищает от утечки данных.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> sklearn.compose <span class="t-kw">import</span> ColumnTransformer
+<span class="t-kw">from</span> sklearn.dummy <span class="t-kw">import</span> DummyClassifier
+<span class="t-kw">from</span> sklearn.impute <span class="t-kw">import</span> SimpleImputer
+<span class="t-kw">from</span> sklearn.pipeline <span class="t-kw">import</span> Pipeline
+<span class="t-kw">from</span> sklearn.preprocessing <span class="t-kw">import</span> OneHotEncoder, StandardScaler
+
+
+<span class="t-kw">def</span> <span class="t-def">build_model</span>(numeric: <span class="t-fn">list</span>[<span class="t-fn">str</span>], categorical: <span class="t-fn">list</span>[<span class="t-fn">str</span>]) -&gt; Pipeline:
+    <span class="t-str">&quot;&quot;&quot;Подготовка признаков и модель в одном объекте.&quot;&quot;&quot;</span>
+    numeric_steps = Pipeline([
+        (<span class="t-str">&quot;impute&quot;</span>, SimpleImputer(strategy=<span class="t-str">&quot;median&quot;</span>)),
+        (<span class="t-str">&quot;scale&quot;</span>, StandardScaler()),
+    ])
+    categorical_steps = Pipeline([
+        (<span class="t-str">&quot;impute&quot;</span>, SimpleImputer(strategy=<span class="t-str">&quot;most_frequent&quot;</span>)),
+        (<span class="t-str">&quot;encode&quot;</span>, OneHotEncoder(handle_unknown=<span class="t-str">&quot;ignore&quot;</span>)),
+    ])
+    preprocess = ColumnTransformer([
+        (<span class="t-str">&quot;num&quot;</span>, numeric_steps, numeric),
+        (<span class="t-str">&quot;cat&quot;</span>, categorical_steps, categorical),
+    ])
+    <span class="t-kw">return</span> Pipeline([(<span class="t-str">&quot;preprocess&quot;</span>, preprocess), (<span class="t-str">&quot;model&quot;</span>, LogisticRegression(max_iter=<span class="t-num">1000</span>))])</code></pre></div>
+<p>Использование:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>TARGET = <span class="t-str">&quot;target&quot;</span>                       <span class="t-com"># замени на имя своей целевой переменной</span>
+df = pd.read_csv(<span class="t-str">&quot;data/dataset.csv&quot;</span>)
+
+X, y = df.drop(columns=TARGET), df[TARGET]
+numeric = X.select_dtypes(<span class="t-str">&quot;number&quot;</span>).columns.tolist()
+categorical = X.select_dtypes(<span class="t-str">&quot;object&quot;</span>).columns.tolist()
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="t-num">0.25</span>, random_state=<span class="t-num">42</span>, stratify=y)
+
+baseline = DummyClassifier(strategy=<span class="t-str">&quot;prior&quot;</span>).fit(X_train, y_train)
+model = build_model(numeric, categorical).fit(X_train, y_train)
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;ROC AUC бейзлайна:&quot;</span>, <span class="t-fn">round</span>(roc_auc_score(y_test, baseline.predict_proba(X_test)[:, <span class="t-num">1</span>]), <span class="t-num">3</span>))   <span class="t-com"># 0.5</span>
+<span class="t-fn">print</span>(<span class="t-str">&quot;ROC AUC модели:&quot;</span>, <span class="t-fn">round</span>(roc_auc_score(y_test, model.predict_proba(X_test)[:, <span class="t-num">1</span>]), <span class="t-num">3</span>))</code></pre></div>
+<p>Почему <code>Pipeline</code> защищает от утечки: медианы для заполнения пропусков и параметры масштабирования вычисляются только по обучающей части при вызове <code>fit</code>, а к тестовой лишь применяются. Если посчитать медиану по всей таблице до разбиения, в обучение просочится информация из теста, и оценка качества окажется завышенной.</p>
+<p>Чек-лист проекта:</p>
+<ul>
+<li>EDA по плану из раздела 8.7, отдельно — распределение целевой переменной;</li>
+<li>проверка на утечку: нет ли признаков, которые становятся известны только после события;</li>
+<li>бейзлайн посчитан, модель сравнивается с ним;</li>
+<li>метрика выбрана под задачу, а не «accuracy по привычке»;</li>
+<li>есть раздел о том, какие признаки важны и что это значит для бизнеса;</li>
+<li>в выводах — что модель позволяет сделать и какие у неё ограничения.</li>
+</ul></details><nav class="nav "><a class="prev" href="10-produktovaya-analitika.html" id=prev><small>← Назад</small><b>Глава 10. Продуктовая аналитика</b></a><a class="next" href="12-portfolio.html" id=next><small>Вперёд →</small><b>Глава 12. Проекты и портфолио</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

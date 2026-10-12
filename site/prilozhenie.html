@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Приложение. Все ресурсы и шпаргалки</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">19 из 19 · Приложение. Все ресурсы и шпаргалки</span>
+</div><div class="progress"><i style="width:100%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="13-rabota.html"><small>← Назад</small><b>Глава 13. Поиск работы</b></a><a class="next" href="index.html"><small>Вперёд →</small><b>Содержание</b></a></nav><h1 id="приложение-все-ресурсы-и-шпаргалки">Приложение. Все ресурсы и шпаргалки</h1>
+<h2 id="а-все-репозитории-книги">А. Все репозитории книги</h2>
+<div class="table"><table><thead><tr><th>Репозиторий</th><th>Что это</th><th>Главы</th></tr></thead><tbody><tr><td><a href="https://github.com/kamranahmedse/developer-roadmap" target="_blank" rel="noopener">kamranahmedse/developer-roadmap</a></td><td>Карта Data Analyst: что и в каком порядке учить</td><td>0, 13</td></tr><tr><td><a href="https://github.com/PavelGrigoryevDS/awesome-data-analysis" target="_blank" rel="noopener">PavelGrigoryevDS/awesome-data-analysis</a></td><td>Каталог из 500+ ресурсов по анализу данных</td><td>0, 2, 13</td></tr><tr><td><a href="https://github.com/academic/awesome-datascience" target="_blank" rel="noopener">academic/awesome-datascience</a></td><td>Каталог ресурсов по Data Science</td><td>0, 11</td></tr><tr><td><a href="https://github.com/lerocha/chinook-database" target="_blank" rel="noopener">lerocha/chinook-database</a></td><td>Учебная база данных музыкального магазина</td><td>3, 5, 12</td></tr><tr><td><a href="https://github.com/jesussantana/sql-data-analysis" target="_blank" rel="noopener">jesussantana/sql-data-analysis</a></td><td>150+ аналитических задач по SQL</td><td>3, 13</td></tr><tr><td><a href="https://github.com/jakevdp/PythonDataScienceHandbook" target="_blank" rel="noopener">jakevdp/PythonDataScienceHandbook</a></td><td>Книга: IPython, NumPy, pandas, Matplotlib, scikit-learn</td><td>2, 4, 5, 6, 7, 11</td></tr><tr><td><a href="https://github.com/wesm/pydata-book" target="_blank" rel="noopener">wesm/pydata-book</a></td><td>Материалы к книге автора pandas</td><td>2, 4, 5, 7</td></tr><tr><td><a href="https://github.com/guipsamora/pandas_exercises" target="_blank" rel="noopener">guipsamora/pandas_exercises</a></td><td>Упражнения по pandas с решениями</td><td>5, 6, 7, 8, 13</td></tr><tr><td><a href="https://github.com/rougier/numpy-100" target="_blank" rel="noopener">rougier/numpy-100</a></td><td>100 задач по NumPy</td><td>4</td></tr><tr><td><a href="https://github.com/jvns/pandas-cookbook" target="_blank" rel="noopener">jvns/pandas-cookbook</a></td><td>pandas на реальных «грязных» данных</td><td>5, 6</td></tr><tr><td><a href="https://github.com/AllenDowney/ThinkStats2" target="_blank" rel="noopener">AllenDowney/ThinkStats2</a></td><td>Статистика через Python-код</td><td>8, 9</td></tr><tr><td><a href="https://github.com/AllenDowney/ThinkBayes2" target="_blank" rel="noopener">AllenDowney/ThinkBayes2</a></td><td>Байесовская статистика на Python</td><td>9</td></tr><tr><td><a href="https://github.com/Yorko/mlcourse.ai" target="_blank" rel="noopener">Yorko/mlcourse.ai</a></td><td>Открытый курс машинного обучения от ODS</td><td>7, 8, 11, 13</td></tr><tr><td><a href="https://github.com/DataTalksClub" target="_blank" rel="noopener">DataTalksClub</a></td><td>Бесплатные курсы с домашними заданиями</td><td>10, 11, 13</td></tr><tr><td><a href="https://github.com/awesomedata/awesome-public-datasets" target="_blank" rel="noopener">awesomedata/awesome-public-datasets</a></td><td>Каталог открытых датасетов по темам</td><td>1, 6, 8, 11, 12</td></tr><tr><td><a href="https://github.com/DataAna1ytics/Projects_Data_Analytics" target="_blank" rel="noopener">DataAna1ytics/Projects_Data_Analytics</a></td><td>Учебные проекты Практикума и karpov.courses</td><td>9, 10, 12</td></tr><tr><td><a href="https://github.com/Yourius/Projects_Ya" target="_blank" rel="noopener">Yourius/Projects_Ya</a></td><td>Воронки, A/A/B-тесты, маркетинговые метрики</td><td>8, 9, 10, 12</td></tr><tr><td><a href="https://github.com/Lenupcik/portfolio" target="_blank" rel="noopener">Lenupcik/portfolio</a></td><td>Исследования, дашборд DataLens, SQL</td><td>3, 7, 10, 12</td></tr><tr><td><a href="https://github.com/GonorAndres/data-analyst-path" target="_blank" rel="noopener">GonorAndres/data-analyst-path</a></td><td>Шесть законченных проектов с дашбордами</td><td>7, 8, 9, 10, 12</td></tr><tr><td><a href="https://github.com/AsifRashid01/DataAnalyst_PortfolioProjects" target="_blank" rel="noopener">AsifRashid01/DataAnalyst_PortfolioProjects</a></td><td>SQL, Tableau, очистка данных, pandas</td><td>3, 6, 7, 12</td></tr><tr><td><a href="https://github.com/noztas/DataAnalystProjects" target="_blank" rel="noopener">noztas/DataAnalystProjects</a></td><td>MySQL, дашборд в Excel, pandas</td><td>1, 3, 6, 7, 12</td></tr></tbody></table></div>
+<p>Содержимое репозиториев со временем меняется: папки переименовывают, файлы переносят. Если путь из книги не нашёлся — открой README репозитория, там всегда есть актуальное оглавление.</p>
+<h2 id="б-шпаргалка-по-sql">Б. Шпаргалка по SQL</h2>
+<div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- Скелет запроса</span>
+<span class="t-kw">SELECT</span> столбцы, агрегаты
+<span class="t-kw">FROM</span> таблица
+<span class="t-kw">JOIN</span> другая <span class="t-kw">ON</span> условие
+<span class="t-kw">WHERE</span> фильтр_строк
+<span class="t-kw">GROUP</span> <span class="t-kw">BY</span> столбцы
+<span class="t-kw">HAVING</span> фильтр_групп
+<span class="t-kw">ORDER</span> <span class="t-kw">BY</span> столбец <span class="t-kw">DESC</span>
+<span class="t-kw">LIMIT</span> n;
+
+<span class="t-com">-- CTE</span>
+<span class="t-kw">WITH</span> имя <span class="t-kw">AS</span> (<span class="t-kw">SELECT</span> ...)
+<span class="t-kw">SELECT</span> ... <span class="t-kw">FROM</span> имя;
+
+<span class="t-com">-- Оконные функции</span>
+<span class="t-fn">ROW_NUMBER</span>() <span class="t-kw">OVER</span> (<span class="t-kw">PARTITION</span> <span class="t-kw">BY</span> g <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> x <span class="t-kw">DESC</span>)
+<span class="t-fn">SUM</span>(x)       <span class="t-kw">OVER</span> (<span class="t-kw">PARTITION</span> <span class="t-kw">BY</span> g <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> d)                              <span class="t-com">-- накопительный итог</span>
+<span class="t-fn">LAG</span>(x)       <span class="t-kw">OVER</span> (<span class="t-kw">PARTITION</span> <span class="t-kw">BY</span> g <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> d)                              <span class="t-com">-- предыдущее значение</span>
+<span class="t-fn">AVG</span>(x)       <span class="t-kw">OVER</span> (<span class="t-kw">ORDER</span> <span class="t-kw">BY</span> d <span class="t-kw">ROWS</span> <span class="t-kw">BETWEEN</span> <span class="t-num">6</span> <span class="t-kw">PRECEDING</span> <span class="t-kw">AND</span> <span class="t-kw">CURRENT</span> <span class="t-kw">ROW</span>)    <span class="t-com">-- скользящее среднее</span>
+
+<span class="t-com">-- Условная агрегация</span>
+<span class="t-fn">SUM</span>(<span class="t-kw">CASE</span> <span class="t-kw">WHEN</span> status = <span class="t-str">&#x27;paid&#x27;</span> <span class="t-kw">THEN</span> amount <span class="t-kw">ELSE</span> <span class="t-num">0</span> <span class="t-kw">END</span>)
+<span class="t-fn">COUNT</span>(<span class="t-kw">DISTINCT</span> <span class="t-kw">CASE</span> <span class="t-kw">WHEN</span> event = <span class="t-str">&#x27;purchase&#x27;</span> <span class="t-kw">THEN</span> user_id <span class="t-kw">END</span>)</code></pre></div>
+<p>Порядок выполнения: <code>FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT</code>.</p>
+<h2 id="в-шпаргалка-по-pandas">В. Шпаргалка по pandas</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com"># Загрузка и осмотр</span>
+df = pd.read_csv(<span class="t-str">&quot;file.csv&quot;</span>, parse_dates=[<span class="t-str">&quot;date&quot;</span>])
+df.head(); df.info(); df.describe(); df.shape
+df[<span class="t-str">&quot;col&quot;</span>].value_counts(); df[<span class="t-str">&quot;col&quot;</span>].nunique(); df.isna().<span class="t-fn">sum</span>()
+
+<span class="t-com"># Выбор</span>
+df[[<span class="t-str">&quot;a&quot;</span>, <span class="t-str">&quot;b&quot;</span>]]
+df[(df[<span class="t-str">&quot;a&quot;</span>] &gt; <span class="t-num">5</span>) &amp; (df[<span class="t-str">&quot;b&quot;</span>] == <span class="t-str">&quot;x&quot;</span>)]
+df.loc[условие, [<span class="t-str">&quot;a&quot;</span>, <span class="t-str">&quot;b&quot;</span>]]
+df.sort_values(<span class="t-str">&quot;a&quot;</span>, ascending=<span class="t-num">False</span>).head(<span class="t-num">10</span>)
+
+<span class="t-com"># Новые столбцы</span>
+df[<span class="t-str">&quot;c&quot;</span>] = df[<span class="t-str">&quot;a&quot;</span>] / df[<span class="t-str">&quot;b&quot;</span>]
+df[<span class="t-str">&quot;flag&quot;</span>] = np.where(df[<span class="t-str">&quot;a&quot;</span>] &gt; <span class="t-num">5</span>, <span class="t-str">&quot;да&quot;</span>, <span class="t-str">&quot;нет&quot;</span>)
+df[<span class="t-str">&quot;month&quot;</span>] = df[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;M&quot;</span>)
+
+<span class="t-com"># Группировка</span>
+df.groupby(<span class="t-str">&quot;g&quot;</span>).agg(n=(<span class="t-str">&quot;id&quot;</span>, <span class="t-str">&quot;count&quot;</span>), total=(<span class="t-str">&quot;x&quot;</span>, <span class="t-str">&quot;sum&quot;</span>)).reset_index()
+df.groupby(<span class="t-str">&quot;g&quot;</span>)[<span class="t-str">&quot;x&quot;</span>].transform(<span class="t-str">&quot;mean&quot;</span>)
+df.pivot_table(index=<span class="t-str">&quot;a&quot;</span>, columns=<span class="t-str">&quot;b&quot;</span>, values=<span class="t-str">&quot;x&quot;</span>, aggfunc=<span class="t-str">&quot;sum&quot;</span>)
+
+<span class="t-com"># Соединение</span>
+df.merge(other, on=<span class="t-str">&quot;key&quot;</span>, how=<span class="t-str">&quot;left&quot;</span>, validate=<span class="t-str">&quot;many_to_one&quot;</span>)
+pd.concat([df1, df2], ignore_index=<span class="t-num">True</span>)
+
+<span class="t-com"># Очистка</span>
+df.drop_duplicates(); df.dropna(subset=[<span class="t-str">&quot;x&quot;</span>]); df[<span class="t-str">&quot;x&quot;</span>].fillna(значение)
+pd.to_numeric(df[<span class="t-str">&quot;x&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>); pd.to_datetime(df[<span class="t-str">&quot;d&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>)
+df[<span class="t-str">&quot;s&quot;</span>].<span class="t-fn">str</span>.strip().<span class="t-fn">str</span>.lower()
+
+<span class="t-com"># Время</span>
+df.set_index(<span class="t-str">&quot;date&quot;</span>)[<span class="t-str">&quot;x&quot;</span>].resample(<span class="t-str">&quot;W&quot;</span>).<span class="t-fn">sum</span>()
+s.rolling(<span class="t-num">7</span>).mean(); s.pct_change(); s.shift(<span class="t-num">1</span>)</code></pre></div>
+<h2 id="г-какой-статистический-тест-выбрать">Г. Какой статистический тест выбрать</h2>
+<div class="table"><table><thead><tr><th>Ситуация</th><th>Тест</th></tr></thead><tbody><tr><td>Две группы, сравниваем средние</td><td>t-тест Уэлча</td></tr><tr><td>Две группы, данные с выбросами или тяжёлым хвостом</td><td>Манна — Уитни или бутстрап</td></tr><tr><td>Две группы, сравниваем доли (конверсии)</td><td>z-тест пропорций или хи-квадрат</td></tr><tr><td>Одни и те же объекты «до» и «после»</td><td>Парный t-тест</td></tr><tr><td>Три и больше групп</td><td>ANOVA, затем попарные сравнения с поправкой</td></tr><tr><td>Связь двух категориальных признаков</td><td>Хи-квадрат</td></tr><tr><td>Связь двух числовых признаков</td><td>Корреляция Пирсона или Спирмена</td></tr><tr><td>Нестандартная метрика (медиана, перцентиль, отношение)</td><td>Бутстрап</td></tr></tbody></table></div>
+<h2 id="д-формулы-метрик">Д. Формулы метрик</h2>
+<div class="table"><table><thead><tr><th>Метрика</th><th>Формула</th></tr></thead><tbody><tr><td>Конверсия (CR)</td><td>целевые действия / посетители</td></tr><tr><td>Средний чек (AOV)</td><td>выручка / число заказов</td></tr><tr><td>ARPU</td><td>выручка / все пользователи</td></tr><tr><td>ARPPU</td><td>выручка / платящие пользователи</td></tr><tr><td>Retention N-го периода</td><td>вернувшиеся в период N / размер когорты</td></tr><tr><td>Churn</td><td>1 − retention</td></tr><tr><td>Sticky factor</td><td>DAU / MAU</td></tr><tr><td>LTV</td><td>суммарная выручка когорты / размер когорты</td></tr><tr><td>CAC</td><td>расходы на привлечение / число привлечённых</td></tr><tr><td>ROMI</td><td>(доход − расходы на маркетинг) / расходы на маркетинг</td></tr></tbody></table></div>
+<h2 id="е-словарь">Е. Словарь</h2>
+<div class="table"><table><thead><tr><th>Термин</th><th>Значение</th></tr></thead><tbody><tr><td>A/A-тест</td><td>Тест, где обе группы видят одно и то же: проверка системы разбиения</td></tr><tr><td>A/B-тест</td><td>Эксперимент со случайным разделением пользователей на группы</td></tr><tr><td>API</td><td>Программный интерфейс для получения данных с сервера</td></tr><tr><td>BI</td><td>Business Intelligence: системы отчётности и дашбордов</td></tr><tr><td>CTE</td><td>Именованный подзапрос в SQL (<code>WITH</code>)</td></tr><tr><td>DataFrame</td><td>Таблица в pandas</td></tr><tr><td>DWH</td><td>Хранилище данных</td></tr><tr><td>EDA</td><td>Разведочный анализ данных</td></tr><tr><td>ETL</td><td>Извлечение, преобразование и загрузка данных</td></tr><tr><td>IQR</td><td>Межквартильный размах</td></tr><tr><td>JOIN</td><td>Соединение таблиц</td></tr><tr><td>KPI</td><td>Ключевой показатель эффективности</td></tr><tr><td>MDE</td><td>Минимальный эффект, который тест способен обнаружить</td></tr><tr><td>NaN / NULL</td><td>Пропущенное значение</td></tr><tr><td>p-value</td><td>Вероятность получить такое же или более сильное различие, если эффекта на самом деле нет</td></tr><tr><td>SRM</td><td>Несоответствие размеров групп в тесте запланированным</td></tr><tr><td>Бейзлайн</td><td>Простейшее решение, с которым сравнивают модель</td></tr><tr><td>Векторизация</td><td>Операция сразу над всем массивом без цикла</td></tr><tr><td>Воронка</td><td>Последовательность шагов с долей дошедших до каждого</td></tr><tr><td>Выброс</td><td>Значение, резко отличающееся от остальных</td></tr><tr><td>Когорта</td><td>Группа пользователей с общим событием в один период</td></tr><tr><td>Конфаундер</td><td>Скрытая переменная, влияющая на обе изучаемые величины</td></tr><tr><td>Метрика</td><td>Числовой показатель состояния продукта или бизнеса</td></tr><tr><td>Мощность</td><td>Вероятность обнаружить эффект, если он есть</td></tr><tr><td>Переобучение</td><td>Модель запомнила обучающие данные и плохо работает на новых</td></tr><tr><td>Признак</td><td>Характеристика объекта, входная переменная модели</td></tr><tr><td>Сегмент</td><td>Часть пользователей, выделенная по признаку</td></tr><tr><td>Утечка данных</td><td>Попадание в признаки информации, недоступной в момент предсказания</td></tr></tbody></table></div><nav class="nav "><a class="prev" href="13-rabota.html" id=prev><small>← Назад</small><b>Глава 13. Поиск работы</b></a><a class="next" href="index.html" id=next><small>Вперёд →</small><b>Содержание</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 13. Поиск работы</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">18 из 19 · Глава 13. Поиск работы</span>
+</div><div class="progress"><i style="width:95%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="12-portfolio.html"><small>← Назад</small><b>Глава 12. Проекты и портфолио</b></a><a class="next" href="prilozhenie.html"><small>Вперёд →</small><b>Приложение. Все ресурсы и шпаргалки</b></a></nav><h1 id="глава-13-поиск-работы">Глава 13. Поиск работы</h1>
+<p>Знаний и портфолио недостаточно — нужно ещё пройти отбор. Это отдельный навык, и ему тоже можно научиться.</p>
+<h2 id="131-какие-бывают-аналитики">13.1. Какие бывают аналитики</h2>
+<p>Название «аналитик данных» скрывает разные роли. Читай описание вакансии, а не заголовок.</p>
+<div class="table"><table><thead><tr><th>Роль</th><th>Чем занимается</th><th>На что упор</th></tr></thead><tbody><tr><td><strong>Аналитик данных</strong></td><td>Отчёты, исследования, ответы на вопросы бизнеса</td><td>SQL, Python, визуализация</td></tr><tr><td><strong>Продуктовый аналитик</strong></td><td>Метрики продукта, A/B-тесты, поведение пользователей</td><td>Статистика, эксперименты, главы 9–10</td></tr><tr><td><strong>BI-аналитик</strong></td><td>Дашборды и отчётность</td><td>SQL, Power BI / Tableau / DataLens</td></tr><tr><td><strong>Маркетинговый аналитик</strong></td><td>Эффективность рекламы и каналов</td><td>Юнит-экономика, атрибуция</td></tr><tr><td><strong>Системный и бизнес-аналитик</strong></td><td>Требования и процессы</td><td>Это другая профессия: данных почти нет</td></tr></tbody></table></div>
+<p>Первую работу чаще находят на позициях аналитика данных, BI-аналитика и стажёра. Стажировки в крупных компаниях — самый прямой путь: туда берут без опыта и учат.</p>
+<h2 id="132-резюме">13.2. Резюме</h2>
+<p>Одна страница. Структура:</p>
+<ol>
+<li><strong>Заголовок:</strong> имя, желаемая должность, город, контакты, ссылка на GitHub.</li>
+<li><strong>Навыки</strong> — конкретно и по группам:<ul>
+<li>SQL: JOIN, CTE, оконные функции (PostgreSQL);</li>
+<li>Python: pandas, NumPy, Matplotlib, seaborn, SciPy;</li>
+<li>Статистика: проверка гипотез, A/B-тесты, доверительные интервалы;</li>
+<li>BI: DataLens;</li>
+<li>Прочее: Git, Excel.</li>
+</ul></li>
+<li><strong>Проекты</strong> — главный раздел, если нет опыта.</li>
+<li><strong>Опыт работы</strong> — даже не из аналитики: покажи задачи, где работал с цифрами.</li>
+<li><strong>Образование и курсы.</strong></li>
+</ol>
+<p>Как описывать проект — по формуле «что сделал → каким инструментом → что получилось»:</p>
+<blockquote><p>❌ Анализ данных интернет-магазина. Использовал Python.</p>
+<p>✅ Исследовал удержание клиентов интернет-магазина (100 тыс. заказов): построил когортный анализ в pandas, обнаружил, что удержание на второй месяц у пользователей из рекламы вдвое ниже, чем из поиска. Предложил перераспределить бюджет. [ссылка]</p></blockquote>
+<p>Правила:</p>
+<ul>
+<li>Пиши только то, что можешь объяснить. Любое слово из резюме — повод для вопроса.</li>
+<li>Числа убедительнее прилагательных.</li>
+<li>Подстраивай резюме под вакансию: ключевые слова из описания должны встречаться в тексте.</li>
+<li>Не указывай уровень навыков в процентах и звёздочках.</li>
+</ul>
+<p>Если переходишь из другой сферы — это преимущество, а не недостаток. Аналитик, который понимает логистику, медицину или продажи изнутри, ценнее того, кто знает только pandas. Ищи вакансии в своей прежней отрасли.</p>
+<h2 id="133-этапы-отбора">13.3. Этапы отбора</h2>
+<ol>
+<li><strong>Отклик и скрининг резюме.</strong></li>
+<li><strong>Звонок с рекрутером:</strong> мотивация, ожидания, общие вопросы.</li>
+<li><strong>Тестовое задание</strong> (не всегда): обычно SQL и небольшой анализ в ноутбуке.</li>
+<li><strong>Техническое собеседование:</strong> SQL и Python вживую, статистика, продуктовые кейсы.</li>
+<li><strong>Финал</strong> с руководителем: как ты думаешь и подойдёшь ли команде.</li>
+</ol>
+<p>Отклики — это воронка (глава 10): из 50 откликов может выйти 5 собеседований и одно предложение. Это нормально. Веди таблицу откликов и анализируй собственную конверсию: если не зовут на собеседования — проблема в резюме, если зовут, но отказывают после технического этапа — в подготовке.</p>
+<h2 id="134-что-спрашивают">13.4. Что спрашивают</h2>
+<h3 id="sql">SQL</h3>
+<p>Спрашивают всегда, часто просят писать запрос вживую.</p>
+<ul>
+<li>Чем отличаются виды <code>JOIN</code>? Сколько строк получится при соединении таких-то таблиц?</li>
+<li>Чем <code>WHERE</code> отличается от <code>HAVING</code>?</li>
+<li>Порядок выполнения запроса.</li>
+<li>Найти топ-3 в каждой группе. (<code>ROW_NUMBER</code> + CTE.)</li>
+<li>Найти вторую по величине зарплату.</li>
+<li>Найти дубликаты. (<code>GROUP BY ... HAVING COUNT(*) &gt; 1</code>.)</li>
+<li>Посчитать накопительную сумму; сравнить с предыдущим месяцем. (<code>SUM() OVER</code>, <code>LAG</code>.)</li>
+<li>Посчитать удержание или конверсию по таблице событий.</li>
+<li>Чем <code>UNION</code> отличается от <code>UNION ALL</code>?</li>
+<li>Как работает <code>NULL</code> в сравнениях и агрегатах?</li>
+</ul>
+<h3 id="python-и-pandas">Python и pandas</h3>
+<ul>
+<li>Чем список отличается от кортежа, словарь — от множества?</li>
+<li>Изменяемые и неизменяемые типы.</li>
+<li><code>merge</code> и <code>concat</code>; виды соединений.</li>
+<li><code>groupby</code> + <code>agg</code>; чем <code>agg</code> отличается от <code>transform</code>.</li>
+<li><code>loc</code> и <code>iloc</code>.</li>
+<li>Как обработать пропуски и дубликаты?</li>
+<li>Почему не стоит перебирать строки DataFrame циклом?</li>
+<li>Небольшая задача: посчитать метрику по таблице, написать простую функцию.</li>
+</ul>
+<h3 id="статистика">Статистика</h3>
+<ul>
+<li>Среднее и медиана: когда что использовать?</li>
+<li>Что такое p-value? Доверительный интервал?</li>
+<li>Ошибки I и II рода, мощность.</li>
+<li>Как спланировать A/B-тест? Как посчитать размер выборки?</li>
+<li>Какой тест выбрать для конверсии, а какой — для среднего чека?</li>
+<li>Почему нельзя подглядывать? Что такое множественные сравнения?</li>
+<li>Корреляция и причинность.</li>
+<li>Центральная предельная теорема — простыми словами.</li>
+<li>Что делать, если результат теста незначим?</li>
+</ul>
+<h3 id="продуктовые-кейсы">Продуктовые кейсы</h3>
+<ul>
+<li>«Упала метрика X. Что будешь делать?» — алгоритм из раздела 10.7.</li>
+<li>«Как измерить успех новой функции?» — выбери целевую метрику, контрольные метрики, способ проверки.</li>
+<li>«Какие метрики ты бы считал для такси / доставки еды / онлайн-кинотеатра?»</li>
+<li>«DAU вырос, а выручка упала. Почему?»</li>
+<li>Задачи на оценку: «Сколько чашек кофе продаётся в Москве за день?» Здесь важна не цифра, а ход рассуждения.</li>
+</ul>
+<p>Главное в кейсах — <strong>рассуждать вслух и структурно</strong>. Задавай уточняющие вопросы: что это за метрика, как считается, за какой период. Молчаливое обдумывание интервьюер оценить не может.</p>
+<h3 id="про-тебя">Про тебя</h3>
+<ul>
+<li>Расскажи о себе — подготовь рассказ на две минуты: откуда пришёл, что умеешь, чего хочешь.</li>
+<li>Расскажи о проекте — по схеме: задача → что сделал → с какими трудностями столкнулся → результат → что сделал бы иначе.</li>
+<li>Почему аналитика? Почему наша компания?</li>
+<li>Вопросы к интервьюеру — обязательно подготовь: какие задачи будут у новичка, какой стек, как устроена команда, кто будет наставником.</li>
+</ul>
+<h2 id="135-тестовое-задание">13.5. Тестовое задание</h2>
+<ul>
+<li>Прочитай условие дважды. Отвечай именно на заданный вопрос.</li>
+<li>Не понял условие — спроси. Это нормально и показывает зрелость.</li>
+<li>Оформи как проект из главы 12: вопрос → шаги → выводы.</li>
+<li>Запиши допущения: «считаю, что заказ со статусом X — отменённый».</li>
+<li>Проверь данные на качество — часто в них специально оставляют ловушки: дубликаты, пропуски, выбросы.</li>
+<li>Начни ответ с вывода, а не с процесса.</li>
+<li>Сдавай вовремя. Аккуратное решение в срок лучше идеального с опозданием.</li>
+</ul>
+<h2 id="136-как-готовиться">13.6. Как готовиться</h2>
+<ul>
+<li><strong>SQL</strong> — каждый день по 2–3 задачи из <a href="https://github.com/jesussantana/sql-data-analysis" target="_blank" rel="noopener">sql-data-analysis</a>. Навык письма запросов теряется быстро.</li>
+<li><strong>pandas</strong> — задачи из <a href="https://github.com/guipsamora/pandas_exercises" target="_blank" rel="noopener">pandas_exercises</a> на время.</li>
+<li><strong>Статистика</strong> — перечитай главу 9 и объясни каждое понятие вслух без подглядывания.</li>
+<li><strong>Кейсы</strong> — разбирай проекты из главы 12: какие метрики, какие решения.</li>
+<li><strong>Пробные собеседования</strong> — самый эффективный способ. Попроси знакомого аналитика или найди напарника в сообществе.</li>
+<li><strong>После каждого собеседования</strong> записывай вопросы, на которые не ответил, и разбирай их.</li>
+</ul>
+<p>Первые собеседования почти всегда неудачны — это тренировка. Начинай откликаться раньше, чем почувствуешь себя «готовым»: такого момента не наступит.</p>
+<h2 id="137-сообщество">13.7. Сообщество</h2>
+<p>Одному учиться тяжело. Найди людей на том же пути:</p>
+<ul>
+<li><strong>Open Data Science (ODS)</strong> — крупнейшее русскоязычное сообщество; из него вырос курс <a href="https://github.com/Yorko/mlcourse.ai" target="_blank" rel="noopener">mlcourse.ai</a>.</li>
+<li><strong><a href="https://github.com/DataTalksClub" target="_blank" rel="noopener">DataTalksClub</a></strong> — международное сообщество с бесплатными курсами.</li>
+<li><strong>Kaggle</strong> — соревнования, датасеты и чужие ноутбуки с разборами. Участвовать в соревнованиях необязательно, читать лучшие решения — полезно.</li>
+<li>Телеграм-каналы и чаты аналитиков, митапы и конференции — там же появляются вакансии, которых нет на сайтах.</li>
+</ul>
+<h2 id="138-первые-месяцы-на-работе">13.8. Первые месяцы на работе</h2>
+<ul>
+<li>Задавай вопросы. От новичка их ждут; хуже — молча сделать не то.</li>
+<li>Всегда уточняй, <strong>какое решение</strong> будет принято по твоему анализу. Это определяет, что и с какой точностью считать.</li>
+<li>Перепроверяй цифры перед отправкой. Репутация аналитика — это доверие к его числам, и теряется оно быстро.</li>
+<li>Сначала простой ответ быстро, потом уточнения. Не уходи на неделю в идеальное исследование.</li>
+<li>Веди заметки: где лежат данные, как считаются метрики, какие в данных есть особенности.</li>
+</ul>
+<h2 id="139-что-учить-дальше">13.9. Что учить дальше</h2>
+<p>Когда найдёшь работу, обучение не заканчивается. Направления роста:</p>
+<ul>
+<li><strong>Глубже в статистику и эксперименты:</strong> методы снижения дисперсии, последовательное тестирование, причинно-следственный анализ.</li>
+<li><strong>Инженерия данных:</strong> хранилища, конвейеры обработки, оркестрация — курсы <a href="https://github.com/DataTalksClub" target="_blank" rel="noopener">DataTalksClub</a>.</li>
+<li><strong>Машинное обучение:</strong> курс <a href="https://github.com/Yorko/mlcourse.ai" target="_blank" rel="noopener">mlcourse.ai</a> целиком.</li>
+<li><strong>Предметная область:</strong> финансы, маркетинг, логистика — понимание бизнеса растит аналитика быстрее всего.</li>
+</ul>
+<p>Сверяйся с <a href="https://github.com/kamranahmedse/developer-roadmap" target="_blank" rel="noopener">картой</a> и каталогом <a href="https://github.com/PavelGrigoryevDS/awesome-data-analysis" target="_blank" rel="noopener">awesome-data-analysis</a>: теперь в них всё будет понятно.</p>
+<h2 id="задания">Задания</h2>
+<ol>
+<li>Найди 10 вакансий junior-аналитика. Выпиши требования и посчитай, как часто встречается каждый навык. Сравни со списком из раздела 0.4.</li>
+<li>Напиши резюме на одну страницу.</li>
+<li>Подготовь двухминутный рассказ о себе и рассказ об одном проекте. Запиши на диктофон и послушай.</li>
+<li>Письменно ответь на все вопросы из раздела 13.4.</li>
+<li>Проведи одно пробное собеседование.</li>
+<li>Отправь первые 10 откликов.</li>
+</ol>
+<h2 id="вместо-заключения">Вместо заключения</h2>
+<p>Вернись к заданию 3 из главы 0 — к списку незнакомых терминов с карты. Если теперь ты можешь объяснить каждый, книга свою задачу выполнила.</p>
+<p>Аналитика — это не про знание всех функций pandas. Это про умение задать правильный вопрос, честно посмотреть на данные и понятно рассказать, что ты увидел. Инструменты поменяются, а это останется.</p><nav class="nav "><a class="prev" href="12-portfolio.html" id=prev><small>← Назад</small><b>Глава 12. Проекты и портфолио</b></a><a class="next" href="prilozhenie.html" id=next><small>Вперёд →</small><b>Приложение. Все ресурсы и шпаргалки</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

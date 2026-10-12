@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 6. Сбор и очистка данных</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">11 из 19 · Глава 6. Сбор и очистка данных</span>
+</div><div class="progress"><i style="width:58%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="05-pandas.html"><small>← Назад</small><b>Глава 5. pandas</b></a><a class="next" href="07-vizualizaciya.html"><small>Вперёд →</small><b>Глава 7. Визуализация</b></a></nav><h1 id="глава-6-сбор-и-очистка-данных">Глава 6. Сбор и очистка данных</h1>
+<p>Говорят, что аналитик 80 % времени готовит данные и только 20 % анализирует. Цифра условная, но суть верная: реальные данные всегда грязные. Вывод, сделанный на грязных данных, хуже, чем отсутствие вывода, — ему поверят.</p>
+<h2 id="61-источники-данных">6.1. Источники данных</h2>
+<p>На карте roadmap.sh их четыре: базы данных, CSV-файлы, API и веб-скрейпинг.</p>
+<h3 id="файлы">Файлы</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+
+df = pd.read_csv(<span class="t-str">&quot;orders.csv&quot;</span>, parse_dates=[<span class="t-str">&quot;date&quot;</span>])</code></pre></div>
+<p>Параметры <code>read_csv</code>, которые решают большинство проблем с «кривыми» файлами:</p>
+<div class="table"><table><thead><tr><th>Параметр</th><th>Когда нужен</th></tr></thead><tbody><tr><td><code>sep=&quot;;&quot;</code></td><td>Разделитель — не запятая (типично для выгрузок из русского Excel)</td></tr><tr><td><code>encoding=&quot;cp1251&quot;</code></td><td>Вместо русских букв кракозябры</td></tr><tr><td><code>decimal=&quot;,&quot;</code></td><td>Дробная часть отделена запятой</td></tr><tr><td><code>parse_dates=[&quot;date&quot;]</code></td><td>Сразу распознать даты</td></tr><tr><td><code>dtype={&quot;user_id&quot;: str}</code></td><td>Задать тип: например, чтобы не потерять нули в начале кода</td></tr><tr><td><code>na_values=[&quot;н/д&quot;, &quot;-&quot;]</code></td><td>Что ещё считать пропуском</td></tr><tr><td><code>usecols=[...]</code>, <code>nrows=1000</code></td><td>Прочитать часть большого файла</td></tr></tbody></table></div>
+<p>Другие форматы читаются так же: <code>pd.read_excel(&quot;file.xlsx&quot;, sheet_name=&quot;Лист1&quot;)</code>, <code>pd.read_json(...)</code>, <code>pd.read_parquet(...)</code>.</p>
+<h3 id="базы-данных">Базы данных</h3>
+<p>Разобрано в разделе 3.9: <code>pd.read_sql(query, conn)</code>.</p>
+<h3 id="api">API</h3>
+<p>API — способ получить данные с сервера программно. Ответ обычно приходит в формате JSON, который в Python превращается в словари и списки (глава 2).</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> requests
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+
+url = <span class="t-str">&quot;https://api.github.com/repos/pandas-dev/pandas&quot;</span>
+response = requests.get(url, timeout=<span class="t-num">10</span>)
+response.raise_for_status()        <span class="t-com"># остановиться, если сервер вернул ошибку</span>
+
+data = response.json()             <span class="t-com"># словарь</span>
+<span class="t-fn">print</span>(data[<span class="t-str">&quot;stargazers_count&quot;</span>], data[<span class="t-str">&quot;forks_count&quot;</span>])
+
+<span class="t-com"># Список словарей превращается в таблицу одной командой</span>
+url = <span class="t-str">&quot;https://api.github.com/users/pandas-dev/repos&quot;</span>
+repos = requests.get(url, timeout=<span class="t-num">10</span>).json()
+df_repos = pd.json_normalize(repos)[[<span class="t-str">&quot;name&quot;</span>, <span class="t-str">&quot;stargazers_count&quot;</span>, <span class="t-str">&quot;language&quot;</span>]]
+<span class="t-fn">print</span>(df_repos.sort_values(<span class="t-str">&quot;stargazers_count&quot;</span>, ascending=<span class="t-num">False</span>).head())</code></pre></div>
+<p>Что нужно знать про API:</p>
+<ul>
+<li>У каждого API есть документация: адреса, параметры, формат ответа.</li>
+<li>Многие требуют ключ (токен). <strong>Никогда не публикуй ключи на GitHub</strong> — храни их в переменных окружения.</li>
+<li>Есть лимиты на число запросов; данные часто отдаются страницами.</li>
+</ul>
+<h3 id="веб-скрейпинг">Веб-скрейпинг</h3>
+<p>Скрейпинг — извлечение данных прямо из HTML-страниц, когда API нет.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> requests
+<span class="t-kw">from</span> bs4 <span class="t-kw">import</span> BeautifulSoup
+
+html = requests.get(<span class="t-str">&quot;https://example.com&quot;</span>, timeout=<span class="t-num">10</span>).text
+soup = BeautifulSoup(html, <span class="t-str">&quot;html.parser&quot;</span>)
+
+<span class="t-fn">print</span>(soup.find(<span class="t-str">&quot;h1&quot;</span>).text)
+<span class="t-kw">for</span> link <span class="t-kw">in</span> soup.find_all(<span class="t-str">&quot;a&quot;</span>):
+    <span class="t-fn">print</span>(link.get(<span class="t-str">&quot;href&quot;</span>))</code></pre></div>
+<p>Если на странице есть обычная HTML-таблица, хватит одной строки: <code>pd.read_html(url)</code> вернёт список всех таблиц страницы.</p>
+<p>Правила приличия: читай условия использования сайта и файл <code>robots.txt</code>, делай паузы между запросами, не собирай персональные данные. Если есть API — используй его.</p>
+<h2 id="62-испортим-данные-специально">6.2. Испортим данные специально</h2>
+<p>Чтобы потренироваться, сделаем из чистого <code>orders.csv</code> грязный:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>rng = np.random.default_rng(<span class="t-num">7</span>)
+dirty = pd.read_csv(<span class="t-str">&quot;orders.csv&quot;</span>)
+
+<span class="t-com"># Пропуски</span>
+dirty.loc[rng.choice(dirty.index, <span class="t-num">25</span>, replace=<span class="t-num">False</span>), <span class="t-str">&quot;amount&quot;</span>] = np.nan
+dirty.loc[rng.choice(dirty.index, <span class="t-num">15</span>, replace=<span class="t-num">False</span>), <span class="t-str">&quot;city&quot;</span>] = np.nan
+
+<span class="t-com"># Разное написание</span>
+idx = rng.choice(dirty.index, <span class="t-num">60</span>, replace=<span class="t-num">False</span>)
+dirty.loc[idx[:<span class="t-num">30</span>], <span class="t-str">&quot;city&quot;</span>] = <span class="t-str">&quot;москва &quot;</span>
+dirty.loc[idx[<span class="t-num">30</span>:], <span class="t-str">&quot;city&quot;</span>] = <span class="t-str">&quot;МОСКВА&quot;</span>
+
+<span class="t-com"># Выбросы и ошибки</span>
+dirty.loc[rng.choice(dirty.index, <span class="t-num">3</span>, replace=<span class="t-num">False</span>), <span class="t-str">&quot;amount&quot;</span>] = <span class="t-num">990000</span>
+dirty.loc[rng.choice(dirty.index, <span class="t-num">2</span>, replace=<span class="t-num">False</span>), <span class="t-str">&quot;amount&quot;</span>] = -<span class="t-num">500</span>
+
+<span class="t-com"># Дубликаты</span>
+dirty = pd.concat([dirty, dirty.sample(<span class="t-num">10</span>, random_state=<span class="t-num">1</span>)], ignore_index=<span class="t-num">True</span>)
+
+dirty.to_csv(<span class="t-str">&quot;orders_dirty.csv&quot;</span>, index=<span class="t-num">False</span>)</code></pre></div>
+<h2 id="63-диагностика">6.3. Диагностика</h2>
+<p>Сначала смотрим, потом чиним.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = pd.read_csv(<span class="t-str">&quot;orders_dirty.csv&quot;</span>)
+
+df.info()
+<span class="t-fn">print</span>(df.isna().<span class="t-fn">sum</span>())                  <span class="t-com"># пропуски</span>
+<span class="t-fn">print</span>(df.duplicated().<span class="t-fn">sum</span>())            <span class="t-com"># полные дубликаты строк</span>
+<span class="t-fn">print</span>(df[<span class="t-str">&quot;city&quot;</span>].value_counts(dropna=<span class="t-num">False</span>))   <span class="t-com"># варианты написания</span>
+<span class="t-fn">print</span>(df[<span class="t-str">&quot;amount&quot;</span>].describe())          <span class="t-com"># min и max выдают ошибки</span></code></pre></div>
+<p>Чек-лист вопросов к любому датасету:</p>
+<ol>
+<li>Правильные ли типы столбцов?</li>
+<li>Где и сколько пропусков?</li>
+<li>Есть ли дубликаты?</li>
+<li>Одинаково ли записаны категории?</li>
+<li>Правдоподобны ли минимум и максимум?</li>
+<li>Покрывают ли даты весь нужный период, нет ли дыр?</li>
+</ol>
+<h2 id="64-типы-данных">6.4. Типы данных</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df[<span class="t-str">&quot;date&quot;</span>] = pd.to_datetime(df[<span class="t-str">&quot;date&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>)
+df[<span class="t-str">&quot;amount&quot;</span>] = pd.to_numeric(df[<span class="t-str">&quot;amount&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>)</code></pre></div>
+<p><code>errors=&quot;coerce&quot;</code> превращает то, что не удалось преобразовать, в пропуск — вместо остановки с ошибкой. После этого обязательно проверь, сколько пропусков добавилось.</p>
+<p>Типичный случай — числа, записанные как текст: <code>&quot;1 200,50 руб.&quot;</code>. Чистится цепочкой строковых методов:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>raw = pd.Series([<span class="t-str">&quot;1 200,50 руб.&quot;</span>, <span class="t-str">&quot;980 руб.&quot;</span>, <span class="t-str">&quot;н/д&quot;</span>])
+clean = (
+    raw.<span class="t-fn">str</span>.replace(<span class="t-str">&quot;руб.&quot;</span>, <span class="t-str">&quot;&quot;</span>, regex=<span class="t-num">False</span>)
+       .<span class="t-fn">str</span>.replace(<span class="t-str">&quot; &quot;</span>, <span class="t-str">&quot;&quot;</span>, regex=<span class="t-num">False</span>)
+       .<span class="t-fn">str</span>.replace(<span class="t-str">&quot;,&quot;</span>, <span class="t-str">&quot;.&quot;</span>, regex=<span class="t-num">False</span>)
+)
+<span class="t-fn">print</span>(pd.to_numeric(clean, errors=<span class="t-str">&quot;coerce&quot;</span>))</code></pre></div>
+<h2 id="65-текстовые-категории">6.5. Текстовые категории</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df[<span class="t-str">&quot;city&quot;</span>] = df[<span class="t-str">&quot;city&quot;</span>].<span class="t-fn">str</span>.strip().<span class="t-fn">str</span>.lower().<span class="t-fn">str</span>.capitalize()
+<span class="t-fn">print</span>(df[<span class="t-str">&quot;city&quot;</span>].value_counts(dropna=<span class="t-num">False</span>))</code></pre></div>
+<p>Для более сложных случаев (опечатки, синонимы) составляют словарь замен:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>mapping = {<span class="t-str">&quot;Мск&quot;</span>: <span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Спб&quot;</span>: <span class="t-str">&quot;Санкт-Петербург&quot;</span>}
+df[<span class="t-str">&quot;city&quot;</span>] = df[<span class="t-str">&quot;city&quot;</span>].replace(mapping)</code></pre></div>
+<h2 id="66-дубликаты">6.6. Дубликаты</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(<span class="t-fn">len</span>(df))
+df = df.drop_duplicates()
+<span class="t-fn">print</span>(<span class="t-fn">len</span>(df))
+
+<span class="t-com"># Дубликаты по ключу: один order_id должен встречаться один раз</span>
+<span class="t-fn">print</span>(df[<span class="t-str">&quot;order_id&quot;</span>].duplicated().<span class="t-fn">sum</span>())
+df = df.drop_duplicates(subset=<span class="t-str">&quot;order_id&quot;</span>, keep=<span class="t-str">&quot;first&quot;</span>)</code></pre></div>
+<p>Прежде чем удалять, спроси себя: это точно ошибка? Два одинаковых заказа одного человека в один день могут быть настоящими.</p>
+<h2 id="67-пропуски">6.7. Пропуски</h2>
+<p>Сначала выясни <strong>причину</strong> пропуска — от неё зависит решение.</p>
+<div class="table"><table><thead><tr><th>Стратегия</th><th>Код</th><th>Когда подходит</th></tr></thead><tbody><tr><td>Удалить строки</td><td><code>df.dropna(subset=[&quot;amount&quot;])</code></td><td>Пропусков мало, и они случайны</td></tr><tr><td>Заполнить константой</td><td><code>df[&quot;city&quot;].fillna(&quot;Не указан&quot;)</code></td><td>Категории; пропуск сам несёт информацию</td></tr><tr><td>Заполнить медианой</td><td><code>df[&quot;amount&quot;].fillna(df[&quot;amount&quot;].median())</code></td><td>Числа, пропусков немного</td></tr><tr><td>Заполнить по группе</td><td><code>groupby(...).transform(&quot;median&quot;)</code></td><td>Значение зависит от группы</td></tr><tr><td>Оставить как есть</td><td>—</td><td>Большинство функций pandas пропуски игнорирует</td></tr></tbody></table></div>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df[<span class="t-str">&quot;city&quot;</span>] = df[<span class="t-str">&quot;city&quot;</span>].fillna(<span class="t-str">&quot;Не указан&quot;</span>)
+df = df.dropna(subset=[<span class="t-str">&quot;amount&quot;</span>])</code></pre></div>
+<p>Чего делать нельзя:</p>
+<ul>
+<li><strong>Заполнять нулём</strong> то, что нулём не является. Неизвестная сумма заказа ≠ заказ на 0 рублей: среднее сразу поедет вниз.</li>
+<li><strong>Заполнять молча.</strong> Любое заполнение — это выдуманные данные. Запиши, что и сколько заполнил.</li>
+</ul>
+<h2 id="68-выбросы">6.8. Выбросы</h2>
+<p>Выброс — значение, сильно отличающееся от остальных. Он бывает двух видов, и это принципиально:</p>
+<ul>
+<li><strong>ошибка</strong> (сумма −500, возраст 200 лет) — исправить или удалить;</li>
+<li><strong>редкое, но настоящее значение</strong> (крупный корпоративный заказ) — удалять нельзя, но можно анализировать отдельно.</li>
+</ul>
+<p>Сначала убираем заведомо невозможное:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = df[df[<span class="t-str">&quot;amount&quot;</span>] &gt; <span class="t-num">0</span>]</code></pre></div>
+<p>Затем ищем подозрительное. Стандартный способ — правило межквартильного размаха (IQR), на нём же построен «ящик с усами» из главы 7:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>q1 = df[<span class="t-str">&quot;amount&quot;</span>].quantile(<span class="t-num">0.25</span>)
+q3 = df[<span class="t-str">&quot;amount&quot;</span>].quantile(<span class="t-num">0.75</span>)
+iqr = q3 - q1
+lower, upper = q1 - <span class="t-num">1.5</span> * iqr, q3 + <span class="t-num">1.5</span> * iqr
+
+outliers = df[(df[<span class="t-str">&quot;amount&quot;</span>] &lt; lower) | (df[<span class="t-str">&quot;amount&quot;</span>] &gt; upper)]
+<span class="t-fn">print</span>(<span class="t-fn">len</span>(outliers))
+<span class="t-fn">print</span>(outliers.sort_values(<span class="t-str">&quot;amount&quot;</span>, ascending=<span class="t-num">False</span>).head())</code></pre></div>
+<p>Что делать с найденным:</p>
+<ul>
+<li>посмотреть глазами — часто причина очевидна;</li>
+<li>удалить, если это ошибка;</li>
+<li>оставить, но считать медиану вместо среднего;</li>
+<li>ограничить сверху: <code>df[&quot;amount&quot;].clip(upper=df[&quot;amount&quot;].quantile(0.99))</code>.</li>
+</ul>
+<p>Правило IQR — не закон. В денежных данных распределение всегда с длинным хвостом, и под «выбросы» формально попадёт много нормальных крупных заказов. Решение принимаешь ты, а не формула.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = df[df[<span class="t-str">&quot;amount&quot;</span>] &lt; <span class="t-num">100000</span>]
+df.to_csv(<span class="t-str">&quot;orders_clean.csv&quot;</span>, index=<span class="t-num">False</span>)</code></pre></div>
+<h2 id="69-проверки-после-очистки">6.9. Проверки после очистки</h2>
+<p>Хорошая очистка заканчивается проверками, которые упадут, если что-то не так:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">assert</span> df[<span class="t-str">&quot;order_id&quot;</span>].is_unique
+<span class="t-kw">assert</span> df[<span class="t-str">&quot;amount&quot;</span>].gt(<span class="t-num">0</span>).<span class="t-fn">all</span>()
+<span class="t-kw">assert</span> df[<span class="t-str">&quot;amount&quot;</span>].notna().<span class="t-fn">all</span>()
+<span class="t-fn">print</span>(<span class="t-str">&quot;Проверки пройдены, строк:&quot;</span>, <span class="t-fn">len</span>(df))</code></pre></div>
+<p>И запиши итог: было 510 строк — стало столько-то, удалено дубликатов, пропусков, ошибок. Эти строки пойдут в отчёт.</p>
+<h2 id="610-принципы-очистки">6.10. Принципы очистки</h2>
+<ol>
+<li><strong>Не трогай исходный файл.</strong> Сырые данные лежат отдельно, очистка — это код, который делает из них чистые.</li>
+<li><strong>Вся очистка — в коде, не руками.</strong> Иначе её нельзя повторить и проверить.</li>
+<li><strong>Каждое решение объясняй</strong> комментарием: почему удалил, почему заполнил.</li>
+<li><strong>Считай потери.</strong> Если после очистки пропало 30 % строк — это повод остановиться.</li>
+</ol>
+<h2 id="практика-на-github">Практика на GitHub</h2>
+<ul>
+<li><a href="https://github.com/jvns/pandas-cookbook" target="_blank" rel="noopener">jvns/pandas-cookbook</a> — главы про очистку «грязных» данных: реальные обращения в городскую службу Нью-Йорка, где в одном столбце перемешаны числа, текст и пропуски. Главное упражнение этой главы.</li>
+<li><a href="https://github.com/guipsamora/pandas_exercises" target="_blank" rel="noopener">guipsamora/pandas_exercises</a> — раздел про удаление данных и раздел про создание Series и DataFrame.</li>
+<li><a href="https://github.com/jakevdp/PythonDataScienceHandbook" target="_blank" rel="noopener">jakevdp/PythonDataScienceHandbook</a> — ноутбуки главы 3 про пропущенные значения и векторные операции со строками.</li>
+<li><a href="https://github.com/AsifRashid01/DataAnalyst_PortfolioProjects" target="_blank" rel="noopener">AsifRashid01/DataAnalyst_PortfolioProjects</a> и <a href="https://github.com/noztas/DataAnalystProjects" target="_blank" rel="noopener">noztas/DataAnalystProjects</a> — проекты по очистке данных на SQL. Повтори те же шаги в pandas: это отличная тренировка в обоих инструментах.</li>
+<li><a href="https://github.com/awesomedata/awesome-public-datasets" target="_blank" rel="noopener">awesomedata/awesome-public-datasets</a> — выбери датасет по интересной тебе теме и пройди по чек-листу из раздела 6.3.</li>
+</ul>
+<h2 id="задания">Задания</h2>
+<ol>
+<li>Очисти <code>orders_dirty.csv</code> самостоятельно, не подглядывая в главу, и сравни число строк с результатом из главы.</li>
+<li>Сравни среднее и медиану <code>amount</code> до и после удаления выбросов. Что изменилось сильнее?</li>
+<li>Заполни пропуски в <code>amount</code> медианой по категории товара через <code>groupby().transform()</code>.</li>
+<li>Получи через API GitHub список репозиториев любого пользователя и построй таблицу: название, язык, звёзды.</li>
+<li>Найди в Википедии страницу с таблицей (например, список городов по населению), загрузи её через <code>pd.read_html</code> и приведи числа к числовому типу.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Почему нельзя заполнять пропуски нулём?</li>
+<li>Чем выброс-ошибка отличается от настоящего редкого значения?</li>
+<li>Как работает правило IQR?</li>
+<li>Что делает <code>errors=&quot;coerce&quot;</code>?</li>
+<li>Почему очистку нужно делать кодом, а не руками в Excel?</li>
+</ul>
+<h2 id="решения">Решения</h2>
+
+<details class="sol"><summary>Задание 1. Полная очистка</summary><p>Оформим очистку функцией, которая ведёт журнал потерь:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+
+MAX_REAL_AMOUNT = <span class="t-num">100_000</span>       <span class="t-com"># суммы выше считаем ошибкой ввода</span>
+
+
+<span class="t-kw">def</span> <span class="t-def">clean_orders</span>(raw: pd.DataFrame) -&gt; pd.DataFrame:
+    df = raw.copy()                                   <span class="t-com"># сырые данные не трогаем</span>
+    log = {<span class="t-str">&quot;исходно&quot;</span>: <span class="t-fn">len</span>(df)}
+
+    df = df.drop_duplicates()
+    log[<span class="t-str">&quot;после удаления полных дубликатов&quot;</span>] = <span class="t-fn">len</span>(df)
+
+    df = df.drop_duplicates(subset=<span class="t-str">&quot;order_id&quot;</span>, keep=<span class="t-str">&quot;first&quot;</span>)
+    log[<span class="t-str">&quot;после удаления дубликатов по order_id&quot;</span>] = <span class="t-fn">len</span>(df)
+
+    df[<span class="t-str">&quot;date&quot;</span>] = pd.to_datetime(df[<span class="t-str">&quot;date&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>)
+    df[<span class="t-str">&quot;amount&quot;</span>] = pd.to_numeric(df[<span class="t-str">&quot;amount&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>)
+
+    df[<span class="t-str">&quot;city&quot;</span>] = df[<span class="t-str">&quot;city&quot;</span>].<span class="t-fn">str</span>.strip().<span class="t-fn">str</span>.lower().<span class="t-fn">str</span>.capitalize().fillna(<span class="t-str">&quot;Не указан&quot;</span>)
+
+    df = df.dropna(subset=[<span class="t-str">&quot;amount&quot;</span>])
+    log[<span class="t-str">&quot;после удаления пропусков в amount&quot;</span>] = <span class="t-fn">len</span>(df)
+
+    df = df[df[<span class="t-str">&quot;amount&quot;</span>] &gt; <span class="t-num">0</span>]
+    log[<span class="t-str">&quot;после удаления неположительных сумм&quot;</span>] = <span class="t-fn">len</span>(df)
+
+    df = df[df[<span class="t-str">&quot;amount&quot;</span>] &lt; MAX_REAL_AMOUNT]
+    log[<span class="t-str">&quot;после удаления аномально больших сумм&quot;</span>] = <span class="t-fn">len</span>(df)
+
+    <span class="t-kw">for</span> step, rows <span class="t-kw">in</span> log.items():
+        <span class="t-fn">print</span>(<span class="t-str">f&quot;{step:&lt;42} {rows}&quot;</span>)
+    <span class="t-kw">return</span> df.reset_index(drop=<span class="t-num">True</span>)
+
+
+raw = pd.read_csv(<span class="t-str">&quot;orders_dirty.csv&quot;</span>)
+clean = clean_orders(raw)
+
+<span class="t-kw">assert</span> clean[<span class="t-str">&quot;order_id&quot;</span>].is_unique
+<span class="t-kw">assert</span> clean[<span class="t-str">&quot;amount&quot;</span>].between(<span class="t-num">0</span>, MAX_REAL_AMOUNT, inclusive=<span class="t-str">&quot;neither&quot;</span>).<span class="t-fn">all</span>()
+<span class="t-fn">print</span>(clean[<span class="t-str">&quot;city&quot;</span>].value_counts())</code></pre></div>
+<p>Порядок шагов выбран не случайно: сначала дубликаты (чтобы не чистить одно и то же дважды), потом типы, потом текст, потом пропуски и выбросы.</p>
+<p>Число строк в конце зависит от случайных пересечений: например, строка с пропуском в <code>amount</code> могла попасть и в дубликаты. Важно не точное число, а то, что ты можешь объяснить каждый шаг журнала.</p></details>
+<details class="sol"><summary>Задание 2. Среднее и медиана до и после</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>before = pd.to_numeric(raw[<span class="t-str">&quot;amount&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>)
+after = clean[<span class="t-str">&quot;amount&quot;</span>]
+
+comparison = pd.DataFrame({
+    <span class="t-str">&quot;до очистки&quot;</span>: [before.mean(), before.median()],
+    <span class="t-str">&quot;после очистки&quot;</span>: [after.mean(), after.median()],
+}, index=[<span class="t-str">&quot;среднее&quot;</span>, <span class="t-str">&quot;медиана&quot;</span>]).<span class="t-fn">round</span>(<span class="t-num">0</span>)
+
+comparison[<span class="t-str">&quot;изменение, %&quot;</span>] = ((comparison[<span class="t-str">&quot;после очистки&quot;</span>] / comparison[<span class="t-str">&quot;до очистки&quot;</span>] - <span class="t-num">1</span>) * <span class="t-num">100</span>).<span class="t-fn">round</span>(<span class="t-num">1</span>)
+<span class="t-fn">print</span>(comparison)</code></pre></div>
+<p>Среднее изменится в разы: три значения по 990 000 на 500 строк добавляют к нему почти 6000. Медиана сдвинется на считаные проценты. Это наглядная причина, по которой для «грязных» и денежных данных смотрят на медиану.</p></details>
+<details class="sol"><summary>Задание 3. Заполнение медианой по категории</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = pd.read_csv(<span class="t-str">&quot;orders_dirty.csv&quot;</span>)
+df[<span class="t-str">&quot;amount&quot;</span>] = pd.to_numeric(df[<span class="t-str">&quot;amount&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>)
+df = df[(df[<span class="t-str">&quot;amount&quot;</span>].isna()) | ((df[<span class="t-str">&quot;amount&quot;</span>] &gt; <span class="t-num">0</span>) &amp; (df[<span class="t-str">&quot;amount&quot;</span>] &lt; <span class="t-num">100_000</span>))]   <span class="t-com"># сначала убрать ошибки</span>
+
+missing_before = df[<span class="t-str">&quot;amount&quot;</span>].isna().<span class="t-fn">sum</span>()
+category_median = df.groupby(<span class="t-str">&quot;category&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].transform(<span class="t-str">&quot;median&quot;</span>)
+df[<span class="t-str">&quot;amount_filled&quot;</span>] = df[<span class="t-str">&quot;amount&quot;</span>].fillna(category_median)
+df[<span class="t-str">&quot;amount_was_missing&quot;</span>] = df[<span class="t-str">&quot;amount&quot;</span>].isna()
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;Заполнено пропусков:&quot;</span>, missing_before)
+<span class="t-fn">print</span>(df.groupby(<span class="t-str">&quot;category&quot;</span>)[[<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;amount_filled&quot;</span>]].median())</code></pre></div>
+<p>Три важные детали:</p>
+<ul>
+<li><strong>выбросы убираются до расчёта медианы</strong>, иначе заполнять будем искажённым значением;</li>
+<li><code>transform(&quot;median&quot;)</code> возвращает столбец той же длины, что и таблица, поэтому его можно передать прямо в <code>fillna</code>;</li>
+<li>столбец-флаг <code>amount_was_missing</code> сохраняет информацию о том, какие значения придуманы. Без него заполненные строки потом не отличить от настоящих.</li>
+</ul></details>
+<details class="sol"><summary>Задание 4. Репозитории через API GitHub</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> requests
+
+USER = <span class="t-str">&quot;pandas-dev&quot;</span>             <span class="t-com"># подставь любого пользователя или организацию</span>
+
+response = requests.get(
+    <span class="t-str">f&quot;https://api.github.com/users/{USER}/repos&quot;</span>,
+    params={<span class="t-str">&quot;per_page&quot;</span>: <span class="t-num">100</span>, <span class="t-str">&quot;sort&quot;</span>: <span class="t-str">&quot;updated&quot;</span>},
+    timeout=<span class="t-num">10</span>,
+)
+response.raise_for_status()
+
+repos = (
+    pd.json_normalize(response.json())
+      [[<span class="t-str">&quot;name&quot;</span>, <span class="t-str">&quot;language&quot;</span>, <span class="t-str">&quot;stargazers_count&quot;</span>, <span class="t-str">&quot;forks_count&quot;</span>, <span class="t-str">&quot;updated_at&quot;</span>]]
+      .rename(columns={<span class="t-str">&quot;stargazers_count&quot;</span>: <span class="t-str">&quot;stars&quot;</span>, <span class="t-str">&quot;forks_count&quot;</span>: <span class="t-str">&quot;forks&quot;</span>})
+      .assign(updated_at=<span class="t-kw">lambda</span> d: pd.to_datetime(d[<span class="t-str">&quot;updated_at&quot;</span>]).dt.date)
+      .sort_values(<span class="t-str">&quot;stars&quot;</span>, ascending=<span class="t-num">False</span>)
+      .reset_index(drop=<span class="t-num">True</span>)
+)
+<span class="t-fn">print</span>(repos.head(<span class="t-num">10</span>))
+<span class="t-fn">print</span>(repos[<span class="t-str">&quot;language&quot;</span>].value_counts(dropna=<span class="t-num">False</span>))</code></pre></div>
+<p>Параметры запроса передаются словарём <code>params</code>, а не вклеиваются в адрес руками. API отдаёт не больше 100 репозиториев за раз: если их больше, нужен цикл по страницам с параметром <code>page</code>. Без авторизации GitHub разрешает около 60 запросов в час — для учёбы хватает.</p></details>
+<details class="sol"><summary>Задание 5. Таблица из Википедии</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>url = <span class="t-str">&quot;https://ru.wikipedia.org/wiki/Список_городов_России_с_населением_более_100_тысяч_жителей&quot;</span>
+
+tables = pd.read_html(url)                 <span class="t-com"># нужна библиотека lxml: pip install lxml</span>
+<span class="t-fn">print</span>(<span class="t-str">&quot;Таблиц на странице:&quot;</span>, <span class="t-fn">len</span>(tables))
+
+<span class="t-kw">for</span> i, table <span class="t-kw">in</span> <span class="t-fn">enumerate</span>(tables[:<span class="t-num">5</span>]):     <span class="t-com"># посмотреть, какая из таблиц нужная</span>
+    <span class="t-fn">print</span>(i, table.shape, <span class="t-fn">list</span>(table.columns)[:<span class="t-num">4</span>])</code></pre></div>
+<p>Дальше действия зависят от того, как сейчас свёрстана страница, поэтому алгоритм, а не готовый код:</p>
+<ol>
+<li>Выбери нужную таблицу по размеру и столбцам: <code>cities = tables[N]</code>.</li>
+<li>Посмотри <code>cities.head()</code> и <code>cities.dtypes</code>. Числа почти наверняка прочитались как текст: в них пробелы-разделители и сноски вида <code>[3]</code>.</li>
+<li>Очисти числовой столбец той же цепочкой, что в разделе 6.4:</li>
+</ol>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">to_number</span>(series: pd.Series) -&gt; pd.Series:
+    cleaned = (
+        series.astype(<span class="t-fn">str</span>)
+              .<span class="t-fn">str</span>.replace(<span class="t-str">r&quot;\[.*?\]&quot;</span>, <span class="t-str">&quot;&quot;</span>, regex=<span class="t-num">True</span>)     <span class="t-com"># сноски</span>
+              .<span class="t-fn">str</span>.replace(<span class="t-str">r&quot;[^\d,.-]&quot;</span>, <span class="t-str">&quot;&quot;</span>, regex=<span class="t-num">True</span>)    <span class="t-com"># всё, кроме цифр и разделителей</span>
+              .<span class="t-fn">str</span>.replace(<span class="t-str">&quot;,&quot;</span>, <span class="t-str">&quot;.&quot;</span>, regex=<span class="t-num">False</span>)
+    )
+    <span class="t-kw">return</span> pd.to_numeric(cleaned, errors=<span class="t-str">&quot;coerce&quot;</span>)
+
+<span class="t-fn">print</span>(to_number(pd.Series([<span class="t-str">&quot;1 234 567[3]&quot;</span>, <span class="t-str">&quot;980 000&quot;</span>, <span class="t-str">&quot;н/д&quot;</span>])))</code></pre></div>
+<ol start="4">
+<li>Проверь, сколько значений стало <code>NaN</code>, и посмотри на них глазами.</li>
+</ol>
+<p>Если Википедия отвечает ошибкой 403, добавь заголовок <code>User-Agent</code>: скачай страницу через <code>requests.get(url, headers={&quot;User-Agent&quot;: &quot;Mozilla/5.0&quot;})</code> и передай текст в <code>pd.read_html(io.StringIO(response.text))</code>.</p></details><nav class="nav "><a class="prev" href="05-pandas.html" id=prev><small>← Назад</small><b>Глава 5. pandas</b></a><a class="next" href="07-vizualizaciya.html" id=next><small>Вперёд →</small><b>Глава 7. Визуализация</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 8. Описательная статистика и EDA</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">13 из 19 · Глава 8. Описательная статистика и EDA</span>
+</div><div class="progress"><i style="width:68%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="07-vizualizaciya.html"><small>← Назад</small><b>Глава 7. Визуализация</b></a><a class="next" href="09-ab-testy.html"><small>Вперёд →</small><b>Глава 9. Гипотезы и A/B-тесты</b></a></nav><h1 id="глава-8-описательная-статистика-и-eda">Глава 8. Описательная статистика и EDA</h1>
+<p>Описательная статистика сжимает тысячи значений до нескольких чисел, по которым можно понять, как устроены данные. EDA (Exploratory Data Analysis, разведочный анализ) — это процесс знакомства с датасетом с помощью этих чисел и графиков.</p>
+<p>На карте roadmap.sh раздел называется Descriptive Analysis и делится на три части: центральная тенденция, разброс и форма распределения.</p>
+<h2 id="81-центральная-тенденция-где-центр-данных">8.1. Центральная тенденция: где «центр» данных</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+<span class="t-kw">from</span> scipy <span class="t-kw">import</span> stats
+
+salaries = pd.Series([<span class="t-num">60</span>, <span class="t-num">65</span>, <span class="t-num">70</span>, <span class="t-num">70</span>, <span class="t-num">75</span>, <span class="t-num">80</span>, <span class="t-num">85</span>, <span class="t-num">90</span>, <span class="t-num">400</span>])   <span class="t-com"># тыс. руб.</span>
+
+<span class="t-fn">print</span>(salaries.mean())      <span class="t-com"># 110.56 — среднее</span>
+<span class="t-fn">print</span>(salaries.median())    <span class="t-com"># 75.0  — медиана</span>
+<span class="t-fn">print</span>(salaries.mode()[<span class="t-num">0</span>])   <span class="t-com"># 70    — мода</span></code></pre></div>
+<ul>
+<li><strong>Среднее (mean)</strong> — сумма, делённая на количество. Чувствительно к выбросам.</li>
+<li><strong>Медиана (median)</strong> — значение посередине отсортированного ряда: половина данных меньше, половина больше. К выбросам устойчива.</li>
+<li><strong>Мода (mode)</strong> — самое частое значение. Единственная мера, которая работает для категорий.</li>
+</ul>
+<p>В примере один директор с зарплатой 400 поднял среднее до 110, хотя восемь человек из девяти получают меньше 100. «Средняя зарплата» здесь никого не описывает, медиана 75 — описывает.</p>
+<p>Практическое правило: <strong>для денег, времени и любых величин с длинным хвостом смотри на медиану</strong>. А лучше — на оба числа: если среднее заметно больше медианы, в данных есть крупные значения справа.</p>
+<h2 id="82-разброс-насколько-данные-разные">8.2. Разброс: насколько данные разные</h2>
+<p>Два набора могут иметь одинаковое среднее и быть совершенно разными: <code>[49, 50, 51]</code> и <code>[0, 50, 100]</code>.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>x = pd.Series([<span class="t-num">12</span>, <span class="t-num">15</span>, <span class="t-num">11</span>, <span class="t-num">19</span>, <span class="t-num">14</span>, <span class="t-num">22</span>, <span class="t-num">13</span>, <span class="t-num">16</span>])
+
+<span class="t-fn">print</span>(x.<span class="t-fn">max</span>() - x.<span class="t-fn">min</span>())       <span class="t-com"># размах (range)</span>
+<span class="t-fn">print</span>(x.var())                 <span class="t-com"># дисперсия (variance)</span>
+<span class="t-fn">print</span>(x.std())                 <span class="t-com"># стандартное отклонение (standard deviation)</span>
+<span class="t-fn">print</span>(x.quantile([<span class="t-num">0.25</span>, <span class="t-num">0.5</span>, <span class="t-num">0.75</span>]))          <span class="t-com"># квартили</span>
+<span class="t-fn">print</span>(x.quantile(<span class="t-num">0.75</span>) - x.quantile(<span class="t-num">0.25</span>))    <span class="t-com"># межквартильный размах (IQR)</span></code></pre></div>
+<ul>
+<li><strong>Размах</strong> — максимум минус минимум. Зависит от двух крайних точек, поэтому ненадёжен.</li>
+<li><strong>Дисперсия</strong> — средний квадрат отклонения от среднего. Измеряется в «квадратных» единицах, поэтому сама по себе неудобна.</li>
+<li><strong>Стандартное отклонение</strong> — корень из дисперсии. Измеряется в тех же единицах, что и данные: «типичное отклонение от среднего».</li>
+<li><strong>Перцентиль (квантиль)</strong> — значение, ниже которого лежит заданная доля данных. 90-й перцентиль времени доставки 3 дня означает: 90 % заказов доставлены не дольше чем за 3 дня.</li>
+<li><strong>IQR</strong> — расстояние между 25-м и 75-м перцентилями: ширина средней половины данных. Устойчив к выбросам.</li>
+</ul>
+<p><strong>Коэффициент вариации</strong> — стандартное отклонение, делённое на среднее. Позволяет сравнивать разброс у величин в разных единицах:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(x.std() / x.mean())</code></pre></div>
+<h2 id="83-форма-распределения">8.3. Форма распределения</h2>
+<p>Распределение — это ответ на вопрос «какие значения встречаются и как часто». Его лучший портрет — гистограмма.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>rng = np.random.default_rng(<span class="t-num">1</span>)
+symmetric = pd.Series(rng.normal(<span class="t-num">100</span>, <span class="t-num">15</span>, <span class="t-num">5000</span>))
+skewed = pd.Series(rng.gamma(<span class="t-num">2.0</span>, <span class="t-num">1500</span>, <span class="t-num">5000</span>))
+
+<span class="t-kw">for</span> name, s <span class="t-kw">in</span> [(<span class="t-str">&quot;симметричное&quot;</span>, symmetric), (<span class="t-str">&quot;скошенное&quot;</span>, skewed)]:
+    <span class="t-fn">print</span>(name,
+          <span class="t-str">&quot;| среднее:&quot;</span>, <span class="t-fn">round</span>(s.mean(), <span class="t-num">1</span>),
+          <span class="t-str">&quot;| медиана:&quot;</span>, <span class="t-fn">round</span>(s.median(), <span class="t-num">1</span>),
+          <span class="t-str">&quot;| асимметрия:&quot;</span>, <span class="t-fn">round</span>(s.skew(), <span class="t-num">2</span>),
+          <span class="t-str">&quot;| эксцесс:&quot;</span>, <span class="t-fn">round</span>(s.kurt(), <span class="t-num">2</span>))</code></pre></div>
+<ul>
+<li><strong>Асимметрия (skewness)</strong> — насколько распределение скошено. Около 0 — симметричное. Больше 0 — длинный хвост справа (доходы, суммы заказов, время на сайте). Меньше 0 — хвост слева.</li>
+<li><strong>Эксцесс (kurtosis)</strong> — насколько тяжёлые хвосты, то есть как часто встречаются экстремальные значения. У нормального распределения он равен 0 (в том определении, которое использует pandas).</li>
+</ul>
+<h3 id="нормальное-распределение">Нормальное распределение</h3>
+<p>Симметричный «колокол», который задаётся средним и стандартным отклонением. Для него работает правило трёх сигм:</p>
+<ul>
+<li>в пределах ±1 стандартного отклонения от среднего — около 68 % значений;</li>
+<li>в пределах ±2 — около 95 %;</li>
+<li>в пределах ±3 — около 99,7 %.</li>
+</ul>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>within_2 = ((symmetric &gt; <span class="t-num">100</span> - <span class="t-num">30</span>) &amp; (symmetric &lt; <span class="t-num">100</span> + <span class="t-num">30</span>)).mean()
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(within_2, <span class="t-num">3</span>))    <span class="t-com"># около 0.95</span></code></pre></div>
+<p>Важно: большинство бизнес-данных <strong>не</strong> нормальны. Суммы заказов, число покупок, длительность сессий скошены вправо. Правило трёх сигм к ним неприменимо.</p>
+<h3 id="логарифм-для-скошенных-данных">Логарифм для скошенных данных</h3>
+<p>Логарифмирование сжимает длинный хвост и часто делает распределение почти симметричным:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(<span class="t-fn">round</span>(skewed.skew(), <span class="t-num">2</span>), <span class="t-fn">round</span>(np.log(skewed).skew(), <span class="t-num">2</span>))</code></pre></div>
+<h2 id="84-вся-статистика-одной-командой">8.4. Вся статистика одной командой</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = pd.read_csv(<span class="t-str">&quot;orders_clean.csv&quot;</span>, parse_dates=[<span class="t-str">&quot;date&quot;</span>])
+
+<span class="t-fn">print</span>(df[<span class="t-str">&quot;amount&quot;</span>].describe(percentiles=[<span class="t-num">0.05</span>, <span class="t-num">0.25</span>, <span class="t-num">0.5</span>, <span class="t-num">0.75</span>, <span class="t-num">0.95</span>, <span class="t-num">0.99</span>]))
+<span class="t-fn">print</span>(df.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].describe())
+<span class="t-fn">print</span>(df.describe(include=<span class="t-str">&quot;object&quot;</span>))    <span class="t-com"># для категорий: число уникальных, самое частое</span></code></pre></div>
+<h2 id="85-связь-между-показателями">8.5. Связь между показателями</h2>
+<h3 id="корреляция">Корреляция</h3>
+<p>Коэффициент корреляции показывает, насколько согласованно меняются две величины. Он лежит от −1 до +1:</p>
+<ul>
+<li>близко к +1 — растёт одна, растёт и другая;</li>
+<li>близко к −1 — одна растёт, другая падает;</li>
+<li>около 0 — линейной связи нет.</li>
+</ul>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>users = (
+    df.groupby(<span class="t-str">&quot;user_id&quot;</span>)
+      .agg(orders=(<span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;count&quot;</span>), revenue=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;sum&quot;</span>), avg_check=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;mean&quot;</span>))
+)
+
+<span class="t-fn">print</span>(users.corr())                       <span class="t-com"># корреляция Пирсона</span>
+<span class="t-fn">print</span>(users.corr(method=<span class="t-str">&quot;spearman&quot;</span>))      <span class="t-com"># корреляция Спирмена</span>
+
+r, p_value = stats.pearsonr(users[<span class="t-str">&quot;orders&quot;</span>], users[<span class="t-str">&quot;revenue&quot;</span>])
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(r, <span class="t-num">3</span>), p_value)</code></pre></div>
+<ul>
+<li><strong>Пирсон</strong> измеряет линейную связь и чувствителен к выбросам.</li>
+<li><strong>Спирмен</strong> работает с рангами: ловит любую монотонную связь и устойчив к выбросам. Для скошенных данных он надёжнее.</li>
+</ul>
+<h3 id="три-ловушки-корреляции">Три ловушки корреляции</h3>
+<ol>
+<li><strong>Корреляция не означает причинность.</strong> Продажи мороженого и число утонувших растут вместе — потому что и то и другое зависит от жары. Третью величину, которая влияет на обе, называют конфаундером.</li>
+<li><strong>Нулевая корреляция не означает отсутствия связи.</strong> Она измеряет только линейную связь: зависимость в форме параболы даст коэффициент около нуля.</li>
+<li><strong>Один выброс может создать или уничтожить корреляцию.</strong> Поэтому сначала всегда точечный график, потом число.</li>
+</ol>
+<h3 id="простая-линейная-регрессия">Простая линейная регрессия</h3>
+<p>Регрессия идёт дальше корреляции: она не только говорит, что связь есть, но и описывает её уравнением <code>y = a + b·x</code>.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>result = stats.linregress(users[<span class="t-str">&quot;orders&quot;</span>], users[<span class="t-str">&quot;revenue&quot;</span>])
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;наклон:&quot;</span>, <span class="t-fn">round</span>(result.slope, <span class="t-num">1</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;свободный член:&quot;</span>, <span class="t-fn">round</span>(result.intercept, <span class="t-num">1</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;R²:&quot;</span>, <span class="t-fn">round</span>(result.rvalue ** <span class="t-num">2</span>, <span class="t-num">3</span>))</code></pre></div>
+<ul>
+<li><strong>Наклон</strong> — на сколько в среднем меняется <code>y</code> при росте <code>x</code> на единицу. Здесь: сколько выручки приносит каждый дополнительный заказ.</li>
+<li><strong>R²</strong> — доля разброса <code>y</code>, которую объясняет модель: от 0 до 1.</li>
+</ul>
+<h2 id="86-парадокс-симпсона">8.6. Парадокс Симпсона</h2>
+<p>Тенденция, которая видна в каждой группе по отдельности, может исчезнуть или перевернуться при объединении групп.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>data = pd.DataFrame({
+    <span class="t-str">&quot;variant&quot;</span>:   [<span class="t-str">&quot;A&quot;</span>, <span class="t-str">&quot;A&quot;</span>, <span class="t-str">&quot;B&quot;</span>, <span class="t-str">&quot;B&quot;</span>],
+    <span class="t-str">&quot;platform&quot;</span>:  [<span class="t-str">&quot;mobile&quot;</span>, <span class="t-str">&quot;desktop&quot;</span>, <span class="t-str">&quot;mobile&quot;</span>, <span class="t-str">&quot;desktop&quot;</span>],
+    <span class="t-str">&quot;visitors&quot;</span>:  [<span class="t-num">8000</span>, <span class="t-num">2000</span>, <span class="t-num">2000</span>, <span class="t-num">8000</span>],
+    <span class="t-str">&quot;purchases&quot;</span>: [<span class="t-num">240</span>, <span class="t-num">200</span>, <span class="t-num">50</span>, <span class="t-num">720</span>],
+})
+data[<span class="t-str">&quot;cr&quot;</span>] = data[<span class="t-str">&quot;purchases&quot;</span>] / data[<span class="t-str">&quot;visitors&quot;</span>]
+<span class="t-fn">print</span>(data)
+
+total = data.groupby(<span class="t-str">&quot;variant&quot;</span>)[[<span class="t-str">&quot;visitors&quot;</span>, <span class="t-str">&quot;purchases&quot;</span>]].<span class="t-fn">sum</span>()
+total[<span class="t-str">&quot;cr&quot;</span>] = total[<span class="t-str">&quot;purchases&quot;</span>] / total[<span class="t-str">&quot;visitors&quot;</span>]
+<span class="t-fn">print</span>(total)</code></pre></div>
+<p>На каждой платформе по отдельности вариант A лучше: 3,0 % против 2,5 % на мобильных и 10 % против 9 % на десктопе. Но по общей конверсии с большим отрывом побеждает B — 7,7 % против 4,4 %. Причина не в варианте, а в составе групп: у B в основном десктопные посетители, которые в принципе покупают чаще.</p>
+<p>Вывод: <strong>всегда смотри на метрику в разрезах</strong> — по платформам, странам, новым и старым пользователям. Общая цифра может врать.</p>
+<h2 id="87-план-разведочного-анализа">8.7. План разведочного анализа</h2>
+<p>Схема, по которой можно пройти любой датасет. Она же — готовая структура проекта для портфолио.</p>
+<ol>
+<li><strong>Контекст.</strong> Откуда данные, что означает одна строка, за какой период.</li>
+<li><strong>Структура.</strong> <code>shape</code>, <code>info()</code>, <code>head()</code>: размеры, типы.</li>
+<li><strong>Качество.</strong> Пропуски, дубликаты, ошибки (чек-лист из главы 6).</li>
+<li><strong>Каждый столбец по отдельности.</strong><ul>
+<li>числовой — <code>describe()</code>, гистограмма, boxplot;</li>
+<li>категориальный — <code>value_counts()</code>, столбчатый график;</li>
+<li>дата — число записей по дням: нет ли дыр и всплесков.</li>
+</ul></li>
+<li><strong>Пары столбцов.</strong><ul>
+<li>число × число — точечный график, корреляция;</li>
+<li>число × категория — boxplot, <code>groupby().agg()</code>;</li>
+<li>категория × категория — <code>crosstab</code>, тепловая карта.</li>
+</ul></li>
+<li><strong>Время.</strong> Тренд, сезонность, день недели.</li>
+<li><strong>Сегменты.</strong> Повтори ключевые расчёты в разрезах.</li>
+<li><strong>Выводы.</strong> 3–5 находок, каждая: что увидел → что это значит → что делать.</li>
+</ol>
+<p>Последний пункт важнее всех предыдущих. EDA без выводов — это просто набор картинок.</p>
+<h2 id="практика-на-github">Практика на GitHub</h2>
+<ul>
+<li><a href="https://github.com/AllenDowney/ThinkStats2" target="_blank" rel="noopener">AllenDowney/ThinkStats2</a> — книга «Think Stats»: статистика через код, а не через формулы. В папке <code>code</code> лежат ноутбуки по главам с упражнениями. Первые главы — ровно материал этой главы: распределения, их характеристики, связи между переменными. Работает на реальных данных опроса о рождаемости.</li>
+<li><a href="https://github.com/Yorko/mlcourse.ai" target="_blank" rel="noopener">Yorko/mlcourse.ai</a> — первая тема курса: разведочный анализ данных в pandas на датасете оттока клиентов телеком-оператора. Прекрасный образец того, как выглядит EDA с выводами.</li>
+<li><a href="https://github.com/guipsamora/pandas_exercises" target="_blank" rel="noopener">guipsamora/pandas_exercises</a> — раздел со статистикой.</li>
+<li><a href="https://github.com/GonorAndres/data-analyst-path" target="_blank" rel="noopener">GonorAndres/data-analyst-path</a> — проект с анализом рынка Airbnb: пример полного EDA от загрузки до выводов.</li>
+<li><a href="https://github.com/Yourius/Projects_Ya" target="_blank" rel="noopener">Yourius/Projects_Ya</a> — исследование рынка общепита Москвы: EDA на русском с выводами для бизнеса.</li>
+</ul>
+<h2 id="задания">Задания</h2>
+<ol>
+<li>Для <code>amount</code> из <code>orders_clean.csv</code> посчитай среднее, медиану, стандартное отклонение, IQR, асимметрию. Опиши распределение словами в двух предложениях.</li>
+<li>Сгенерируй 10 000 значений из нормального распределения и проверь правило трёх сигм.</li>
+<li>Придумай три примера из жизни, где корреляция есть, а причинной связи нет. Для каждого назови конфаундер.</li>
+<li>Сгенерируй <code>x = np.linspace(-3, 3, 100)</code> и <code>y = x ** 2</code>. Посчитай корреляцию Пирсона. Объясни результат.</li>
+<li>Выбери датасет из <a href="https://github.com/awesomedata/awesome-public-datasets" target="_blank" rel="noopener">awesome-public-datasets</a> и проведи EDA по плану из раздела 8.7. Оформи в ноутбуке с текстовыми выводами и выложи на GitHub. Это твой первый проект для портфолио.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Когда медиана лучше среднего?</li>
+<li>Что показывает стандартное отклонение?</li>
+<li>Что такое 95-й перцентиль?</li>
+<li>Чем корреляция Спирмена отличается от корреляции Пирсона?</li>
+<li>Почему корреляция не означает причинность?</li>
+<li>В чём суть парадокса Симпсона и как от него защититься?</li>
+</ul>
+<h2 id="решения">Решения</h2>
+
+<details class="sol"><summary>Задание 1. Описание распределения суммы заказа</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+
+amount = pd.read_csv(<span class="t-str">&quot;orders_clean.csv&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>]
+
+summary = pd.Series({
+    <span class="t-str">&quot;среднее&quot;</span>: amount.mean(),
+    <span class="t-str">&quot;медиана&quot;</span>: amount.median(),
+    <span class="t-str">&quot;стандартное отклонение&quot;</span>: amount.std(),
+    <span class="t-str">&quot;IQR&quot;</span>: amount.quantile(<span class="t-num">0.75</span>) - amount.quantile(<span class="t-num">0.25</span>),
+    <span class="t-str">&quot;асимметрия&quot;</span>: amount.skew(),
+    <span class="t-str">&quot;5-й перцентиль&quot;</span>: amount.quantile(<span class="t-num">0.05</span>),
+    <span class="t-str">&quot;95-й перцентиль&quot;</span>: amount.quantile(<span class="t-num">0.95</span>),
+})
+<span class="t-fn">print</span>(summary.<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<p>Образец описания словами (подставь свои числа):</p>
+<blockquote><p>Типичный заказ — около 2500 рублей (медиана), половина заказов укладывается в диапазон от 1400 до 4000. Распределение скошено вправо (асимметрия около 1,4): среднее заметно выше медианы из-за небольшого числа крупных заказов, поэтому для описания «обычного» заказа лучше использовать медиану.</p></blockquote>
+<p>Хорошее описание отвечает на три вопроса: где центр, каков разброс и какова форма.</p></details>
+<details class="sol"><summary>Задание 2. Правило трёх сигм</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+
+rng = np.random.default_rng(<span class="t-num">0</span>)
+x = rng.normal(loc=<span class="t-num">100</span>, scale=<span class="t-num">15</span>, size=<span class="t-num">10_000</span>)
+
+mean, std = x.mean(), x.std()
+<span class="t-kw">for</span> k <span class="t-kw">in</span> (<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">3</span>):
+    share = ((x &gt; mean - k * std) &amp; (x &lt; mean + k * std)).mean()
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;в пределах ±{k} сигм: {share:.1%}&quot;</span>)</code></pre></div>
+<p>Получится около 68 %, 95 % и 99,7 %. Повтори то же для скошенных данных (<code>rng.gamma(2.0, 1500, 10_000)</code>) и убедись, что доли другие: правило работает только для нормального распределения.</p></details>
+<details class="sol"><summary>Задание 3. Корреляция без причинности</summary><p>Примеры ответов:</p>
+<div class="table"><table><thead><tr><th>Наблюдение</th><th>Конфаундер</th></tr></thead><tbody><tr><td>Чем больше пожарных на вызове, тем больше ущерб</td><td>Размер пожара: на крупный пожар приезжает больше машин, и ущерб от него больше</td></tr><tr><td>У детей с большим размером обуви лучше навык чтения</td><td>Возраст: старшие дети и крупнее, и читают лучше</td></tr><tr><td>Пользователи, которые пишут в поддержку, уходят чаще</td><td>Проблемы с продуктом: они вызывают и обращения, и уход. Закрыть поддержку — не решение</td></tr><tr><td>Клиенты с подпиской тратят больше</td><td>Лояльность: подписку оформляют те, кто и так много покупает</td></tr></tbody></table></div>
+<p>Последние два примера — из реальной практики аналитика. Вывод «давайте всем навяжем подписку, и они начнут больше тратить» не следует из данных; проверить его можно только экспериментом (глава 9).</p></details>
+<details class="sol"><summary>Задание 4. Корреляция для параболы</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+
+x = np.linspace(-<span class="t-num">3</span>, <span class="t-num">3</span>, <span class="t-num">100</span>)
+y = x ** <span class="t-num">2</span>
+
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(np.corrcoef(x, y)[<span class="t-num">0</span>, <span class="t-num">1</span>], <span class="t-num">6</span>))      <span class="t-com"># практически 0</span></code></pre></div>
+<p>Связь между <code>x</code> и <code>y</code> полная — <code>y</code> однозначно вычисляется из <code>x</code>. Но корреляция Пирсона равна нулю, потому что она измеряет только <strong>линейную</strong> связь: на левой половине <code>y</code> убывает с ростом <code>x</code>, на правой — возрастает, и два эффекта взаимно уничтожаются.</p>
+<p>Если взять только правую половину, корреляция станет высокой:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>mask = x &gt; <span class="t-num">0</span>
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(np.corrcoef(x[mask], y[mask])[<span class="t-num">0</span>, <span class="t-num">1</span>], <span class="t-num">3</span>))     <span class="t-com"># около 0.97</span></code></pre></div>
+<p>Вывод: нулевая корреляция не означает отсутствия связи. Сначала точечный график — потом коэффициент.</p></details>
+<details class="sol"><summary>Задание 5. EDA-проект</summary><p>Это задание без единственного верного ответа. Ниже — каркас ноутбука, который нужно наполнить.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+<span class="t-kw">import</span> matplotlib.pyplot <span class="t-kw">as</span> plt
+<span class="t-kw">import</span> seaborn <span class="t-kw">as</span> sns
+
+DATA_PATH = <span class="t-str">&quot;data/dataset.csv&quot;</span>
+
+
+<span class="t-kw">def</span> <span class="t-def">overview</span>(df: pd.DataFrame) -&gt; pd.DataFrame:
+    <span class="t-str">&quot;&quot;&quot;Сводка по каждому столбцу: тип, пропуски, число уникальных значений, пример.&quot;&quot;&quot;</span>
+    <span class="t-kw">return</span> pd.DataFrame({
+        <span class="t-str">&quot;тип&quot;</span>: df.dtypes.astype(<span class="t-fn">str</span>),
+        <span class="t-str">&quot;пропусков&quot;</span>: df.isna().<span class="t-fn">sum</span>(),
+        <span class="t-str">&quot;доля пропусков&quot;</span>: df.isna().mean().<span class="t-fn">round</span>(<span class="t-num">3</span>),
+        <span class="t-str">&quot;уникальных&quot;</span>: df.nunique(),
+        <span class="t-str">&quot;пример&quot;</span>: df.iloc[<span class="t-num">0</span>],
+    })
+
+
+<span class="t-kw">def</span> <span class="t-def">plot_numeric</span>(df: pd.DataFrame, column: <span class="t-fn">str</span>) -&gt; <span class="t-num">None</span>:
+    <span class="t-str">&quot;&quot;&quot;Гистограмма и ящик с усами для числового столбца.&quot;&quot;&quot;</span>
+    fig, axes = plt.subplots(<span class="t-num">1</span>, <span class="t-num">2</span>, figsize=(<span class="t-num">11</span>, <span class="t-num">3.5</span>))
+    sns.histplot(df[column].dropna(), bins=<span class="t-num">40</span>, ax=axes[<span class="t-num">0</span>])
+    sns.boxplot(x=df[column], ax=axes[<span class="t-num">1</span>])
+    fig.suptitle(column)
+    fig.tight_layout()
+    plt.show()
+
+
+<span class="t-kw">def</span> <span class="t-def">plot_category</span>(df: pd.DataFrame, column: <span class="t-fn">str</span>, top: <span class="t-fn">int</span> = <span class="t-num">10</span>) -&gt; <span class="t-num">None</span>:
+    <span class="t-str">&quot;&quot;&quot;Столбчатый график самых частых значений категориального столбца.&quot;&quot;&quot;</span>
+    counts = df[column].value_counts().head(top).sort_values()
+    counts.plot(kind=<span class="t-str">&quot;barh&quot;</span>, figsize=(<span class="t-num">7</span>, <span class="t-num">3.5</span>), title=column)
+    plt.show()</code></pre></div>
+<p>Использование:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = pd.read_csv(DATA_PATH)
+
+<span class="t-fn">print</span>(df.shape)
+<span class="t-fn">print</span>(overview(df))
+<span class="t-fn">print</span>(<span class="t-str">&quot;Полных дубликатов:&quot;</span>, df.duplicated().<span class="t-fn">sum</span>())
+
+<span class="t-kw">for</span> column <span class="t-kw">in</span> df.select_dtypes(<span class="t-str">&quot;number&quot;</span>).columns:
+    plot_numeric(df, column)
+
+<span class="t-kw">for</span> column <span class="t-kw">in</span> df.select_dtypes(<span class="t-str">&quot;object&quot;</span>).columns:
+    plot_category(df, column)
+
+sns.heatmap(df.select_dtypes(<span class="t-str">&quot;number&quot;</span>).corr(method=<span class="t-str">&quot;spearman&quot;</span>), annot=<span class="t-num">True</span>, fmt=<span class="t-str">&quot;.2f&quot;</span>,
+            cmap=<span class="t-str">&quot;coolwarm&quot;</span>, vmin=-<span class="t-num">1</span>, vmax=<span class="t-num">1</span>)
+plt.show()</code></pre></div>
+<p>Обрати внимание: повторяющиеся действия вынесены в функции с docstring и аннотациями — это приёмы из главы 2В в деле.</p>
+<p>Критерии, по которым стоит оценить свой проект:</p>
+<ul>
+<li>в начале сформулирован вопрос и описаны данные;</li>
+<li>после каждого графика есть вывод словами;</li>
+<li>каждое решение об очистке объяснено;</li>
+<li>в конце 3–5 находок в формате «что увидел → что это значит → что делать»;</li>
+<li>ноутбук выполняется целиком через Restart Kernel and Run All.</li>
+</ul></details><nav class="nav "><a class="prev" href="07-vizualizaciya.html" id=prev><small>← Назад</small><b>Глава 7. Визуализация</b></a><a class="next" href="09-ab-testy.html" id=next><small>Вперёд →</small><b>Глава 9. Гипотезы и A/B-тесты</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

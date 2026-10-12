@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 7. Визуализация</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">12 из 19 · Глава 7. Визуализация</span>
+</div><div class="progress"><i style="width:63%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="06-sbor-i-ochistka.html"><small>← Назад</small><b>Глава 6. Сбор и очистка данных</b></a><a class="next" href="08-statistika.html"><small>Вперёд →</small><b>Глава 8. Описательная статистика и EDA</b></a></nav><h1 id="глава-7-визуализация">Глава 7. Визуализация</h1>
+<p>График нужен в двух случаях: чтобы <strong>понять</strong> данные самому и чтобы <strong>объяснить</strong> находку другим. Это разные задачи. Для себя достаточно быстрого чернового графика. Для других график должен за пять секунд доносить одну мысль.</p>
+<h2 id="71-какой-график-выбрать">7.1. Какой график выбрать</h2>
+<p>Выбор зависит от вопроса, а не от того, что красивее.</p>
+<div class="table"><table><thead><tr><th>Вопрос</th><th>График</th><th>На карте roadmap.sh</th></tr></thead><tbody><tr><td>Как менялось во времени?</td><td>Линейный</td><td>Line Chart</td></tr><tr><td>Что больше: сравнение категорий</td><td>Столбчатый</td><td>Bar Chart</td></tr><tr><td>Из чего состоит целое?</td><td>Столбчатый с накоплением</td><td>Stacked Chart</td></tr><tr><td>Как распределены значения?</td><td>Гистограмма, ящик с усами</td><td>Histogram</td></tr><tr><td>Связаны ли два показателя?</td><td>Точечный</td><td>Scatter Plot</td></tr><tr><td>Где густо, где пусто в таблице?</td><td>Тепловая карта</td><td>Heatmap</td></tr><tr><td>Сколько теряем на каждом шаге?</td><td>Воронка</td><td>Funnel Chart</td></tr><tr><td>Доли (не больше 3–4 частей)</td><td>Круговая</td><td>Pie Chart</td></tr></tbody></table></div>
+<p>Про круговую диаграмму: человек плохо сравнивает углы и площади и хорошо — длины. Поэтому почти всегда столбчатый график лучше кругового.</p>
+<h2 id="72-matplotlib-основа">7.2. Matplotlib: основа</h2>
+<p>Matplotlib — базовая библиотека; seaborn и встроенные графики pandas построены на ней.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+<span class="t-kw">import</span> matplotlib.pyplot <span class="t-kw">as</span> plt
+
+df = pd.read_csv(<span class="t-str">&quot;orders_clean.csv&quot;</span>, parse_dates=[<span class="t-str">&quot;date&quot;</span>])
+weekly = df.set_index(<span class="t-str">&quot;date&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].resample(<span class="t-str">&quot;W&quot;</span>).<span class="t-fn">sum</span>()
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">10</span>, <span class="t-num">4</span>))
+ax.plot(weekly.index, weekly.values, marker=<span class="t-str">&quot;o&quot;</span>)
+ax.set_title(<span class="t-str">&quot;Выручка по неделям&quot;</span>)
+ax.set_xlabel(<span class="t-str">&quot;Неделя&quot;</span>)
+ax.set_ylabel(<span class="t-str">&quot;Выручка, руб.&quot;</span>)
+ax.grid(alpha=<span class="t-num">0.3</span>)
+fig.tight_layout()
+fig.savefig(<span class="t-str">&quot;weekly_revenue.png&quot;</span>, dpi=<span class="t-num">150</span>)
+plt.show()</code></pre></div>
+<p>Два объекта, которые нужно различать:</p>
+<ul>
+<li><code>fig</code> (Figure) — весь рисунок целиком, «лист бумаги»;</li>
+<li><code>ax</code> (Axes) — одна область с осями, сам график.</li>
+</ul>
+<p>Всегда начинай с <code>fig, ax = plt.subplots()</code> и рисуй методами <code>ax</code>. Это называется объектным стилем; он работает одинаково и для одного графика, и для нескольких.</p>
+<p>Несколько графиков на одном рисунке:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>fig, axes = plt.subplots(<span class="t-num">1</span>, <span class="t-num">2</span>, figsize=(<span class="t-num">12</span>, <span class="t-num">4</span>))
+
+city_revenue = df.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>().sort_values()
+axes[<span class="t-num">0</span>].barh(city_revenue.index, city_revenue.values)
+axes[<span class="t-num">0</span>].set_title(<span class="t-str">&quot;Выручка по городам&quot;</span>)
+
+axes[<span class="t-num">1</span>].hist(df[<span class="t-str">&quot;amount&quot;</span>], bins=<span class="t-num">30</span>)
+axes[<span class="t-num">1</span>].set_title(<span class="t-str">&quot;Распределение суммы заказа&quot;</span>)
+
+fig.tight_layout()
+plt.show()</code></pre></div>
+<h2 id="73-быстрые-графики-из-pandas">7.3. Быстрые графики из pandas</h2>
+<p>Для черновиков — метод <code>.plot()</code> прямо у таблицы:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>().sort_values().plot(kind=<span class="t-str">&quot;barh&quot;</span>, title=<span class="t-str">&quot;Выручка по городам&quot;</span>)
+plt.show()
+
+df[<span class="t-str">&quot;amount&quot;</span>].plot(kind=<span class="t-str">&quot;hist&quot;</span>, bins=<span class="t-num">30</span>, title=<span class="t-str">&quot;Сумма заказа&quot;</span>)
+plt.show()
+
+df[<span class="t-str">&quot;month&quot;</span>] = df[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;M&quot;</span>).astype(<span class="t-fn">str</span>)
+(
+    df.pivot_table(index=<span class="t-str">&quot;month&quot;</span>, columns=<span class="t-str">&quot;category&quot;</span>, values=<span class="t-str">&quot;amount&quot;</span>, aggfunc=<span class="t-str">&quot;sum&quot;</span>)
+      .plot(kind=<span class="t-str">&quot;bar&quot;</span>, stacked=<span class="t-num">True</span>, title=<span class="t-str">&quot;Выручка по месяцам и категориям&quot;</span>)
+)
+plt.show()</code></pre></div>
+<h2 id="74-seaborn-статистические-графики">7.4. Seaborn: статистические графики</h2>
+<p>Seaborn умеет сам группировать данные и рисует аккуратнее по умолчанию. В него передают таблицу в длинном формате и названия столбцов.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> seaborn <span class="t-kw">as</span> sns
+
+sns.set_theme(style=<span class="t-str">&quot;whitegrid&quot;</span>)
+
+<span class="t-com"># Распределение</span>
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">4</span>))
+sns.histplot(data=df, x=<span class="t-str">&quot;amount&quot;</span>, bins=<span class="t-num">30</span>, kde=<span class="t-num">True</span>, ax=ax)
+ax.set_title(<span class="t-str">&quot;Распределение суммы заказа&quot;</span>)
+plt.show()
+
+<span class="t-com"># Сравнение распределений по группам</span>
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">4</span>))
+sns.boxplot(data=df, x=<span class="t-str">&quot;city&quot;</span>, y=<span class="t-str">&quot;amount&quot;</span>, ax=ax)
+ax.set_title(<span class="t-str">&quot;Сумма заказа по городам&quot;</span>)
+plt.show()
+
+<span class="t-com"># Среднее по категориям с доверительным интервалом</span>
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">4</span>))
+sns.barplot(data=df, x=<span class="t-str">&quot;category&quot;</span>, y=<span class="t-str">&quot;amount&quot;</span>, hue=<span class="t-str">&quot;city&quot;</span>, ax=ax)
+plt.show()</code></pre></div>
+<h3 id="как-читать-ящик-с-усами-boxplot">Как читать ящик с усами (boxplot)</h3>
+<ul>
+<li>линия внутри ящика — медиана;</li>
+<li>края ящика — 25-й и 75-й перцентили, то есть в ящике лежит средняя половина данных;</li>
+<li>усы — до крайних значений в пределах 1,5 × IQR;</li>
+<li>точки за усами — кандидаты в выбросы (то самое правило из главы 6).</li>
+</ul>
+<h3 id="точечный-график-и-тепловая-карта">Точечный график и тепловая карта</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>users = (
+    df.groupby(<span class="t-str">&quot;user_id&quot;</span>)
+      .agg(orders=(<span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;count&quot;</span>), revenue=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;sum&quot;</span>), avg_check=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;mean&quot;</span>))
+      .reset_index()
+)
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">6</span>, <span class="t-num">5</span>))
+sns.scatterplot(data=users, x=<span class="t-str">&quot;orders&quot;</span>, y=<span class="t-str">&quot;revenue&quot;</span>, alpha=<span class="t-num">0.6</span>, ax=ax)
+ax.set_title(<span class="t-str">&quot;Число заказов и выручка с пользователя&quot;</span>)
+plt.show()
+
+<span class="t-com"># Тепловая карта корреляций</span>
+fig, ax = plt.subplots(figsize=(<span class="t-num">5</span>, <span class="t-num">4</span>))
+sns.heatmap(users[[<span class="t-str">&quot;orders&quot;</span>, <span class="t-str">&quot;revenue&quot;</span>, <span class="t-str">&quot;avg_check&quot;</span>]].corr(), annot=<span class="t-num">True</span>, fmt=<span class="t-str">&quot;.2f&quot;</span>,
+            cmap=<span class="t-str">&quot;coolwarm&quot;</span>, vmin=-<span class="t-num">1</span>, vmax=<span class="t-num">1</span>, ax=ax)
+plt.show()
+
+<span class="t-com"># Тепловая карта сводной таблицы</span>
+pivot = df.pivot_table(index=<span class="t-str">&quot;city&quot;</span>, columns=<span class="t-str">&quot;category&quot;</span>, values=<span class="t-str">&quot;amount&quot;</span>, aggfunc=<span class="t-str">&quot;mean&quot;</span>)
+fig, ax = plt.subplots(figsize=(<span class="t-num">6</span>, <span class="t-num">4</span>))
+sns.heatmap(pivot, annot=<span class="t-num">True</span>, fmt=<span class="t-str">&quot;.0f&quot;</span>, cmap=<span class="t-str">&quot;Blues&quot;</span>, ax=ax)
+ax.set_title(<span class="t-str">&quot;Средний чек: город × категория&quot;</span>)
+plt.show()</code></pre></div>
+<h3 id="воронка">Воронка</h3>
+<p>Готовой функции нет, воронку рисуют горизонтальными столбцами:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>steps = [<span class="t-str">&quot;Зашли на сайт&quot;</span>, <span class="t-str">&quot;Открыли товар&quot;</span>, <span class="t-str">&quot;Добавили в корзину&quot;</span>, <span class="t-str">&quot;Оплатили&quot;</span>]
+users_count = [<span class="t-num">10000</span>, <span class="t-num">4200</span>, <span class="t-num">1300</span>, <span class="t-num">520</span>]
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">3.5</span>))
+bars = ax.barh(steps[::-<span class="t-num">1</span>], users_count[::-<span class="t-num">1</span>])
+<span class="t-kw">for</span> bar, value <span class="t-kw">in</span> <span class="t-fn">zip</span>(bars, users_count[::-<span class="t-num">1</span>]):
+    ax.text(bar.get_width(), bar.get_y() + bar.get_height() / <span class="t-num">2</span>,
+            <span class="t-str">f&quot;  {value:,} ({value / users_count[0]:.0%})&quot;</span>, va=<span class="t-str">&quot;center&quot;</span>)
+ax.set_xlim(<span class="t-num">0</span>, users_count[<span class="t-num">0</span>] * <span class="t-num">1.25</span>)
+ax.set_title(<span class="t-str">&quot;Воронка покупки&quot;</span>)
+fig.tight_layout()
+plt.show()</code></pre></div>
+<h2 id="75-как-сделать-график-понятным">7.5. Как сделать график понятным</h2>
+<p>График для отчёта — это не то, что получилось по умолчанию.</p>
+<ol>
+<li><strong>Заголовок — это вывод, а не описание.</strong> Не «Выручка по неделям», а «Выручка растёт третью неделю подряд».</li>
+<li><strong>Подпиши оси и единицы измерения.</strong></li>
+<li><strong>Убери лишнее:</strong> ненужную сетку, рамки, легенду из одного пункта, 3D-эффекты.</li>
+<li><strong>Отсортируй столбцы</strong> по значению, а не по алфавиту (кроме случаев, когда у категорий есть естественный порядок).</li>
+<li><strong>Используй цвет со смыслом:</strong> выдели главное, остальное сделай серым. Не больше 5–6 цветов.</li>
+<li><strong>Столбцы начинай с нуля.</strong> Обрезанная ось превращает разницу в 2 % в визуальную пропасть.</li>
+<li><strong>Один график — одна мысль.</strong></li>
+</ol>
+<p>Пример выделения цветом:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>city_revenue = df.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>().sort_values()
+colors = [<span class="t-str">&quot;#b0b0b0&quot;</span>] * <span class="t-fn">len</span>(city_revenue)
+colors[-<span class="t-num">1</span>] = <span class="t-str">&quot;#d62728&quot;</span>      <span class="t-com"># лидер — красным</span>
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">3.5</span>))
+ax.barh(city_revenue.index, city_revenue.values, color=colors)
+ax.set_title(<span class="t-str">f&quot;{city_revenue.index[-1]} приносит больше всех остальных городов&quot;</span>)
+ax.set_xlabel(<span class="t-str">&quot;Выручка, руб.&quot;</span>)
+<span class="t-kw">for</span> side <span class="t-kw">in</span> [<span class="t-str">&quot;top&quot;</span>, <span class="t-str">&quot;right&quot;</span>]:
+    ax.spines[side].set_visible(<span class="t-num">False</span>)
+fig.tight_layout()
+plt.show()</code></pre></div>
+<h3 id="как-графиком-обманывают">Как графиком обманывают</h3>
+<p>Знай эти приёмы, чтобы не применять случайно и замечать у других:</p>
+<ul>
+<li>обрезанная ось Y у столбчатого графика;</li>
+<li>две оси Y с подобранными масштабами — «связь» можно нарисовать между чем угодно;</li>
+<li>специально выбранный период («с марта всё растёт» — а до марта падало);</li>
+<li>накопительный итог вместо значений по периодам — он растёт всегда.</li>
+</ul>
+<h2 id="76-bi-инструменты-и-дашборды">7.6. BI-инструменты и дашборды</h2>
+<p>Дашборд — интерактивная страница с ключевыми показателями, которая обновляется сама. Его делают не в Python, а в BI-системах:</p>
+<div class="table"><table><thead><tr><th>Инструмент</th><th>Особенности</th></tr></thead><tbody><tr><td><strong>Power BI</strong></td><td>Самый распространённый в корпорациях, бесплатная настольная версия</td></tr><tr><td><strong>Tableau</strong></td><td>Сильная визуализация, есть бесплатная версия Tableau Public</td></tr><tr><td><strong>Yandex DataLens</strong></td><td>Бесплатный, работает в браузере, популярен в России</td></tr><tr><td><strong>Apache Superset</strong>, <strong>Metabase</strong></td><td>Открытые, часто встречаются в IT-компаниях</td></tr></tbody></table></div>
+<p>Выбери один и сделай в нём один дашборд — этого достаточно для начала. Принципы у всех одинаковые: подключил источник → собрал графики → добавил фильтры.</p>
+<p>Как построить дашборд:</p>
+<ol>
+<li>Сверху — 3–5 главных чисел (выручка, заказы, средний чек, конверсия) со сравнением с прошлым периодом.</li>
+<li>Ниже — динамика во времени.</li>
+<li>Ещё ниже — разрезы: по городам, категориям, каналам.</li>
+<li>Фильтры — в одном месте.</li>
+<li>Проверка: понимает ли человек за 10 секунд, всё хорошо или плохо?</li>
+</ol>
+<h2 id="практика-на-github">Практика на GitHub</h2>
+<ul>
+<li><a href="https://github.com/jakevdp/PythonDataScienceHandbook" target="_blank" rel="noopener">jakevdp/PythonDataScienceHandbook</a> — глава 4 (ноутбуки с префиксом <code>04</code>): Matplotlib от простых линий до настройки оформления, в конце — seaborn.</li>
+<li><a href="https://github.com/guipsamora/pandas_exercises" target="_blank" rel="noopener">guipsamora/pandas_exercises</a> — раздел с упражнениями по визуализации.</li>
+<li><a href="https://github.com/wesm/pydata-book" target="_blank" rel="noopener">wesm/pydata-book</a> — ноутбук <code>ch09</code> про построение графиков.</li>
+<li><a href="https://github.com/Yorko/mlcourse.ai" target="_blank" rel="noopener">Yorko/mlcourse.ai</a> — вторая тема курса посвящена визуальному анализу данных на pandas, matplotlib и seaborn.</li>
+<li>Образцы дашбордов: <a href="https://github.com/Lenupcik/portfolio" target="_blank" rel="noopener">Lenupcik/portfolio</a> (Yandex DataLens), <a href="https://github.com/AsifRashid01/DataAnalyst_PortfolioProjects" target="_blank" rel="noopener">AsifRashid01/DataAnalyst_PortfolioProjects</a> (Tableau), <a href="https://github.com/noztas/DataAnalystProjects" target="_blank" rel="noopener">noztas/DataAnalystProjects</a> (Excel), <a href="https://github.com/GonorAndres/data-analyst-path" target="_blank" rel="noopener">GonorAndres/data-analyst-path</a> (дашборды к каждому проекту).</li>
+</ul>
+<h2 id="задания">Задания</h2>
+<p>На <code>orders_clean.csv</code>:</p>
+<ol>
+<li>Построй линейный график числа заказов по дням и добавь на него скользящее среднее за 7 дней.</li>
+<li>Построй гистограмму суммы заказа. На что похоже распределение? Построй её же для <code>np.log(amount)</code>.</li>
+<li>Сравни распределение суммы заказа по категориям через boxplot.</li>
+<li>Построй тепловую карту: день недели × город, в ячейках — число заказов.</li>
+<li>Возьми любой свой график и доведи до уровня отчёта по семи правилам из раздела 7.5.</li>
+<li>Собери дашборд в DataLens, Power BI или Tableau Public на <code>orders_clean.csv</code>: три числа сверху, динамика, два разреза, фильтр по городу.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Какой график выбрать, чтобы показать связь двух числовых показателей?</li>
+<li>Что показывают ящик и усы на boxplot?</li>
+<li>Чем <code>fig</code> отличается от <code>ax</code>?</li>
+<li>Почему столбчатый график должен начинаться с нуля?</li>
+<li>Чем заголовок-вывод отличается от заголовка-описания?</li>
+</ul>
+<h2 id="решения">Решения</h2>
+<p>Общая подготовка для всех решений:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+<span class="t-kw">import</span> matplotlib.pyplot <span class="t-kw">as</span> plt
+<span class="t-kw">import</span> seaborn <span class="t-kw">as</span> sns
+
+sns.set_theme(style=<span class="t-str">&quot;whitegrid&quot;</span>)
+df = pd.read_csv(<span class="t-str">&quot;orders_clean.csv&quot;</span>, parse_dates=[<span class="t-str">&quot;date&quot;</span>])</code></pre></div>
+<details class="sol"><summary>Задание 1. Заказы по дням и скользящее среднее</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>daily = df.set_index(<span class="t-str">&quot;date&quot;</span>)[<span class="t-str">&quot;order_id&quot;</span>].resample(<span class="t-str">&quot;D&quot;</span>).count()
+rolling = daily.rolling(<span class="t-num">7</span>).mean()
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">11</span>, <span class="t-num">4</span>))
+ax.plot(daily.index, daily.values, color=<span class="t-str">&quot;#b0b0b0&quot;</span>, linewidth=<span class="t-num">1</span>, label=<span class="t-str">&quot;Заказов в день&quot;</span>)
+ax.plot(rolling.index, rolling.values, color=<span class="t-str">&quot;#d62728&quot;</span>, linewidth=<span class="t-num">2.5</span>, label=<span class="t-str">&quot;Среднее за 7 дней&quot;</span>)
+ax.set_title(<span class="t-str">&quot;Число заказов по дням&quot;</span>)
+ax.set_ylabel(<span class="t-str">&quot;Заказов&quot;</span>)
+ax.legend()
+fig.tight_layout()
+plt.show()</code></pre></div>
+<p>Дневной ряд шумный, поэтому он нарисован серым и тонким, а сглаженная линия — яркой: глаз сразу видит тренд. Окно в 7 дней выбрано не случайно — оно гасит недельную сезонность. Первые шесть значений скользящего среднего пустые: для них ещё не набралось семи дней.</p></details>
+<details class="sol"><summary>Задание 2. Гистограмма суммы и её логарифма</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>fig, axes = plt.subplots(<span class="t-num">1</span>, <span class="t-num">2</span>, figsize=(<span class="t-num">12</span>, <span class="t-num">4</span>))
+
+sns.histplot(df[<span class="t-str">&quot;amount&quot;</span>], bins=<span class="t-num">40</span>, ax=axes[<span class="t-num">0</span>])
+axes[<span class="t-num">0</span>].axvline(df[<span class="t-str">&quot;amount&quot;</span>].mean(), color=<span class="t-str">&quot;red&quot;</span>, linestyle=<span class="t-str">&quot;--&quot;</span>, label=<span class="t-str">&quot;среднее&quot;</span>)
+axes[<span class="t-num">0</span>].axvline(df[<span class="t-str">&quot;amount&quot;</span>].median(), color=<span class="t-str">&quot;black&quot;</span>, linestyle=<span class="t-str">&quot;--&quot;</span>, label=<span class="t-str">&quot;медиана&quot;</span>)
+axes[<span class="t-num">0</span>].set_title(<span class="t-str">&quot;Сумма заказа&quot;</span>)
+axes[<span class="t-num">0</span>].legend()
+
+sns.histplot(np.log(df[<span class="t-str">&quot;amount&quot;</span>]), bins=<span class="t-num">40</span>, ax=axes[<span class="t-num">1</span>])
+axes[<span class="t-num">1</span>].set_title(<span class="t-str">&quot;Логарифм суммы заказа&quot;</span>)
+axes[<span class="t-num">1</span>].set_xlabel(<span class="t-str">&quot;log(amount)&quot;</span>)
+
+fig.tight_layout()
+plt.show()</code></pre></div>
+<p>Исходное распределение скошено вправо: большинство заказов небольшие, и есть длинный хвост крупных. Среднее лежит правее медианы — это видно по двум вертикальным линиям. После логарифмирования распределение становится заметно симметричнее. Такая форма типична для денег: доходов, чеков, цен.</p></details>
+<details class="sol"><summary>Задание 3. Сравнение категорий</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>order = df.groupby(<span class="t-str">&quot;category&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].median().sort_values(ascending=<span class="t-num">False</span>).index
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">4</span>))
+sns.boxplot(data=df, x=<span class="t-str">&quot;category&quot;</span>, y=<span class="t-str">&quot;amount&quot;</span>, order=order, ax=ax)
+ax.set_title(<span class="t-str">&quot;Сумма заказа по категориям&quot;</span>)
+ax.set_xlabel(<span class="t-str">&quot;&quot;</span>)
+ax.set_ylabel(<span class="t-str">&quot;Сумма, руб.&quot;</span>)
+plt.show()
+
+<span class="t-fn">print</span>(df.groupby(<span class="t-str">&quot;category&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].describe().<span class="t-fn">round</span>(<span class="t-num">0</span>))</code></pre></div>
+<p>Категории отсортированы по медиане. Смотри на три вещи: положение линии медианы, высоту ящика (разброс) и точки-выбросы. Если ящики сильно перекрываются, уверенно говорить о различии категорий нельзя — нужна проверка из главы 9.</p></details>
+<details class="sol"><summary>Задание 4. Тепловая карта: день недели × город</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>weekdays = [<span class="t-str">&quot;Monday&quot;</span>, <span class="t-str">&quot;Tuesday&quot;</span>, <span class="t-str">&quot;Wednesday&quot;</span>, <span class="t-str">&quot;Thursday&quot;</span>, <span class="t-str">&quot;Friday&quot;</span>, <span class="t-str">&quot;Saturday&quot;</span>, <span class="t-str">&quot;Sunday&quot;</span>]
+
+heat = (
+    pd.crosstab(df[<span class="t-str">&quot;date&quot;</span>].dt.day_name(), df[<span class="t-str">&quot;city&quot;</span>])
+      .reindex(weekdays)
+)
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">7</span>, <span class="t-num">4.5</span>))
+sns.heatmap(heat, annot=<span class="t-num">True</span>, fmt=<span class="t-str">&quot;d&quot;</span>, cmap=<span class="t-str">&quot;Blues&quot;</span>, ax=ax)
+ax.set_title(<span class="t-str">&quot;Число заказов: день недели × город&quot;</span>)
+ax.set_xlabel(<span class="t-str">&quot;&quot;</span>)
+ax.set_ylabel(<span class="t-str">&quot;&quot;</span>)
+plt.show()</code></pre></div>
+<p>На такой карте в первую очередь бросается в глаза самый крупный город: у него всё темнее просто из-за объёма. Чтобы сравнить <strong>структуру</strong> по дням, пронормируй столбцы — тогда в каждом городе сумма будет 100 %:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>share = heat / heat.<span class="t-fn">sum</span>()
+sns.heatmap(share, annot=<span class="t-num">True</span>, fmt=<span class="t-str">&quot;.0%&quot;</span>, cmap=<span class="t-str">&quot;Blues&quot;</span>)
+plt.show()</code></pre></div></details>
+<details class="sol"><summary>Задание 5. График уровня отчёта</summary><p>Берём график выручки по городам и проходим по семи правилам раздела 7.5:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>city_revenue = df.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>().sort_values()        <span class="t-com"># правило 4: сортировка</span>
+leader = city_revenue.index[-<span class="t-num">1</span>]
+leader_share = city_revenue.iloc[-<span class="t-num">1</span>] / city_revenue.<span class="t-fn">sum</span>()
+
+colors = [<span class="t-str">&quot;#c8c8c8&quot;</span>] * <span class="t-fn">len</span>(city_revenue)                               <span class="t-com"># правило 5: цвет со смыслом</span>
+colors[-<span class="t-num">1</span>] = <span class="t-str">&quot;#1f6f5c&quot;</span>
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">3.8</span>))
+bars = ax.barh(city_revenue.index, city_revenue.values / <span class="t-num">1000</span>, color=colors)   <span class="t-com"># правило 6: ось от нуля</span>
+
+ax.set_title(<span class="t-str">f&quot;{leader} даёт {leader_share:.0%} всей выручки&quot;</span>,          <span class="t-com"># правило 1: заголовок-вывод</span>
+             loc=<span class="t-str">&quot;left&quot;</span>, fontsize=<span class="t-num">14</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>)
+ax.set_xlabel(<span class="t-str">&quot;Выручка, тыс. руб.&quot;</span>)                                    <span class="t-com"># правило 2: единицы</span>
+ax.bar_label(bars, fmt=<span class="t-str">&quot;%.0f&quot;</span>, padding=<span class="t-num">4</span>)
+
+ax.grid(<span class="t-num">False</span>)                                                         <span class="t-com"># правило 3: убрать лишнее</span>
+<span class="t-kw">for</span> side <span class="t-kw">in</span> [<span class="t-str">&quot;top&quot;</span>, <span class="t-str">&quot;right&quot;</span>, <span class="t-str">&quot;bottom&quot;</span>]:
+    ax.spines[side].set_visible(<span class="t-num">False</span>)
+ax.set_xticks([])
+
+fig.tight_layout()
+fig.savefig(<span class="t-str">&quot;revenue_by_city.png&quot;</span>, dpi=<span class="t-num">150</span>)
+plt.show()</code></pre></div>
+<p>Значения подписаны прямо на столбцах, поэтому ось и сетка стали не нужны и убраны. Правило 7 (одна мысль) выполнено: график говорит только о доле лидера.</p></details>
+<details class="sol"><summary>Задание 6. Дашборд</summary><p>Готового кода здесь нет — дашборд собирается мышкой. План для Yandex DataLens (в Power BI и Tableau шаги те же, названия другие):</p>
+<ol>
+<li><strong>Подключение.</strong> Создай подключение типа «Файлы» и загрузи <code>orders_clean.csv</code>.</li>
+<li><strong>Датасет.</strong> Проверь типы полей: <code>date</code> — дата, <code>amount</code> — дробное число, <code>city</code> и <code>category</code> — строки.</li>
+<li><strong>Вычисляемые поля.</strong> Добавь: «Выручка» = <code>SUM([amount])</code>, «Заказы» = <code>COUNT([order_id])</code>, «Средний чек» = <code>SUM([amount]) / COUNT([order_id])</code>, «Покупатели» = <code>COUNTD([user_id])</code>.</li>
+<li><strong>Чарты.</strong><ul>
+<li>три индикатора: выручка, заказы, средний чек;</li>
+<li>линейный график: выручка по неделям;</li>
+<li>столбчатый: выручка по городам, отсортированный;</li>
+<li>столбчатый с накоплением: выручка по месяцам в разрезе категорий.</li>
+</ul></li>
+<li><strong>Дашборд.</strong> Индикаторы — сверху в ряд, динамика — под ними на всю ширину, два разреза — внизу рядом.</li>
+<li><strong>Селекторы.</strong> Добавь фильтры по городу и диапазону дат и убедись, что они влияют на все чарты.</li>
+</ol>
+<p>Самопроверка: общая выручка на дашборде должна совпасть с <code>df[&quot;amount&quot;].sum()</code> из pandas. Если не совпадает — ищи причину (обычно это тип поля или агрегация), иначе дашборду нельзя верить.</p>
+<p>Опубликуй дашборд по публичной ссылке и добавь её в README своего репозитория.</p></details><nav class="nav "><a class="prev" href="06-sbor-i-ochistka.html" id=prev><small>← Назад</small><b>Глава 6. Сбор и очистка данных</b></a><a class="next" href="08-statistika.html" id=next><small>Вперёд →</small><b>Глава 8. Описательная статистика и EDA</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

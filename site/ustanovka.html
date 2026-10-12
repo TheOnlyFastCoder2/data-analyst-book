@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Установка и настройка: полное руководство</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">2 из 19 · Установка и настройка: полное руководство</span>
+</div><div class="progress"><i style="width:11%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="00-vvedenie.html"><small>← Назад</small><b>Глава 0. Профессия и подготовка</b></a><a class="next" href="01-excel.html"><small>Вперёд →</small><b>Глава 1. Таблицы: Excel и Google Sheets</b></a></nav><h1 id="установка-и-настройка-полное-руководство">Установка и настройка: полное руководство</h1>
+<p>Справочная глава. Здесь собрано всё про установку программ, команды терминала, виртуальные окружения и создание проекта. Пройди её один раз по порядку, а потом возвращайся как к шпаргалке.</p>
+<p>Содержание:</p>
+<ol>
+<li><a href="#1-терминал">Терминал</a></li>
+<li><a href="#2-установка-python">Установка Python</a></li>
+<li><a href="#3-pip-установка-библиотек">pip: установка библиотек</a></li>
+<li><a href="#4-виртуальное-окружение-venv">Виртуальное окружение</a></li>
+<li><a href="#5-requirementstxt-список-библиотек-проекта">requirements.txt</a></li>
+<li><a href="#6-jupyter">Jupyter</a></li>
+<li><a href="#7-vs-code">VS Code</a></li>
+<li><a href="#8-git-и-github">Git и GitHub</a></li>
+<li><a href="#9-новый-проект-с-нуля-пошагово">Новый проект с нуля</a></li>
+<li><a href="#10-как-запустить-чужой-проект-с-github">Чужой проект с GitHub</a></li>
+<li><a href="#11-файл-env-и-секреты">Файл .env и секреты</a></li>
+<li><a href="#12-частые-проблемы">Частые проблемы</a></li>
+<li><a href="#13-шпаргалка-команд">Шпаргалка команд</a></li>
+</ol>
+<hr>
+<h2 id="1-терминал">1. Терминал</h2>
+<p>Терминал — окно, в котором команды компьютеру отдают текстом. Почти вся настройка делается в нём.</p>
+<p>Как открыть:</p>
+<ul>
+<li><strong>Windows:</strong> нажми <code>Win</code>, набери <code>PowerShell</code>, нажми Enter. Ещё удобнее — открыть нужную папку в Проводнике, кликнуть правой кнопкой по пустому месту и выбрать «Открыть в Терминале».</li>
+<li><strong>macOS:</strong> <code>Cmd+Пробел</code>, набери <code>Terminal</code>.</li>
+<li><strong>Linux:</strong> <code>Ctrl+Alt+T</code>.</li>
+</ul>
+<p>Терминал всегда «находится» в какой-то папке — она называется текущей. Команды выполняются относительно неё.</p>
+<div class="table"><table><thead><tr><th>Действие</th><th>Windows (PowerShell)</th><th>macOS / Linux</th></tr></thead><tbody><tr><td>Где я сейчас</td><td><code>pwd</code></td><td><code>pwd</code></td></tr><tr><td>Что в папке</td><td><code>ls</code></td><td><code>ls</code></td></tr><tr><td>Перейти в папку</td><td><code>cd analyst</code></td><td><code>cd analyst</code></td></tr><tr><td>Подняться на уровень вверх</td><td><code>cd ..</code></td><td><code>cd ..</code></td></tr><tr><td>Перейти на другой диск</td><td><code>cd D:\projects</code></td><td>—</td></tr><tr><td>Создать папку</td><td><code>mkdir analyst</code></td><td><code>mkdir analyst</code></td></tr><tr><td>Очистить экран</td><td><code>cls</code></td><td><code>clear</code></td></tr></tbody></table></div>
+<p>Полезные приёмы:</p>
+<ul>
+<li><code>Tab</code> дописывает имя файла или папки за тебя.</li>
+<li>Стрелка вверх возвращает предыдущую команду.</li>
+<li><code>Ctrl+C</code> останавливает выполняющуюся программу (например, Jupyter).</li>
+<li>Если в пути есть пробелы, бери его в кавычки: <code>cd &quot;D:\Мои проекты&quot;</code>. Лучше вообще не использовать пробелы и русские буквы в названиях папок с кодом.</li>
+</ul>
+<h2 id="2-установка-python">2. Установка Python</h2>
+<h3 id="windows">Windows</h3>
+<ol>
+<li>Открой python.org → Downloads и скачай установщик свежей версии (3.11 или новее).</li>
+<li>Запусти его и <strong>обязательно поставь галочку <code>Add python.exe to PATH</code></strong> на первом экране. Без неё терминал не найдёт Python.</li>
+<li>Нажми Install Now.</li>
+<li><strong>Закрой и заново открой терминал</strong>, затем проверь:</li>
+</ol>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">python</span> <span class="t-num">--version</span></code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> <span class="t-num">--version</span></code></pre></div>
+<p>Обе команды должны вывести номер версии.</p>
+<h3 id="macos">macOS</h3>
+<p>Самый простой путь — установщик с python.org. На macOS команды называются <code>python3</code> и <code>pip3</code>:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">python3</span> <span class="t-num">--version</span></code></pre></div>
+<h3 id="linux">Linux</h3>
+<p>Python обычно уже установлен. На Ubuntu и Debian нужно доустановить модуль окружений:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">sudo</span> apt install python3-venv python3-pip</code></pre></div>
+<blockquote><p>Дальше в главе написано <code>python</code>. Если у тебя macOS или Linux, вне виртуального окружения пиши <code>python3</code>. Внутри активированного окружения <code>python</code> работает везде одинаково.</p></blockquote>
+<h2 id="3-pip-установка-библиотек">3. pip: установка библиотек</h2>
+<p><code>pip</code> — программа, которая скачивает и устанавливает библиотеки Python из общего каталога PyPI.</p>
+<div class="table"><table><thead><tr><th>Команда</th><th>Что делает</th></tr></thead><tbody><tr><td><code>pip install pandas</code></td><td>Установить библиотеку</td></tr><tr><td><code>pip install pandas matplotlib seaborn</code></td><td>Установить несколько сразу</td></tr><tr><td><code>pip install pandas==2.2.3</code></td><td>Установить конкретную версию</td></tr><tr><td><code>pip install --upgrade pandas</code></td><td>Обновить</td></tr><tr><td><code>pip uninstall pandas</code></td><td>Удалить</td></tr><tr><td><code>pip list</code></td><td>Показать всё установленное</td></tr><tr><td><code>pip show pandas</code></td><td>Версия и расположение библиотеки</td></tr><tr><td><code>pip freeze &gt; requirements.txt</code></td><td>Сохранить список библиотек в файл</td></tr><tr><td><code>pip install -r requirements.txt</code></td><td>Установить всё из файла</td></tr></tbody></table></div>
+<p>Надёжный вариант записи — <code>python -m pip install pandas</code>. Он гарантирует, что библиотека поставится именно в тот Python, который сейчас запускается командой <code>python</code>.</p>
+<p>Важно: <strong>не устанавливай библиотеки, пока не активировал виртуальное окружение</strong> — об этом следующий раздел.</p>
+<h2 id="4-виртуальное-окружение-venv">4. Виртуальное окружение (venv)</h2>
+<h3 id="что-это-и-зачем">Что это и зачем</h3>
+<p>Виртуальное окружение — это отдельная папка с собственной копией Python и собственным набором библиотек. У каждого проекта оно своё.</p>
+<p>Представь, что у тебя два проекта. Первому нужен pandas версии 1.5, второй написан под pandas 2.2. Если ставить библиотеки «в систему», они будут общими, и одновременно обе версии существовать не смогут: починишь один проект — сломаешь другой.</p>
+<p>Окружение решает три задачи:</p>
+<ul>
+<li><strong>Изоляция.</strong> Библиотеки одного проекта не мешают другому.</li>
+<li><strong>Воспроизводимость.</strong> Список библиотек проекта можно сохранить в файл, и любой человек развернёт у себя точно такой же набор.</li>
+<li><strong>Чистота.</strong> Надоел проект — удалил папку, и в системе не осталось мусора.</li>
+</ul>
+<p>Правило: <strong>один проект — одна папка — одно окружение.</strong></p>
+<h3 id="создание">Создание</h3>
+<p>Перейди в папку проекта и выполни:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">python</span> <span class="t-num">-m</span> venv .venv</code></pre></div>
+<p>Разбор команды:</p>
+<ul>
+<li><code>python -m venv</code> — запустить встроенный модуль <code>venv</code>;</li>
+<li><code>.venv</code> — имя папки, в которой будет окружение. Называть можно как угодно, но <code>.venv</code> — общепринятый вариант: его узнают VS Code и другие программы.</li>
+</ul>
+<p>В проекте появится папка <code>.venv</code>. Внутри лежат копия интерпретатора и место для библиотек. Руками там ничего менять не нужно.</p>
+<h3 id="активация">Активация</h3>
+<p>Создать окружение мало — его нужно <strong>включать в каждом новом окне терминала</strong>.</p>
+<p>Windows, PowerShell:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">.venv\Scripts\Activate.ps1</span></code></pre></div>
+<p>Windows, старая командная строка (cmd):</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">.venv\Scripts\activate.bat</span></code></pre></div>
+<p>macOS и Linux:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">source</span> .venv/bin/activate</code></pre></div>
+<p>Признак успеха — в начале строки терминала появилась приставка <code>(.venv)</code>:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>(.venv) PS D:\analyst&gt;</code></pre></div>
+<p>С этого момента <code>python</code> и <code>pip</code> в этом окне терминала относятся к окружению.</p>
+<h3 id="ошибка-активации-в-powershell">Ошибка активации в PowerShell</h3>
+<p>На Windows при первой активации часто появляется красный текст «выполнение сценариев отключено в этой системе». Это настройка безопасности PowerShell. Разреши запуск локальных скриптов для своего пользователя (делается один раз):</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">Set-ExecutionPolicy</span> <span class="t-num">-Scope</span> CurrentUser RemoteSigned</code></pre></div>
+<p>Ответь <code>Y</code> и повтори активацию.</p>
+<h3 id="как-проверить-что-окружение-активно">Как проверить, что окружение активно</h3>
+<p>Windows:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">where.exe</span> python</code></pre></div>
+<p>macOS и Linux:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">which</span> python</code></pre></div>
+<p>Первым в ответе должен идти путь внутри твоей папки <code>.venv</code>. Если там системный путь — окружение не активировано.</p>
+<h3 id="установка-библиотек-в-окружение">Установка библиотек в окружение</h3>
+<p>Активируй окружение и ставь как обычно:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> install numpy pandas matplotlib seaborn scipy statsmodels scikit-learn requests beautifulsoup4 jupyterlab</code></pre></div>
+<p>Это полный набор для книги. Всё установится внутрь <code>.venv</code>.</p>
+<h3 id="выход-удаление-пересоздание">Выход, удаление, пересоздание</h3>
+<p>Выйти из окружения:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">deactivate</span></code></pre></div>
+<p>Удалить окружение — просто удалить папку <code>.venv</code>. Твой код при этом не пострадает: он лежит рядом, а не внутри.</p>
+<p>Если окружение сломалось (так бывает), его не чинят, а пересоздают: удаляют папку, создают заново и ставят библиотеки из <code>requirements.txt</code>. Это занимает пару минут.</p>
+<h3 id="чего-нельзя-делать-с-окружением">Чего нельзя делать с окружением</h3>
+<ul>
+<li><strong>Не клади свои файлы внутрь <code>.venv</code>.</strong> Эта папка служебная.</li>
+<li><strong>Не отправляй <code>.venv</code> на GitHub.</strong> Она большая и работает только на твоём компьютере. Добавь её в <code>.gitignore</code> (раздел 8).</li>
+<li><strong>Не переноси и не переименовывай папку проекта вместе с <code>.venv</code>.</strong> Внутри окружения записаны абсолютные пути; после переезда оно перестанет работать. Перенёс проект — пересоздай окружение.</li>
+<li><strong>Не копируй <code>.venv</code> другу.</strong> Передают <code>requirements.txt</code>, а окружение каждый создаёт у себя сам.</li>
+</ul>
+<h3 id="другие-инструменты">Другие инструменты</h3>
+<p>Ты встретишь упоминания других менеджеров окружений. Все они решают ту же задачу:</p>
+<div class="table"><table><thead><tr><th>Инструмент</th><th>Что это</th></tr></thead><tbody><tr><td><strong>venv</strong></td><td>Встроен в Python. Достаточен для всей книги — используем его</td></tr><tr><td><strong>conda</strong> (Anaconda, Miniconda)</td><td>Отдельный менеджер, умеет ставить и разные версии самого Python. Популярен в науке о данных</td></tr><tr><td><strong>uv</strong>, <strong>Poetry</strong></td><td>Современные инструменты для управления проектом и зависимостями</td></tr></tbody></table></div>
+<p>Не распыляйся: начни с <code>venv</code>. Принцип у всех одинаковый, и перейти на другой инструмент потом будет легко.</p>
+<h2 id="5-requirementstxt-список-библиотек-проекта">5. requirements.txt: список библиотек проекта</h2>
+<p>Это текстовый файл, в котором перечислены библиотеки проекта. По нему проект разворачивается на любом компьютере.</p>
+<p>Сохранить текущее состояние окружения:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> freeze &gt; requirements.txt</code></pre></div>
+<p>В файле появятся строки с точными версиями:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>numpy==2.1.3
+pandas==2.2.3
+matplotlib==3.9.2</code></pre></div>
+<p>Развернуть окружение по файлу (на другом компьютере или после пересоздания):</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> install <span class="t-num">-r</span> requirements.txt</code></pre></div>
+<p><code>pip freeze</code> записывает вообще всё, включая десятки вспомогательных библиотек. Для учебных проектов допустимо написать файл руками и перечислить только то, что ты сам импортируешь:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>pandas
+matplotlib
+seaborn
+scipy
+jupyterlab</code></pre></div>
+<p>Обновляй <code>requirements.txt</code> каждый раз, когда ставишь в проект новую библиотеку.</p>
+<h2 id="6-jupyter">6. Jupyter</h2>
+<h3 id="запуск">Запуск</h3>
+<p>Jupyter запускают <strong>из активированного окружения и из папки проекта</strong>:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">jupyter</span> lab</code></pre></div>
+<p>В браузере откроется вкладка с файлами проекта. Терминал при этом занят — в нём работает сервер Jupyter, закрывать его нельзя. Чтобы остановить, нажми в терминале <code>Ctrl+C</code>.</p>
+<p>Раз Jupyter установлен в окружение и запущен из него, ноутбуки видят все библиотеки этого окружения. Это самый простой и надёжный способ.</p>
+<h3 id="проверка-что-ноутбук-использует-нужное-окружение">Проверка, что ноутбук использует нужное окружение</h3>
+<p>Выполни в ячейке:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> sys
+<span class="t-fn">print</span>(sys.executable)</code></pre></div>
+<p>Путь должен вести в папку <code>.venv</code> твоего проекта.</p>
+<h3 id="установка-библиотеки-из-ноутбука">Установка библиотеки из ноутбука</h3>
+<p>Если во время работы не хватило библиотеки, её можно поставить прямо из ячейки:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>%pip install plotly</code></pre></div>
+<p>Команда <code>%pip</code> ставит библиотеку именно в то окружение, в котором работает ноутбук. После установки перезапусти ядро: меню Kernel → Restart Kernel.</p>
+<h3 id="ядро-kernel">Ядро (kernel)</h3>
+<p>Ядро — это процесс Python, который выполняет ячейки ноутбука. Что о нём нужно знать:</p>
+<ul>
+<li>переменные живут, пока живо ядро; после перезапуска все ячейки нужно выполнить заново;</li>
+<li>ячейки выполняются в том порядке, в каком ты их запускал, а не сверху вниз. Число в квадратных скобках слева от ячейки показывает порядок;</li>
+<li>если ноутбук ведёт себя странно — Kernel → Restart Kernel and Run All Cells. Это же обязательная проверка перед публикацией.</li>
+</ul>
+<h2 id="7-vs-code">7. VS Code</h2>
+<p>Visual Studio Code — бесплатный редактор кода. В нём удобно держать всё сразу: файлы проекта, ноутбуки, терминал и Git.</p>
+<p>Настройка:</p>
+<ol>
+<li>Установи VS Code с code.visualstudio.com.</li>
+<li>Открой <strong>папку проекта</strong>: File → Open Folder. Именно папку, а не отдельный файл.</li>
+<li>Во вкладке Extensions (значок с квадратами слева) установи расширения <strong>Python</strong> и <strong>Jupyter</strong> от Microsoft.</li>
+<li>Выбери интерпретатор: <code>Ctrl+Shift+P</code> → набери <code>Python: Select Interpreter</code> → выбери вариант с <code>.venv</code>.</li>
+<li>Открой встроенный терминал: <code>Ctrl+`</code>. После выбора интерпретатора VS Code будет сам активировать окружение в новых терминалах.</li>
+</ol>
+<p>Файлы <code>.ipynb</code> открываются прямо в VS Code. В правом верхнем углу ноутбука есть кнопка выбора ядра — там тоже нужно указать <code>.venv</code>.</p>
+<h2 id="8-git-и-github">8. Git и GitHub</h2>
+<h3 id="установка-и-первая-настройка">Установка и первая настройка</h3>
+<ol>
+<li>Скачай Git с git-scm.com и установи с настройками по умолчанию.</li>
+<li>Представься (один раз на компьютере) — эти данные попадут в историю изменений:</li>
+</ol>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> config <span class="t-num">--global</span> user.name <span class="t-str">&quot;Твоё Имя&quot;</span></code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> config <span class="t-num">--global</span> user.email <span class="t-str">&quot;твоя_почта@example.com&quot;</span></code></pre></div>
+<p>Почту укажи ту же, что в аккаунте GitHub.</p>
+<h3 id="файл-gitignore">Файл .gitignore</h3>
+<p>До первого коммита создай в корне проекта файл <code>.gitignore</code>. В нём перечислено то, что Git не должен отслеживать:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code># виртуальное окружение
+.venv/
+
+# секреты
+.env
+
+# служебные файлы Python и Jupyter
+__pycache__/
+.ipynb_checkpoints/
+
+# большие и сырые данные
+data/raw/
+
+# служебные файлы систем и редакторов
+.DS_Store
+.vscode/</code></pre></div>
+<h3 id="основные-команды">Основные команды</h3>
+<div class="table"><table><thead><tr><th>Команда</th><th>Что делает</th></tr></thead><tbody><tr><td><code>git init</code></td><td>Сделать папку репозиторием</td></tr><tr><td><code>git status</code></td><td>Что изменилось. Запускай постоянно</td></tr><tr><td><code>git add .</code></td><td>Подготовить все изменения к сохранению</td></tr><tr><td><code>git commit -m &quot;сообщение&quot;</code></td><td>Сохранить снимок изменений в историю</td></tr><tr><td><code>git push</code></td><td>Отправить на GitHub</td></tr><tr><td><code>git pull</code></td><td>Забрать изменения с GitHub</td></tr><tr><td><code>git log --oneline</code></td><td>Короткая история коммитов</td></tr><tr><td><code>git clone адрес</code></td><td>Скачать чужой репозиторий</td></tr></tbody></table></div>
+<h3 id="первая-отправка-на-github">Первая отправка на GitHub</h3>
+<ol>
+<li>На github.com нажми New repository, задай имя, <strong>не ставь</strong> галочки про README и .gitignore (они у тебя уже есть), нажми Create.</li>
+<li>В папке проекта выполни по очереди:</li>
+</ol>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> init</code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> add .</code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> commit <span class="t-num">-m</span> <span class="t-str">&quot;Первый коммит: структура проекта&quot;</span></code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> branch <span class="t-num">-M</span> main</code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> remote add origin https://github.com/ТВОЙ_ЛОГИН/ИМЯ_РЕПОЗИТОРИЯ.git</code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> push <span class="t-num">-u</span> origin main</code></pre></div>
+<p>При первой отправке откроется окно браузера для входа в GitHub — это нормально.</p>
+<p>Дальше рабочий цикл состоит из трёх команд: <code>git add .</code>, затем <code>git commit -m &quot;что сделал&quot;</code>, затем <code>git push</code>.</p>
+<p>Пиши сообщения коммитов по делу: «Добавил когортный анализ», а не «изменения» или «asdf».</p>
+<h2 id="9-новый-проект-с-нуля-пошагово">9. Новый проект с нуля: пошагово</h2>
+<p>Полная последовательность. Сохрани её — будешь повторять для каждого проекта.</p>
+<p><strong>Шаг 1.</strong> Создай папку и перейди в неё:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">mkdir</span> sales-analysis</code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">cd</span> sales-analysis</code></pre></div>
+<p><strong>Шаг 2.</strong> Создай окружение:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">python</span> <span class="t-num">-m</span> venv .venv</code></pre></div>
+<p><strong>Шаг 3.</strong> Активируй его (вариант для Windows; для других систем — раздел 4):</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">.venv\Scripts\Activate.ps1</span></code></pre></div>
+<p><strong>Шаг 4.</strong> Обнови pip и установи библиотеки:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">python</span> <span class="t-num">-m</span> pip install <span class="t-num">--upgrade</span> pip</code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> install pandas matplotlib seaborn scipy jupyterlab</code></pre></div>
+<p><strong>Шаг 5.</strong> Сохрани список библиотек:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> freeze &gt; requirements.txt</code></pre></div>
+<p><strong>Шаг 6.</strong> Создай структуру папок:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">mkdir</span> data, notebooks, images</code></pre></div>
+<p>На macOS и Linux — <code>mkdir data notebooks images</code>, без запятых.</p>
+<p><strong>Шаг 7.</strong> Создай файлы <code>.gitignore</code> (содержимое — в разделе 8) и <code>README.md</code> (шаблон — в разделе 12.6 книги).</p>
+<p><strong>Шаг 8.</strong> Инициализируй Git и сделай первый коммит (раздел 8).</p>
+<p><strong>Шаг 9.</strong> Запусти Jupyter и создай ноутбук в папке <code>notebooks</code>:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">jupyter</span> lab</code></pre></div>
+<p>В итоге проект выглядит так:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>sales-analysis/
+├── .venv/               — окружение (не попадает в Git)
+├── data/                — данные
+├── notebooks/
+│   └── analysis.ipynb   — анализ
+├── images/              — графики для README
+├── .gitignore
+├── README.md
+└── requirements.txt</code></pre></div>
+<h3 id="пути-к-файлам-в-ноутбуке">Пути к файлам в ноутбуке</h3>
+<p>Ноутбук лежит в <code>notebooks</code>, данные — в <code>data</code>. Относительный путь считается от папки, где лежит сам ноутбук, поэтому нужно подняться на уровень вверх:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = pd.read_csv(<span class="t-str">&quot;../data/orders.csv&quot;</span>)</code></pre></div>
+<p>Не пиши абсолютные пути вида <code>C:\Users\Ivan\...</code> — на другом компьютере такой код не запустится.</p>
+<h3 id="каждый-следующий-день">Каждый следующий день</h3>
+<p>Когда проект уже создан, начало работы — три действия:</p>
+<ol>
+<li>Открыть терминал в папке проекта.</li>
+<li>Активировать окружение.</li>
+<li>Запустить <code>jupyter lab</code> (или открыть папку в VS Code).</li>
+</ol>
+<h2 id="10-как-запустить-чужой-проект-с-github">10. Как запустить чужой проект с GitHub</h2>
+<p>Так ты будешь работать со всеми репозиториями из книги.</p>
+<p><strong>Шаг 1.</strong> Скопируй адрес: на странице репозитория кнопка Code → HTTPS.</p>
+<p><strong>Шаг 2.</strong> Склонируй и перейди в папку:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> clone https://github.com/guipsamora/pandas_exercises.git</code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">cd</span> pandas_exercises</code></pre></div>
+<p><strong>Шаг 3.</strong> Создай и активируй окружение — своё для этого репозитория:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">python</span> <span class="t-num">-m</span> venv .venv</code></pre></div>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">.venv\Scripts\Activate.ps1</span></code></pre></div>
+<p><strong>Шаг 4.</strong> Установи библиотеки. Если в репозитории есть <code>requirements.txt</code>:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> install <span class="t-num">-r</span> requirements.txt</code></pre></div>
+<p>Если файла нет — поставь базовый набор и доустанавливай остальное по мере появления ошибок <code>ModuleNotFoundError</code>:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> install pandas matplotlib seaborn jupyterlab</code></pre></div>
+<p><strong>Шаг 5.</strong> Запусти Jupyter:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">jupyter</span> lab</code></pre></div>
+<p>Замечания:</p>
+<ul>
+<li>Старые репозитории могут быть написаны под старые версии библиотек, и часть кода выдаст ошибки или предупреждения. Чаще всего достаточно прочитать сообщение: в нём обычно сказано, чем заменить устаревшую функцию.</li>
+<li>Чтобы сохранять собственные решения у себя на GitHub, сделай <strong>fork</strong> — кнопка Fork на странице репозитория создаст твою копию. Клонируй уже её.</li>
+<li>Если нужен один файл, а не весь репозиторий, открой его на GitHub и нажми кнопку скачивания.</li>
+</ul>
+<h2 id="11-файл-env-и-секреты">11. Файл .env и секреты</h2>
+<p>Не путай: <code>.venv</code> — это <strong>папка</strong> с окружением Python. <code>.env</code> — это <strong>текстовый файл</strong> с настройками и секретами проекта. Названия похожи, задачи разные.</p>
+<h3 id="зачем-нужен">Зачем нужен</h3>
+<p>Пароли от баз данных и ключи API нельзя писать прямо в коде: код попадает на GitHub, и секрет увидят все. Украденные ключи находят автоматические сканеры за считаные минуты.</p>
+<p>Решение — хранить секреты в переменных окружения, а в коде только читать их.</p>
+<h3 id="как-пользоваться">Как пользоваться</h3>
+<p>Установи библиотеку:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> install python-dotenv</code></pre></div>
+<p>Создай в корне проекта файл <code>.env</code>:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>DB_HOST=localhost
+DB_USER=analyst
+DB_PASSWORD=очень_секретный_пароль
+API_KEY=abc123</code></pre></div>
+<p>Правила записи: одна переменная на строку, без пробелов вокруг <code>=</code>, без кавычек.</p>
+<p>Прочитай значения в коде:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> os
+<span class="t-kw">from</span> dotenv <span class="t-kw">import</span> load_dotenv
+
+load_dotenv()                          <span class="t-com"># загрузить переменные из файла .env</span>
+
+password = os.getenv(<span class="t-str">&quot;DB_PASSWORD&quot;</span>)
+api_key = os.getenv(<span class="t-str">&quot;API_KEY&quot;</span>)</code></pre></div>
+<p>Если ноутбук лежит в подпапке, <code>load_dotenv()</code> сам поищет файл в родительских папках.</p>
+<h3 id="обязательные-правила">Обязательные правила</h3>
+<ol>
+<li><strong>Добавь <code>.env</code> в <code>.gitignore</code> до первого коммита.</strong></li>
+<li>Положи в репозиторий файл <code>.env.example</code> — такой же, но без настоящих значений. По нему другой человек поймёт, какие переменные нужны:</li>
+</ol>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>DB_HOST=
+DB_USER=
+DB_PASSWORD=
+API_KEY=</code></pre></div>
+<ol start="3">
+<li>Если секрет всё-таки попал на GitHub — недостаточно удалить его следующим коммитом: он останется в истории. Ключ нужно немедленно отозвать и выпустить новый.</li>
+</ol>
+<h2 id="12-частые-проблемы">12. Частые проблемы</h2>
+<div class="table"><table><thead><tr><th>Симптом</th><th>Причина и решение</th></tr></thead><tbody><tr><td><code>python</code> не является командой</td><td>Python не добавлен в PATH. Переустанови с галочкой <code>Add python.exe to PATH</code> и открой терминал заново</td></tr><tr><td>Команда <code>python</code> открывает Microsoft Store</td><td>То же самое: поставь Python с python.org</td></tr><tr><td>«Выполнение сценариев отключено» при активации</td><td><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code> (раздел 4)</td></tr><tr><td><code>ModuleNotFoundError: No module named &#x27;pandas&#x27;</code></td><td>Библиотека не установлена <strong>в это</strong> окружение. Проверь, что окружение активно, и выполни <code>pip install pandas</code></td></tr><tr><td>Установил библиотеку, а ноутбук её не видит</td><td>Ноутбук запущен на другом ядре. Проверь <code>sys.executable</code> (раздел 6), выбери ядро <code>.venv</code>, перезапусти ядро</td></tr><tr><td><code>pip</code> ставит не туда</td><td>Используй <code>python -m pip install ...</code> при активном окружении</td></tr><tr><td><code>jupyter</code> не является командой</td><td>Jupyter не установлен в это окружение или оно не активировано</td></tr><tr><td><code>FileNotFoundError</code> при чтении файла</td><td>Неверный путь. Посмотри текущую папку: <code>import os; print(os.getcwd())</code></td></tr><tr><td>Кракозябры вместо русских букв</td><td>Добавь <code>encoding=&quot;utf-8&quot;</code> или <code>encoding=&quot;cp1251&quot;</code></td></tr><tr><td>После переноса папки проекта окружение не работает</td><td>Удали <code>.venv</code> и создай заново</td></tr><tr><td><code>git push</code> отклонён</td><td>На GitHub есть изменения, которых нет у тебя. Сначала <code>git pull</code></td></tr><tr><td>В Git попала папка <code>.venv</code></td><td>Добавь её в <code>.gitignore</code>, затем <code>git rm -r --cached .venv</code> и сделай коммит</td></tr></tbody></table></div>
+<p>Если ничего не помогло: скопируй <strong>последнюю строку</strong> сообщения об ошибке и вбей её в поиск. Почти наверняка с этим уже сталкивались.</p>
+<h2 id="13-шпаргалка-команд">13. Шпаргалка команд</h2>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code># ── Окружение ───────────────────────────────────────────
+python -m venv .venv                    создать
+.venv\Scripts\Activate.ps1              активировать (Windows PowerShell)
+source .venv/bin/activate               активировать (macOS, Linux)
+deactivate                              выйти
+
+# ── Библиотеки ──────────────────────────────────────────
+pip install имя                         установить
+pip install -r requirements.txt         установить всё из файла
+pip freeze &gt; requirements.txt           сохранить список
+pip list                                показать установленное
+
+# ── Jupyter ─────────────────────────────────────────────
+jupyter lab                             запустить
+Ctrl+C                                  остановить
+
+# ── Git ─────────────────────────────────────────────────
+git status                              что изменилось
+git add .                               подготовить изменения
+git commit -m &quot;сообщение&quot;               сохранить
+git push                                отправить на GitHub
+git pull                                забрать с GitHub
+git clone адрес                         скачать репозиторий</code></pre></div><nav class="nav "><a class="prev" href="00-vvedenie.html" id=prev><small>← Назад</small><b>Глава 0. Профессия и подготовка</b></a><a class="next" href="01-excel.html" id=next><small>Вперёд →</small><b>Глава 1. Таблицы: Excel и Google Sheets</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

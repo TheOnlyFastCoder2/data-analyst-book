@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 0. Профессия и подготовка</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">1 из 19 · Глава 0. Профессия и подготовка</span>
+</div><div class="progress"><i style="width:5%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="index.html"><small>← Назад</small><b>Содержание</b></a><a class="next" href="ustanovka.html"><small>Вперёд →</small><b>Установка и настройка: полное руководство</b></a></nav><h1 id="глава-0-профессия-и-подготовка">Глава 0. Профессия и подготовка</h1>
+<h2 id="01-чем-занимается-аналитик-данных">0.1. Чем занимается аналитик данных</h2>
+<p>Аналитик отвечает на вопросы бизнеса с помощью данных. Не «строит графики» и не «пишет код» — это только инструменты. Результат его работы — <strong>решение</strong>, которое приняли на основе его выводов.</p>
+<p>Типичные вопросы, с которыми приходят к аналитику:</p>
+<ul>
+<li>Почему в марте упали продажи?</li>
+<li>Какой из двух вариантов кнопки приносит больше заказов?</li>
+<li>Сколько клиентов уйдёт от нас в следующем месяце?</li>
+<li>На какой рекламный канал тратить бюджет?</li>
+</ul>
+<p>Типичный рабочий цикл выглядит так:</p>
+<ol>
+<li><strong>Понять вопрос.</strong> Что именно хотят узнать и какое решение от этого зависит.</li>
+<li><strong>Собрать данные.</strong> Обычно SQL-запросом из базы компании.</li>
+<li><strong>Очистить.</strong> Убрать дубликаты, разобраться с пропусками и ошибками.</li>
+<li><strong>Исследовать.</strong> Посчитать метрики, построить графики, найти закономерности.</li>
+<li><strong>Проверить.</strong> Убедиться, что находка — не случайность (статистика).</li>
+<li><strong>Рассказать.</strong> Написать вывод понятным языком и дать рекомендацию.</li>
+</ol>
+<p>Шаги 2–5 — это техника, ей и посвящена книга. Но шаги 1 и 6 отличают сильного аналитика от слабого, поэтому к ним мы будем возвращаться в каждой главе.</p>
+<h2 id="02-четыре-типа-аналитики">0.2. Четыре типа аналитики</h2>
+<div class="table"><table><thead><tr><th>Тип</th><th>Вопрос</th><th>Пример</th><th>Инструменты</th></tr></thead><tbody><tr><td>Описательная (descriptive)</td><td>Что произошло?</td><td>Выручка в марте упала на 12 %</td><td>SQL, pandas, дашборды</td></tr><tr><td>Диагностическая (diagnostic)</td><td>Почему это произошло?</td><td>Упала конверсия у пользователей Android после обновления</td><td>Сегментация, воронки, гипотезы</td></tr><tr><td>Предсказательная (predictive)</td><td>Что произойдёт?</td><td>В апреле уйдёт около 800 клиентов</td><td>Регрессия, ML-модели</td></tr><tr><td>Предписывающая (prescriptive)</td><td>Что делать?</td><td>Дать скидку 10 % клиентам из группы риска</td><td>Эксперименты, оптимизация</td></tr></tbody></table></div>
+<p>Начинающий аналитик 90 % времени работает с первыми двумя типами. Поэтому главы 1–10 — про них, а глава 11 даёт обзор остальных.</p>
+<h2 id="03-ключевые-этапы-работы-с-данными">0.3. Ключевые этапы работы с данными</h2>
+<p>На карте roadmap.sh они названы Key Concepts of Data. В скобках — глава, где это разбирается.</p>
+<ul>
+<li><strong>Collection</strong> — сбор: базы данных, файлы, API, парсинг сайтов (главы 3 и 6).</li>
+<li><strong>Cleanup</strong> — очистка (глава 6).</li>
+<li><strong>Exploration</strong> — исследование (главы 5 и 8).</li>
+<li><strong>Visualisation</strong> — визуализация (глава 7).</li>
+<li><strong>Statistical Analysis</strong> — статистика (главы 8 и 9).</li>
+<li><strong>Machine Learning</strong> — машинное обучение (глава 11).</li>
+</ul>
+<h2 id="04-что-нужно-знать-чтобы-взяли-на-работу">0.4. Что нужно знать, чтобы взяли на работу</h2>
+<p>Если отсортировать навыки по тому, как часто их спрашивают на собеседованиях на позицию junior:</p>
+<ol>
+<li><strong>SQL</strong> — спрашивают всегда.</li>
+<li><strong>Python + pandas</strong> — почти всегда.</li>
+<li><strong>Статистика и A/B-тесты</strong> — почти всегда, особенно в продуктовых компаниях.</li>
+<li><strong>Продуктовые метрики</strong> — в продуктовых компаниях.</li>
+<li><strong>Визуализация и BI</strong> (Power BI, Tableau, DataLens) — часто.</li>
+<li><strong>Excel</strong> — в небольших и нетехнологических компаниях.</li>
+<li><strong>Машинное обучение</strong> — редко и только на базовом уровне.</li>
+</ol>
+<p>Вывод: не начинай с нейросетей. Начни с Python, SQL и pandas.</p>
+<h2 id="05-настройка-компьютера">0.5. Настройка компьютера</h2>
+<p>Здесь — короткая версия. Подробный разбор каждой команды, виртуальных окружений, структуры проекта и типичных ошибок вынесен в отдельную главу: <a href="ustanovka.html">Установка и настройка: полное руководство</a>.</p>
+<h3 id="python">Python</h3>
+<ol>
+<li>Скачай установщик с официального сайта python.org (версия 3.11 или новее).</li>
+<li>На Windows при установке поставь галочку <strong>Add python.exe to PATH</strong>.</li>
+<li>Открой терминал (на Windows — PowerShell) и проверь:</li>
+</ol>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">python</span> <span class="t-num">--version</span></code></pre></div>
+<p>Должно появиться что-то вроде <code>Python 3.12.x</code>.</p>
+<h3 id="рабочая-папка-и-библиотеки">Рабочая папка и библиотеки</h3>
+<p>Создай папку для учёбы и виртуальное окружение в ней. Окружение — это изолированный набор библиотек для одного проекта.</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">mkdir</span> analyst
+<span class="t-fn">cd</span> analyst
+<span class="t-fn">python</span> <span class="t-num">-m</span> venv .venv</code></pre></div>
+<p>Активируй окружение. На Windows:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">.venv\Scripts\Activate.ps1</span></code></pre></div>
+<p>На macOS и Linux:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">source</span> .venv/bin/activate</code></pre></div>
+<p>Установи библиотеки, которые понадобятся в книге:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> install numpy pandas matplotlib seaborn scipy statsmodels scikit-learn requests beautifulsoup4 jupyterlab</code></pre></div>
+<h3 id="jupyter">Jupyter</h3>
+<p>Jupyter — это «тетрадка», где код выполняется по кусочкам (ячейкам), а результат виден сразу под ячейкой. Аналитики работают в основном в нём.</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">jupyter</span> lab</code></pre></div>
+<p>Откроется вкладка в браузере. Создай новый ноутбук, набери в ячейке <code>2 + 2</code> и нажми <code>Shift+Enter</code>.</p>
+<p>Самые нужные клавиши:</p>
+<div class="table"><table><thead><tr><th>Клавиши</th><th>Действие</th></tr></thead><tbody><tr><td><code>Shift+Enter</code></td><td>Выполнить ячейку и перейти к следующей</td></tr><tr><td><code>Esc</code>, затем <code>A</code> / <code>B</code></td><td>Добавить ячейку выше / ниже</td></tr><tr><td><code>Esc</code>, затем <code>D D</code></td><td>Удалить ячейку</td></tr><tr><td><code>Esc</code>, затем <code>M</code></td><td>Превратить ячейку в текст (Markdown)</td></tr></tbody></table></div>
+<p>Альтернатива без установки — Google Colab: те же ноутбуки, но в браузере.</p>
+<h3 id="git-и-github">Git и GitHub</h3>
+<p>Git хранит историю изменений, GitHub — показывает твою работу миру. Для аналитика GitHub — это портфолио.</p>
+<ol>
+<li>Зарегистрируйся на github.com.</li>
+<li>Установи Git с git-scm.com.</li>
+<li>Создай на GitHub пустой репозиторий, например <code>analyst-learning</code>.</li>
+<li>Свяжи с ним свою папку:</li>
+</ol>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> init
+<span class="t-fn">git</span> add .
+<span class="t-fn">git</span> commit <span class="t-num">-m</span> <span class="t-str">&quot;Первый ноутбук&quot;</span>
+<span class="t-fn">git</span> branch <span class="t-num">-M</span> main
+<span class="t-fn">git</span> remote add origin https://github.com/ТВОЙ_ЛОГИН/analyst-learning.git
+<span class="t-fn">git</span> push <span class="t-num">-u</span> origin main</code></pre></div>
+<p>Дальше после каждого занятия повторяй три команды: <code>git add .</code>, <code>git commit -m &quot;что сделал&quot;</code>, <code>git push</code>.</p>
+<p>Чтобы скачать чужой репозиторий для практики:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">git</span> clone https://github.com/guipsamora/pandas_exercises.git</code></pre></div>
+<h2 id="06-как-пользоваться-репозиториями-каталогами">0.6. Как пользоваться репозиториями-каталогами</h2>
+<p>Три ссылки держи в закладках, но <strong>не пытайся пройти их целиком</strong> — это справочники, а не курсы:</p>
+<ul>
+<li><a href="https://github.com/kamranahmedse/developer-roadmap" target="_blank" rel="noopener">developer-roadmap</a> — карта: что и в каком порядке учить. Сверяйся с ней раз в месяц и отмечай пройденное.</li>
+<li><a href="https://github.com/PavelGrigoryevDS/awesome-data-analysis" target="_blank" rel="noopener">PavelGrigoryevDS/awesome-data-analysis</a> — каталог из 500+ ресурсов по разделам. Открывай, когда тема из книги не зашла и нужно другое объяснение.</li>
+<li><a href="https://github.com/academic/awesome-datascience" target="_blank" rel="noopener">academic/awesome-datascience</a> — ещё один большой каталог, с уклоном в Data Science.</li>
+</ul>
+<p>Главная ловушка новичка — собирать ссылки вместо того, чтобы учиться. Правило: новый ресурс открываешь только тогда, когда закончил текущий.</p>
+<h2 id="задания">Задания</h2>
+<ol>
+<li>Установи Python, создай окружение, запусти Jupyter.</li>
+<li>Создай репозиторий на GitHub и запушь в него первый ноутбук с ячейкой <code>print(&quot;Привет, аналитика!&quot;)</code>.</li>
+<li>Открой карту Data Analyst на roadmap.sh и найди на ней пять терминов, которые тебе незнакомы. Запиши их — в конце книги проверишь, что все стали понятны.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Чем диагностическая аналитика отличается от описательной?</li>
+<li>Зачем нужно виртуальное окружение?</li>
+<li>Какие три команды Git отправляют изменения на GitHub?</li>
+</ul><nav class="nav "><a class="prev" href="index.html" id=prev><small>← Назад</small><b>Содержание</b></a><a class="next" href="ustanovka.html" id=next><small>Вперёд →</small><b>Установка и настройка: полное руководство</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>
