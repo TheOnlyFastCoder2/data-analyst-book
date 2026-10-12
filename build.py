@@ -6,6 +6,7 @@
 """
 import html
 import re
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -70,6 +71,7 @@ def inline(text):
         external = ' target="_blank" rel="noopener"' if url.startswith("http") else ""
         return f'<a href="{url}"{external}>{match.group(1)}</a>'
 
+    text = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)", r'<img src="\2" alt="\1" loading="lazy">', text)
     text = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", link, text)
     text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"(?<![*\w])\*(?!\s)([^*]+?)(?<!\s)\*(?![*\w])", r"<em>\1</em>", text)
@@ -211,6 +213,21 @@ def convert(markdown):
         if not line.strip():
             i += 1
 
+        elif line.strip() == "<!-- result -->":
+            i += 1
+            inner = []
+            while lines[i].strip() != "<!-- /result -->":
+                inner.append(lines[i])
+                i += 1
+            i += 1
+            if inner and inner[0].strip() == "*Результат:*":
+                inner = inner[1:]
+            out.append('<div class="result"><span class="result-label">Результат</span>'
+                       + convert("\n".join(inner)) + "</div>")
+
+        elif line.startswith("<!--"):
+            i += 1
+
         elif line.startswith("```"):
             lang = line[3:].strip()
             i += 1
@@ -219,6 +236,9 @@ def convert(markdown):
                 code.append(lines[i])
                 i += 1
             i += 1
+            if lang == "output":
+                out.append(f'<pre class="out"><code>{html.escape(chr(10).join(code))}</code></pre>')
+                continue
             label = f'<span class="lang">{lang}</span>' if lang else ""
             button = '<button class="copy" type="button">Копировать</button>'
             out.append(f'<div class="code">{label}{button}<pre><code>{highlight(chr(10).join(code), lang)}</code></pre></div>')
@@ -329,6 +349,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -433,6 +466,8 @@ def nav(prev, nxt, extra=""):
 
 def build():
     OUT.mkdir(exist_ok=True)
+    if (ROOT / "img").exists():
+        shutil.copytree(ROOT / "img", OUT / "img", dirs_exist_ok=True)
     pages = []
     for name, label, about in CHAPTERS:
         text = (ROOT / name).read_text(encoding="utf-8")

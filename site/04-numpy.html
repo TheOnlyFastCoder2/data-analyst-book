@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -103,6 +116,9 @@ arr = np.array(prices)
 <span class="t-fn">print</span>(arr * <span class="t-num">1.2</span>)        <span class="t-com"># [120. 300.  96. 492.]</span>
 <span class="t-fn">print</span>(arr.dtype)        <span class="t-com"># целочисленный тип, например int64</span>
 <span class="t-fn">print</span>(arr.shape)        <span class="t-com"># (4,)</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[120. 300.  96. 492.]
+int64
+(4,)</code></pre></div>
 <p>Отличия массива от списка:</p>
 <ul>
 <li>все элементы одного типа;</li>
@@ -119,6 +135,13 @@ arr = np.array(prices)
 rng = np.random.default_rng(seed=<span class="t-num">42</span>)       <span class="t-com"># генератор случайных чисел</span>
 <span class="t-fn">print</span>(rng.integers(<span class="t-num">1</span>, <span class="t-num">7</span>, size=<span class="t-num">5</span>))          <span class="t-com"># 5 бросков кубика</span>
 <span class="t-fn">print</span>(rng.normal(loc=<span class="t-num">100</span>, scale=<span class="t-num">15</span>, size=<span class="t-num">3</span>))  <span class="t-com"># нормальное распределение</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[0. 0. 0.]
+[[1. 1. 1.]
+ [1. 1. 1.]]
+[0 2 4 6 8]
+[0.   0.25 0.5  0.75 1.  ]
+[1 5 4 3 3]
+[114.10847075  70.73447217  80.4673074 ]</code></pre></div>
 <p><code>seed</code> фиксирует случайность: с одним и тем же зерном результат всегда одинаковый. В аналитике это обязательно — иначе твой расчёт никто не сможет повторить.</p>
 <h2 id="43-индексация-и-фильтрация">4.3. Индексация и фильтрация</h2>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>a = np.array([<span class="t-num">15</span>, <span class="t-num">42</span>, <span class="t-num">8</span>, <span class="t-num">23</span>, <span class="t-num">4</span>, <span class="t-num">16</span>])
@@ -126,6 +149,9 @@ rng = np.random.default_rng(seed=<span class="t-num">42</span>)       <span clas
 <span class="t-fn">print</span>(a[<span class="t-num">0</span>])       <span class="t-com"># 15</span>
 <span class="t-fn">print</span>(a[-<span class="t-num">1</span>])      <span class="t-com"># 16</span>
 <span class="t-fn">print</span>(a[<span class="t-num">1</span>:<span class="t-num">4</span>])     <span class="t-com"># [42  8 23]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>15
+16
+[42  8 23]</code></pre></div>
 <p>Булева маска — самый важный приём главы. Сравнение массива с числом даёт массив из <code>True</code> и <code>False</code>, и по нему можно отобрать элементы:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>mask = a &gt; <span class="t-num">15</span>
 <span class="t-fn">print</span>(mask)          <span class="t-com"># [False  True False  True False  True]</span>
@@ -133,6 +159,11 @@ rng = np.random.default_rng(seed=<span class="t-num">42</span>)       <span clas
 <span class="t-fn">print</span>(a[(a &gt; <span class="t-num">10</span>) &amp; (a &lt; <span class="t-num">30</span>)])   <span class="t-com"># [15 23 16]</span>
 <span class="t-fn">print</span>(mask.<span class="t-fn">sum</span>())    <span class="t-com"># 3 — сколько элементов прошло условие</span>
 <span class="t-fn">print</span>(mask.mean())   <span class="t-com"># 0.5 — их доля</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[False  True False  True False  True]
+[42 23 16]
+[15 23 16]
+3
+0.5</code></pre></div>
 <p>Обрати внимание:</p>
 <ul>
 <li>условия объединяются через <code>&amp;</code> (и), <code>|</code> (или), <code>~</code> (не), а не через <code>and</code> / <code>or</code>;</li>
@@ -141,6 +172,7 @@ rng = np.random.default_rng(seed=<span class="t-num">42</span>)       <span clas
 </ul>
 <p><code>np.where</code> — векторный аналог <code>if / else</code>:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(np.where(a &gt; <span class="t-num">15</span>, <span class="t-str">&quot;много&quot;</span>, <span class="t-str">&quot;мало&quot;</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[&#x27;мало&#x27; &#x27;много&#x27; &#x27;мало&#x27; &#x27;много&#x27; &#x27;мало&#x27; &#x27;много&#x27;]</code></pre></div>
 <h2 id="44-двумерные-массивы-и-оси">4.4. Двумерные массивы и оси</h2>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com"># Продажи: 3 магазина (строки) × 4 квартала (столбцы)</span>
 sales = np.array([
@@ -157,6 +189,13 @@ sales = np.array([
 <span class="t-fn">print</span>(sales.<span class="t-fn">sum</span>())            <span class="t-com"># 192 — по всем элементам</span>
 <span class="t-fn">print</span>(sales.<span class="t-fn">sum</span>(axis=<span class="t-num">0</span>))      <span class="t-com"># [38 39 51 64] — итог по каждому кварталу</span>
 <span class="t-fn">print</span>(sales.<span class="t-fn">sum</span>(axis=<span class="t-num">1</span>))      <span class="t-com"># [57 42 93] — итог по каждому магазину</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>(3, 4)
+12
+[10  8 20]
+[ 8  9 11 14]
+192
+[38 39 51 64]
+[57 42 93]</code></pre></div>
 <p>Как запомнить оси: <code>axis=0</code> — идём <strong>вниз по строкам</strong> и получаем результат для каждого столбца; <code>axis=1</code> — идём <strong>вправо по столбцам</strong> и получаем результат для каждой строки. В pandas оси работают так же.</p>
 <h2 id="45-статистика">4.5. Статистика</h2>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>x = np.array([<span class="t-num">12</span>, <span class="t-num">15</span>, <span class="t-num">11</span>, <span class="t-num">19</span>, <span class="t-num">14</span>, <span class="t-num">95</span>])
@@ -166,6 +205,11 @@ sales = np.array([
 <span class="t-fn">print</span>(x.std(ddof=<span class="t-num">1</span>))          <span class="t-com"># стандартное отклонение по выборке</span>
 <span class="t-fn">print</span>(np.percentile(x, <span class="t-num">90</span>))   <span class="t-com"># 90-й перцентиль</span>
 <span class="t-fn">print</span>(x.<span class="t-fn">min</span>(), x.<span class="t-fn">max</span>(), x.argmax())   <span class="t-com"># 11 95 5</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>27.666666666666668
+14.5
+33.10387691293373
+57.0
+11 95 5</code></pre></div>
 <p>Заметь: одно значение 95 утянуло среднее до 27,7, а медиана осталась 14,5. К этому вернёмся в главе 8.</p>
 <p>Параметр <code>ddof=1</code> включает деление на <code>n − 1</code> — так считают отклонение по выборке. В NumPy по умолчанию <code>ddof=0</code>, в pandas — <code>ddof=1</code>. Из-за этого два инструмента могут дать немного разные числа, и это не ошибка.</p>
 <h2 id="46-broadcasting">4.6. Broadcasting</h2>
@@ -184,6 +228,12 @@ share = sales / quarter_total              <span class="t-com"># (3, 4) / (4,) �
 <span class="t-com"># Доля каждого квартала в продажах магазина</span>
 store_total = sales.<span class="t-fn">sum</span>(axis=<span class="t-num">1</span>, keepdims=<span class="t-num">True</span>)   <span class="t-com"># форма (3, 1)</span>
 <span class="t-fn">print</span>((sales / store_total).<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[[0.26 0.31 0.29 0.31]
+ [0.21 0.23 0.22 0.22]
+ [0.53 0.46 0.49 0.47]]
+[[0.18 0.21 0.26 0.35]
+ [0.19 0.21 0.26 0.33]
+ [0.22 0.19 0.27 0.32]]</code></pre></div>
 <p><code>keepdims=True</code> сохраняет результат в виде столбца, чтобы формы совпали.</p>
 <h2 id="47-пропуски-nan">4.7. Пропуски: NaN</h2>
 <p><code>np.nan</code> — «не число», так обозначают пропущенные значения.</p>
@@ -193,6 +243,10 @@ store_total = sales.<span class="t-fn">sum</span>(axis=<span class="t-num">1</sp
 <span class="t-fn">print</span>(np.nanmean(v))     <span class="t-com"># 20.0 — версия функции, игнорирующая пропуски</span>
 <span class="t-fn">print</span>(np.isnan(v))       <span class="t-com"># [False  True False]</span>
 <span class="t-fn">print</span>(np.nan == np.nan)  <span class="t-com"># False — NaN не равен даже самому себе</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>nan
+20.0
+[False  True False]
+False</code></pre></div>
 <p>Последняя строка — причина, по которой пропуски ищут специальными функциями, а не сравнением.</p>
 <h2 id="практика-на-github">Практика на GitHub</h2>
 <ul>
@@ -224,18 +278,23 @@ rng = np.random.default_rng(<span class="t-num">42</span>)
 values = rng.normal(loc=<span class="t-num">50</span>, scale=<span class="t-num">10</span>, size=<span class="t-num">1000</span>)
 
 <span class="t-fn">print</span>((values &gt; <span class="t-num">60</span>).mean())       <span class="t-com"># около 0.16</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.141</code></pre></div>
 <p>Сравнение даёт массив из <code>True</code> и <code>False</code>, а <code>mean</code> считает долю <code>True</code>. Теоретически ответ — около 15,9 %: значение 60 лежит на одно стандартное отклонение выше среднего, а за пределами ±1 отклонения находится около 32 % значений, половина из них — справа.</p></details>
 <details class="sol"><summary>Задание 2. Отрицательные заменить на 0</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>a = np.array([<span class="t-num">3</span>, -<span class="t-num">1</span>, <span class="t-num">4</span>, -<span class="t-num">5</span>, <span class="t-num">9</span>])
 
 <span class="t-fn">print</span>(np.where(a &lt; <span class="t-num">0</span>, <span class="t-num">0</span>, a))      <span class="t-com"># [3 0 4 0 9]</span>
 <span class="t-fn">print</span>(np.clip(a, <span class="t-num">0</span>, <span class="t-num">None</span>))        <span class="t-com"># то же: обрезать снизу нулём</span>
 <span class="t-fn">print</span>(np.maximum(a, <span class="t-num">0</span>))           <span class="t-com"># то же: поэлементный максимум с нулём</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[3 0 4 0 9]
+[3 0 4 0 9]
+[3 0 4 0 9]</code></pre></div>
 <p>Все три способа возвращают новый массив. Изменить на месте можно так: <code>a[a &lt; 0] = 0</code>.</p></details>
 <details class="sol"><summary>Задание 3. Два кубика</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>rng = np.random.default_rng(<span class="t-num">1</span>)
 dice = rng.integers(<span class="t-num">1</span>, <span class="t-num">7</span>, size=(<span class="t-num">10_000</span>, <span class="t-num">2</span>))     <span class="t-com"># 10 000 бросков по два кубика</span>
 sums = dice.<span class="t-fn">sum</span>(axis=<span class="t-num">1</span>)                         <span class="t-com"># сумма в каждой строке</span>
 
 <span class="t-fn">print</span>((sums == <span class="t-num">7</span>).mean(), <span class="t-num">1</span> / <span class="t-num">6</span>)                <span class="t-com"># около 0.167 и 0.1667</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.1652 0.16666666666666666</code></pre></div>
 <p>Верхняя граница в <code>integers(1, 7)</code> не включается, поэтому значения — от 1 до 6. Сумму 7 дают 6 комбинаций из 36, отсюда 1/6. Результат симуляции немного отличается от теории — это нормальная случайная погрешность, она уменьшается с ростом числа бросков.</p></details>
 <details class="sol"><summary>Задание 4. Лучший магазин и лучший квартал</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>sales = np.array([
     [<span class="t-num">10</span>, <span class="t-num">12</span>, <span class="t-num">15</span>, <span class="t-num">20</span>],
@@ -246,12 +305,16 @@ sums = dice.<span class="t-fn">sum</span>(axis=<span class="t-num">1</span>)    
 by_store = sales.<span class="t-fn">sum</span>(axis=<span class="t-num">1</span>)
 <span class="t-fn">print</span>(by_store, <span class="t-str">&quot;лучший магазин:&quot;</span>, by_store.argmax())             <span class="t-com"># [57 42 93] лучший магазин: 2</span>
 <span class="t-fn">print</span>(<span class="t-str">&quot;лучший квартал каждого магазина:&quot;</span>, sales.argmax(axis=<span class="t-num">1</span>))   <span class="t-com"># [3 3 3]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[57 42 93] лучший магазин: 2
+лучший квартал каждого магазина: [3 3 3]</code></pre></div>
 <p><code>argmax</code> возвращает не значение, а <strong>позицию</strong> максимума. Нумерация с нуля: магазин 2 — третий по счёту, квартал 3 — четвёртый.</p></details>
 <details class="sol"><summary>Задание 5. Нормализация</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>x = np.array([<span class="t-num">12</span>, <span class="t-num">15</span>, <span class="t-num">11</span>, <span class="t-num">19</span>, <span class="t-num">14</span>, <span class="t-num">22</span>], dtype=<span class="t-fn">float</span>)
 
 z = (x - x.mean()) / x.std()
 <span class="t-fn">print</span>(z.<span class="t-fn">round</span>(<span class="t-num">2</span>))
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(z.mean(), <span class="t-num">10</span>), <span class="t-fn">round</span>(z.std(), <span class="t-num">10</span>))    <span class="t-com"># 0.0 1.0</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[-0.91 -0.13 -1.17  0.91 -0.39  1.68]
+-0.0 1.0</code></pre></div>
 <p>Такое преобразование называют стандартизацией или z-оценкой. Значение <code>z</code> показывает, на сколько стандартных отклонений элемент отстоит от среднего. Среднее получается не ровно ноль, а что-то вроде <code>1e-17</code> — это погрешность вычислений с дробными числами, поэтому мы округляем.</p></details><nav class="nav "><a class="prev" href="03a-sql-priemy.html" id=prev><small>← Назад</small><b>Глава 3А. SQL: приёмы и трюки</b></a><a class="next" href="05-pandas.html" id=next><small>Вперёд →</small><b>Глава 5. pandas</b></a></nav>
 </main>
 <footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>

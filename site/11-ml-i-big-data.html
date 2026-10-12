@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -139,6 +152,7 @@ model.fit(X_train, y_train)
 
 pred = model.predict(X_test)                  <span class="t-com"># класс: 0 или 1</span>
 proba = model.predict_proba(X_test)[:, <span class="t-num">1</span>]     <span class="t-com"># вероятность ухода</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.1705</code></pre></div>
 <p>В библиотеке scikit-learn у всех моделей одинаковый интерфейс: <code>fit</code> — обучить, <code>predict</code> — предсказать. Поменять алгоритм — это поменять одну строку.</p>
 <h2 id="113-как-оценивать-модель">11.3. Как оценивать модель</h2>
 <h3 id="классификация">Классификация</h3>
@@ -148,6 +162,12 @@ proba = model.predict_proba(X_test)[:, <span class="t-num">1</span>]     <span c
 <span class="t-fn">print</span>(<span class="t-str">&quot;precision:&quot;</span>, <span class="t-fn">round</span>(precision_score(y_test, pred), <span class="t-num">3</span>))
 <span class="t-fn">print</span>(<span class="t-str">&quot;recall:&quot;</span>, <span class="t-fn">round</span>(recall_score(y_test, pred), <span class="t-num">3</span>))
 <span class="t-fn">print</span>(<span class="t-str">&quot;ROC AUC:&quot;</span>, <span class="t-fn">round</span>(roc_auc_score(y_test, proba), <span class="t-num">3</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[[403  12]
+ [ 73  12]]
+accuracy: 0.83
+precision: 0.5
+recall: 0.141
+ROC AUC: 0.775</code></pre></div>
 <div class="table"><table><thead><tr><th>Метрика</th><th>Вопрос, на который отвечает</th></tr></thead><tbody><tr><td><strong>Accuracy</strong></td><td>Какая доля предсказаний верна?</td></tr><tr><td><strong>Precision</strong> (точность)</td><td>Из тех, кого модель назвала уходящими, сколько действительно ушли?</td></tr><tr><td><strong>Recall</strong> (полнота)</td><td>Из тех, кто действительно ушёл, скольких модель нашла?</td></tr><tr><td><strong>F1</strong></td><td>Среднее гармоническое precision и recall</td></tr><tr><td><strong>ROC AUC</strong></td><td>Насколько хорошо модель в целом отделяет один класс от другого (0,5 — случайно, 1 — идеально)</td></tr></tbody></table></div>
 <p><strong>Ловушка accuracy.</strong> Если уходит 5 % клиентов, то модель, которая всем предсказывает «останется», получит accuracy 95 % — и будет абсолютно бесполезной. При несбалансированных классах смотри на precision, recall и ROC AUC.</p>
 <p>Выбор между precision и recall — это вопрос бизнеса: что дороже — зря дать скидку лояльному клиенту или пропустить уходящего?</p>
@@ -163,6 +183,9 @@ proba = model.predict_proba(X_test)[:, <span class="t-num">1</span>]     <span c
     train_auc = roc_auc_score(y_train, tree.predict_proba(X_train)[:, <span class="t-num">1</span>])
     test_auc = roc_auc_score(y_test, tree.predict_proba(X_test)[:, <span class="t-num">1</span>])
     <span class="t-fn">print</span>(depth, <span class="t-fn">round</span>(train_auc, <span class="t-num">3</span>), <span class="t-fn">round</span>(test_auc, <span class="t-num">3</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2 0.698 0.643
+5 0.79 0.713
+None 1.0 0.611</code></pre></div>
 <p>Дерево без ограничения глубины показывает идеальный результат на обучении и заметно худший на тесте — оно заучило данные.</p>
 <p>Более надёжная оценка — <strong>кросс-валидация</strong>: данные делят на несколько частей, по очереди каждая служит тестовой, результат усредняют. В scikit-learn это функция <code>cross_val_score</code>.</p>
 <h2 id="115-алгоритмы-с-карты">11.5. Алгоритмы с карты</h2>
@@ -172,6 +195,11 @@ proba = model.predict_proba(X_test)[:, <span class="t-num">1</span>]     <span c
 <p>Аналитику модель часто нужна не для предсказаний, а для понимания: какие факторы связаны с результатом.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>coefs = pd.Series(model.coef_[<span class="t-num">0</span>], index=X.columns).sort_values()
 <span class="t-fn">print</span>(coefs.<span class="t-fn">round</span>(<span class="t-num">3</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>orders_last_90d   -0.339
+months_with_us    -0.039
+avg_check         -0.000
+support_tickets    0.743
+dtype: float64</code></pre></div>
 <p>Знак коэффициента показывает направление связи: отрицательный у <code>orders_last_90d</code> — чем больше заказов, тем ниже вероятность ухода. Сравнивать величины коэффициентов между собой можно только после приведения признаков к одному масштабу (<code>StandardScaler</code>).</p>
 <h3 id="кластеризация">Кластеризация</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> sklearn.cluster <span class="t-kw">import</span> KMeans
@@ -185,6 +213,16 @@ data[<span class="t-str">&quot;cluster&quot;</span>] = kmeans.fit_predict(scaled
 
 <span class="t-fn">print</span>(data.groupby(<span class="t-str">&quot;cluster&quot;</span>)[features.columns.tolist()].mean().<span class="t-fn">round</span>(<span class="t-num">1</span>))
 <span class="t-fn">print</span>(data[<span class="t-str">&quot;cluster&quot;</span>].value_counts())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>         months_with_us  orders_last_90d  avg_check
+cluster                                            
+0                  36.3              2.7     2244.2
+1                  23.4              3.2     6581.3
+2                  12.2              3.1     2175.1
+cluster
+2    835
+0    816
+1    349
+Name: count, dtype: int64</code></pre></div>
 <p>Масштабирование обязательно: K-means работает с расстояниями, и без него признак с большими числами (средний чек в тысячах) полностью подавит остальные.</p>
 <p>Алгоритм найдёт кластеры всегда, даже в полностью случайных данных. Осмысленны ли они — решает аналитик, глядя на средние значения признаков в каждой группе. Сравни этот подход с RFM-сегментацией из главы 10.</p>
 <h2 id="116-типичные-ошибки">11.6. Типичные ошибки</h2>
@@ -244,6 +282,30 @@ tree_proba = tree.predict_proba(X_test)[:, <span class="t-num">1</span>]
 <span class="t-fn">print</span>(<span class="t-str">&quot;ROC AUC, логистическая регрессия:&quot;</span>, <span class="t-fn">round</span>(roc_auc_score(y_test, proba), <span class="t-num">3</span>))
 <span class="t-fn">print</span>(<span class="t-str">&quot;ROC AUC, дерево глубины 3:&quot;</span>, <span class="t-fn">round</span>(roc_auc_score(y_test, tree_proba), <span class="t-num">3</span>))
 <span class="t-fn">print</span>(export_text(tree, feature_names=<span class="t-fn">list</span>(X.columns)))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>ROC AUC, логистическая регрессия: 0.775
+ROC AUC, дерево глубины 3: 0.674
+|--- support_tickets &lt;= 1.50
+|   |--- months_with_us &lt;= 14.50
+|   |   |--- orders_last_90d &lt;= 1.50
+|   |   |   |--- class: 0
+|   |   |--- orders_last_90d &gt;  1.50
+|   |   |   |--- class: 0
+|   |--- months_with_us &gt;  14.50
+|   |   |--- orders_last_90d &lt;= 3.50
+|   |   |   |--- class: 0
+|   |   |--- orders_last_90d &gt;  3.50
+|   |   |   |--- class: 0
+|--- support_tickets &gt;  1.50
+|   |--- months_with_us &lt;= 19.50
+|   |   |--- orders_last_90d &lt;= 3.50
+|   |   |   |--- class: 1
+|   |   |--- orders_last_90d &gt;  3.50
+|   |   |   |--- class: 0
+|   |--- months_with_us &gt;  19.50
+|   |   |--- support_tickets &lt;= 3.50
+|   |   |   |--- class: 0
+|   |   |--- support_tickets &gt;  3.50
+|   |   |   |--- class: 1</code></pre></div>
 <p>Логистическая регрессия здесь, скорее всего, окажется лучше. Это ожидаемо: данные мы сами сгенерировали по логистической формуле, и линейная модель описывает их идеально. Дерево глубины 3 делит пространство всего на восемь областей и приближает плавную зависимость «ступеньками».</p>
 <p><code>export_text</code> печатает правила дерева — главное достоинство этого алгоритма: его можно прочитать и объяснить менеджеру.</p>
 <p>Вывод шире конкретного примера: нет «лучшего алгоритма вообще», есть алгоритм, подходящий под структуру данных.</p></details>
@@ -255,6 +317,10 @@ baseline = DummyClassifier(strategy=<span class="t-str">&quot;most_frequent&quot
 <span class="t-fn">print</span>(<span class="t-str">&quot;Accuracy бейзлайна:&quot;</span>, <span class="t-fn">round</span>(accuracy_score(y_test, baseline.predict(X_test)), <span class="t-num">3</span>))
 <span class="t-fn">print</span>(<span class="t-str">&quot;Accuracy модели:&quot;</span>, <span class="t-fn">round</span>(accuracy_score(y_test, pred), <span class="t-num">3</span>))
 <span class="t-fn">print</span>(<span class="t-str">&quot;Recall бейзлайна:&quot;</span>, recall_score(y_test, baseline.predict(X_test)))      <span class="t-com"># 0.0</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Доля ушедших: 0.17
+Accuracy бейзлайна: 0.83
+Accuracy модели: 0.83
+Recall бейзлайна: 0.0</code></pre></div>
 <p>Accuracy бейзлайна равна <code>1 − доля ушедших</code>. Модель, которая никого не находит (recall = 0), получает высокую accuracy просто потому, что ушедших мало. Если accuracy нашей модели лишь немного выше — это не значит, что модель плохая: это значит, что accuracy здесь ни о чём не говорит. Смотрим на recall, precision и ROC AUC.</p></details>
 <details class="sol"><summary>Задание 3. Порог вероятности</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>rows = []
 <span class="t-kw">for</span> threshold <span class="t-kw">in</span> (<span class="t-num">0.2</span>, <span class="t-num">0.3</span>, <span class="t-num">0.5</span>):
@@ -267,6 +333,10 @@ baseline = DummyClassifier(strategy=<span class="t-str">&quot;most_frequent&quot
     })
 
 <span class="t-fn">print</span>(pd.DataFrame(rows))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>   порог  помечено уходящими  precision  recall
+0    0.2                 153      0.346   0.624
+1    0.3                  88      0.489   0.506
+2    0.5                  24      0.500   0.141</code></pre></div>
 <p>Чем ниже порог, тем больше клиентов модель помечает как уходящих: recall растёт (находим больше настоящих уходящих), precision падает (больше ложных тревог). Улучшить обе метрики одновременно сдвигом порога нельзя.</p>
 <p>Какой порог выбрать — решает экономика. Если удержание — это дешёвое письмо, выгоден низкий порог: лучше написать лишним, чем пропустить уходящего. Если удержание — дорогая скидка или звонок менеджера, порог поднимают.</p>
 <p>Метод <code>predict</code> всегда использует порог 0,5. Для несбалансированных классов он почти никогда не оптимален, поэтому работать нужно с <code>predict_proba</code>.</p></details>
@@ -276,6 +346,8 @@ scores = cross_val_score(LogisticRegression(max_iter=<span class="t-num">1000</s
 
 <span class="t-fn">print</span>(scores.<span class="t-fn">round</span>(<span class="t-num">3</span>))
 <span class="t-fn">print</span>(<span class="t-str">f&quot;ROC AUC: {scores.mean():.3f} ± {scores.std():.3f}&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[0.759 0.762 0.78  0.792 0.737]
+ROC AUC: 0.766 ± 0.019</code></pre></div>
 <p>Получаем пять оценок вместо одной. Среднее — более надёжная оценка качества, а разброс показывает, насколько результат зависит от того, какие объекты попали в тест. Если бы оценка на одном разбиении сильно отличалась от среднего по пяти, мы бы знали, что нам просто повезло или не повезло с разбиением.</p></details>
 <details class="sol"><summary>Задание 5. K-means на RFM-признаках</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> sklearn.cluster <span class="t-kw">import</span> KMeans
 <span class="t-kw">from</span> sklearn.preprocessing <span class="t-kw">import</span> StandardScaler
@@ -304,6 +376,12 @@ profile = rfm.groupby(<span class="t-str">&quot;cluster&quot;</span>).agg(
     revenue_share=(<span class="t-str">&quot;monetary&quot;</span>, <span class="t-kw">lambda</span> m: m.<span class="t-fn">sum</span>() / rfm[<span class="t-str">&quot;monetary&quot;</span>].<span class="t-fn">sum</span>()),
 )
 <span class="t-fn">print</span>(profile.<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>         users  recency  frequency  monetary  revenue_share
+cluster                                                    
+0          212    28.60       1.00   3991.30           0.48
+1          136    41.45       1.00    911.06           0.07
+2          177    66.15       1.00   3379.81           0.34
+3           34    29.74       2.03   5844.94           0.11</code></pre></div>
 <p>Два шага подготовки обязательны: логарифм для суммы покупок (иначе несколько крупных клиентов образуют отдельный кластер) и стандартизация (иначе рубли в тысячах задавят частоту в единицах).</p>
 <p>Кластеры нужно <strong>назвать</strong>, глядя на таблицу <code>profile</code>: например, «недавние разовые», «давно ушедшие», «постоянные крупные». Если кластеру не получается дать осмысленное имя и предложить для него действие — он бесполезен, и число кластеров стоит поменять.</p>
 <p>Сравнение с ручной RFM-сегментацией:</p>
@@ -338,7 +416,7 @@ df = pd.read_csv(<span class="t-str">&quot;data/dataset.csv&quot;</span>)
 
 X, y = df.drop(columns=TARGET), df[TARGET]
 numeric = X.select_dtypes(<span class="t-str">&quot;number&quot;</span>).columns.tolist()
-categorical = X.select_dtypes(<span class="t-str">&quot;object&quot;</span>).columns.tolist()
+categorical = X.select_dtypes(exclude=<span class="t-str">&quot;number&quot;</span>).columns.tolist()
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="t-num">0.25</span>, random_state=<span class="t-num">42</span>, stratify=y)
 

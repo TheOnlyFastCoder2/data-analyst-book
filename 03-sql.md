@@ -39,6 +39,21 @@ ORDER BY LastName
 LIMIT 5;
 ```
 
+<!-- result -->
+*Результат:*
+
+| FirstName | LastName | Country |
+|---|---|---|
+| Roberto | Almeida | Brazil |
+| Luís | Gonçalves | Brazil |
+| Eduardo | Martins | Brazil |
+| Fernanda | Ramos | Brazil |
+| Alexandre | Rocha | Brazil |
+<!-- /result -->
+
+
+
+
 - `SELECT` — какие столбцы показать (`*` — все);
 - `FROM` — из какой таблицы;
 - `WHERE` — какие строки оставить;
@@ -50,11 +65,31 @@ LIMIT 5;
 ```sql
 SELECT Name, Milliseconds / 60000.0 AS minutes, UnitPrice
 FROM Track
-WHERE UnitPrice > 0.99
+WHERE UnitPrice <= 0.99
   AND Milliseconds BETWEEN 180000 AND 300000
   AND Name LIKE '%Love%'
   AND Composer IS NOT NULL;
 ```
+
+<!-- result -->
+*Результат:*
+
+| Name | minutes | UnitPrice |
+|---|---|---|
+| My Love | 3.3916 | 0.99 |
+| The Girl I Love She Got Long Black Wavy Hair | 3.0554 | 0.99 |
+| Love Gun | 3.271 | 0.99 |
+| Do You Love Me | 3.5831 | 0.99 |
+| Calling Dr. Love | 3.7555 | 0.99 |
+| Cry For Love | 4.8836 | 0.99 |
+| I Need Love | 4.3973 | 0.99 |
+| Love Child | 3.136 | 0.99 |
+
+*Показаны первые 8 строк из 60.*
+<!-- /result -->
+
+
+
 
 | Оператор | Смысл |
 |----------|-------|
@@ -73,6 +108,26 @@ WHERE UnitPrice > 0.99
 SELECT DISTINCT Country FROM Customer ORDER BY Country;
 ```
 
+<!-- result -->
+*Результат:*
+
+| Country |
+|---|
+| Argentina |
+| Australia |
+| Austria |
+| Belgium |
+| Brazil |
+| Canada |
+| Chile |
+| Czech Republic |
+
+*Показаны первые 8 строк из 24.*
+<!-- /result -->
+
+
+
+
 ## 3.3. Агрегация и GROUP BY
 
 Агрегатные функции сворачивают много строк в одно число: `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`.
@@ -83,6 +138,17 @@ SELECT COUNT(*)   AS invoices,
        AVG(Total) AS avg_check
 FROM Invoice;
 ```
+
+<!-- result -->
+*Результат:*
+
+| invoices | revenue | avg_check |
+|---|---|---|
+| 412 | 2328.6 | 5.6519 |
+<!-- /result -->
+
+
+
 
 `GROUP BY` считает агрегаты отдельно для каждой группы — это сводная таблица из главы 1:
 
@@ -96,6 +162,26 @@ ORDER BY revenue DESC
 LIMIT 10;
 ```
 
+<!-- result -->
+*Результат:*
+
+| BillingCountry | invoices | revenue |
+|---|---|---|
+| USA | 91 | 523.06 |
+| Canada | 56 | 303.96 |
+| France | 35 | 195.1 |
+| Brazil | 35 | 190.1 |
+| Germany | 28 | 156.48 |
+| United Kingdom | 21 | 112.86 |
+| Czech Republic | 14 | 90.24 |
+| Portugal | 14 | 77.24 |
+
+*Показаны первые 8 строк из 10.*
+<!-- /result -->
+
+
+
+
 Правило: в `SELECT` при группировке могут стоять только столбцы из `GROUP BY` и агрегатные функции.
 
 `HAVING` фильтрует **группы** — так же, как `WHERE` фильтрует строки:
@@ -103,11 +189,28 @@ LIMIT 10;
 ```sql
 SELECT BillingCountry, COUNT(*) AS invoices
 FROM Invoice
-WHERE InvoiceDate >= '2010-01-01'   -- фильтр строк ДО группировки
+WHERE InvoiceDate >= '2023-01-01'   -- фильтр строк ДО группировки
 GROUP BY BillingCountry
 HAVING COUNT(*) >= 10               -- фильтр групп ПОСЛЕ группировки
 ORDER BY invoices DESC;
 ```
+
+<!-- result -->
+*Результат:*
+
+| BillingCountry | invoices |
+|---|---|
+| USA | 56 |
+| Canada | 34 |
+| France | 21 |
+| Brazil | 20 |
+| Germany | 15 |
+| United Kingdom | 12 |
+| Czech Republic | 10 |
+<!-- /result -->
+
+
+
 
 Три варианта `COUNT`, которые любят спрашивать на собеседованиях:
 
@@ -138,6 +241,26 @@ ORDER BY ar.Name
 LIMIT 10;
 ```
 
+<!-- result -->
+*Результат:*
+
+| artist | album |
+|---|---|
+| AC/DC | For Those About To Rock We Salute You |
+| AC/DC | Let There Be Rock |
+| Aaron Copland & London Symphony Orchestra | A Copland Celebration, Vol. I |
+| Aaron Goldberg | Worlds |
+| Academy of St. Martin in the Fields & Sir Neville Marriner | The World of Classical Favourites |
+| Academy of St. Martin in the Fields Chamber Ensemble & Sir Neville Marriner | Sir Neville Marriner: A Celebration |
+| Academy of St. Martin in the Fields, John Birch, Sir Neville Marriner & Sylvia McNair | Fauré: Requiem, Ravel: Pavane & Others |
+| Academy of St. Martin in the Fields, Sir Neville Marriner & Thurston Dart | Bach: Orchestral Suites Nos. 1 - 4 |
+
+*Показаны первые 8 строк из 10.*
+<!-- /result -->
+
+
+
+
 `al` и `ar` — псевдонимы таблиц, чтобы не писать полные имена.
 
 Виды соединений:
@@ -161,6 +284,26 @@ LEFT JOIN Album AS al ON al.ArtistId = ar.ArtistId
 WHERE al.AlbumId IS NULL;
 ```
 
+<!-- result -->
+*Результат:*
+
+| Name |
+|---|
+| Milton Nascimento & Bebeto |
+| Azymuth |
+| João Gilberto |
+| Bebel Gilberto |
+| Jorge Vercilo |
+| Baby Consuelo |
+| Ney Matogrosso |
+| Luiz Melodia |
+
+*Показаны первые 8 строк из 71.*
+<!-- /result -->
+
+
+
+
 Соединять можно сколько угодно таблиц. Выручка по жанрам:
 
 ```sql
@@ -173,6 +316,21 @@ GROUP BY g.Name
 ORDER BY revenue DESC
 LIMIT 5;
 ```
+
+<!-- result -->
+*Результат:*
+
+| genre | revenue |
+|---|---|
+| Rock | 826.65 |
+| Latin | 382.14 |
+| Metal | 261.36 |
+| Alternative & Punk | 241.56 |
+| TV Shows | 93.53 |
+<!-- /result -->
+
+
+
 
 **Главная ловушка JOIN — размножение строк.** Если соединить `Invoice` с `InvoiceLine` и посчитать `SUM(Invoice.Total)`, сумма счёта учтётся столько раз, сколько в нём позиций. Привычка: после каждого `JOIN` проверяй через `COUNT(*)`, что строк столько, сколько ты ожидаешь.
 
@@ -265,6 +423,24 @@ show("Заказы без клиента (меняем таблицы места
 """)
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+Сколько заказов и на какую сумму у каждого клиента:
+   ('Анна', 2, 800)
+   ('Борис', 1, 700)
+   ('Вера', 0, 0)
+Клиенты без заказов:
+   ('Вера',)
+Заказы без клиента (меняем таблицы местами):
+   (13,)
+```
+<!-- /result -->
+
+
+
+
 Обрати внимание на первый запрос:
 
 - `COUNT(o.order_id)`, а не `COUNT(*)`. У Веры после LEFT JOIN есть одна строка — с пустым заказом. `COUNT(*)` посчитал бы её и выдал 1, а `COUNT(o.order_id)` пропускает `NULL` и честно даёт 0.
@@ -287,6 +463,19 @@ FROM Invoice
 GROUP BY segment;
 ```
 
+<!-- result -->
+*Результат:*
+
+| segment | invoices |
+|---|---|
+| крупный | 64 |
+| мелкий | 233 |
+| средний | 115 |
+<!-- /result -->
+
+
+
+
 ### Даты
 
 Функции дат — самое разное место в диалектах SQL. Выручка по месяцам:
@@ -300,6 +489,26 @@ GROUP BY month
 ORDER BY month;
 ```
 
+<!-- result -->
+*Результат:*
+
+| month | revenue |
+|---|---|
+| 2021-01 | 35.64 |
+| 2021-02 | 37.62 |
+| 2021-03 | 37.62 |
+| 2021-04 | 37.62 |
+| 2021-05 | 37.62 |
+| 2021-06 | 37.62 |
+| 2021-07 | 37.62 |
+| 2021-08 | 37.62 |
+
+*Показаны первые 8 строк из 60.*
+<!-- /result -->
+
+
+
+
 В PostgreSQL вместо `strftime` используют `DATE_TRUNC('month', invoice_date)`.
 
 ### Подзапрос
@@ -312,6 +521,26 @@ FROM Invoice
 WHERE Total > (SELECT AVG(Total) FROM Invoice)
 ORDER BY Total DESC;
 ```
+
+<!-- result -->
+*Результат:*
+
+| InvoiceId | Total |
+|---|---|
+| 404 | 25.86 |
+| 299 | 23.86 |
+| 96 | 21.86 |
+| 194 | 21.86 |
+| 89 | 18.86 |
+| 201 | 18.86 |
+| 88 | 17.91 |
+| 306 | 16.86 |
+
+*Показаны первые 8 строк из 179.*
+<!-- /result -->
+
+
+
 
 ### CTE (WITH)
 
@@ -333,6 +562,26 @@ ORDER BY cr.revenue DESC
 LIMIT 10;
 ```
 
+<!-- result -->
+*Результат:*
+
+| customer | Country | revenue |
+|---|---|---|
+| Helena Holý | Czech Republic | 49.62 |
+| Richard Cunningham | USA | 47.62 |
+| Luis Rojas | Chile | 46.62 |
+| Ladislav Kovács | Hungary | 45.62 |
+| Hugh O'Reilly | Ireland | 45.62 |
+| Frank Ralston | USA | 43.62 |
+| Julia Barnett | USA | 43.62 |
+| Fynn Zimmermann | Germany | 43.62 |
+
+*Показаны первые 8 строк из 10.*
+<!-- /result -->
+
+
+
+
 ## 3.7. Оконные функции
 
 Тема, которая отделяет новичка от уверенного пользователя. `GROUP BY` схлопывает строки группы в одну. Оконная функция считает то же самое, но **оставляет все строки на месте**.
@@ -344,6 +593,26 @@ SELECT InvoiceId,
        SUM(Total) OVER (PARTITION BY BillingCountry) AS country_revenue
 FROM Invoice;
 ```
+
+<!-- result -->
+*Результат:*
+
+| InvoiceId | BillingCountry | Total | country_revenue |
+|---|---|---|---|
+| 119 | Argentina | 1.98 | 37.62 |
+| 142 | Argentina | 3.96 | 37.62 |
+| 164 | Argentina | 5.94 | 37.62 |
+| 216 | Argentina | 0.99 | 37.62 |
+| 337 | Argentina | 1.98 | 37.62 |
+| 348 | Argentina | 13.86 | 37.62 |
+| 403 | Argentina | 8.91 | 37.62 |
+| 21 | Australia | 1.98 | 37.62 |
+
+*Показаны первые 8 строк из 412.*
+<!-- /result -->
+
+
+
 
 Конструкция `OVER (...)` задаёт окно:
 
@@ -376,6 +645,26 @@ FROM ranked
 WHERE rn <= 3;
 ```
 
+<!-- result -->
+*Результат:*
+
+| BillingCountry | InvoiceId | Total | rn |
+|---|---|---|---|
+| Argentina | 348 | 13.86 | 1 |
+| Argentina | 403 | 8.91 | 2 |
+| Argentina | 164 | 5.94 | 3 |
+| Australia | 250 | 13.86 | 1 |
+| Australia | 305 | 8.91 | 2 |
+| Australia | 66 | 5.94 | 3 |
+| Austria | 89 | 18.86 | 1 |
+| Austria | 144 | 8.91 | 2 |
+
+*Показаны первые 8 строк из 72.*
+<!-- /result -->
+
+
+
+
 Фильтровать по `rn` в том же запросе нельзя — оконные функции вычисляются после `WHERE`. Поэтому нужен CTE.
 
 ### Накопительный итог и сравнение с прошлым периодом
@@ -395,6 +684,26 @@ SELECT month,
 FROM monthly
 ORDER BY month;
 ```
+
+<!-- result -->
+*Результат:*
+
+| month | revenue | running_total | prev_month | diff |
+|---|---|---|---|---|
+| 2021-01 | 35.64 | 35.64 | NULL | NULL |
+| 2021-02 | 37.62 | 73.26 | 35.64 | 1.98 |
+| 2021-03 | 37.62 | 110.88 | 37.62 | 0 |
+| 2021-04 | 37.62 | 148.5 | 37.62 | 0 |
+| 2021-05 | 37.62 | 186.12 | 37.62 | 0 |
+| 2021-06 | 37.62 | 223.74 | 37.62 | 0 |
+| 2021-07 | 37.62 | 261.36 | 37.62 | 0 |
+| 2021-08 | 37.62 | 298.98 | 37.62 | 0 |
+
+*Показаны первые 8 строк из 60.*
+<!-- /result -->
+
+
+
 
 - `SUM(...) OVER (ORDER BY ...)` — накопительная сумма;
 - `LAG(x)` — значение из предыдущей строки, `LEAD(x)` — из следующей.
@@ -432,6 +741,22 @@ df = pd.read_sql(query, conn)
 print(df.head())
 conn.close()
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+   country  invoices  revenue
+0      USA        91   523.06
+1   Canada        56   303.96
+2   France        35   195.10
+3   Brazil        35   190.10
+4  Germany        28   156.48
+```
+<!-- /result -->
+
+
+
 
 Правило разделения труда: отбор, соединение и группировку больших таблиц делай в SQL (база справится быстрее), а расчёты, статистику и графики — в pandas.
 
@@ -484,6 +809,26 @@ GROUP BY Country
 ORDER BY customers DESC, Country;
 ```
 
+<!-- result -->
+*Результат:*
+
+| Country | customers |
+|---|---|
+| USA | 13 |
+| Canada | 8 |
+| Brazil | 5 |
+| France | 5 |
+| Germany | 4 |
+| United Kingdom | 3 |
+| Czech Republic | 2 |
+| India | 2 |
+
+*Показаны первые 8 строк из 24.*
+<!-- /result -->
+
+
+
+
 Вторая колонка сортировки (`Country`) нужна, чтобы страны с одинаковым числом клиентов шли в предсказуемом порядке.
 
 ### Задание 2. Десять самых длинных треков
@@ -495,6 +840,26 @@ FROM Track
 ORDER BY Milliseconds DESC
 LIMIT 10;
 ```
+
+<!-- result -->
+*Результат:*
+
+| Name | minutes |
+|---|---|
+| Occupation / Precipice | 88.1 |
+| Through a Looking Glass | 84.8 |
+| Greetings from Earth, Pt. 1 | 49.3 |
+| The Man With Nine Lives | 49.3 |
+| Battlestar Galactica, Pt. 2 | 49.3 |
+| Battlestar Galactica, Pt. 1 | 49.2 |
+| Murder On the Rising Star | 48.9 |
+| Battlestar Galactica, Pt. 3 | 48.8 |
+
+*Показаны первые 8 строк из 10.*
+<!-- /result -->
+
+
+
 
 Делим на `60000.0`, а не на `60000`: при делении целого на целое SQLite отбросит дробную часть. Сортируем по исходному столбцу, а не по округлённому — так точнее.
 
@@ -510,6 +875,21 @@ ORDER BY albums DESC
 LIMIT 5;
 ```
 
+<!-- result -->
+*Результат:*
+
+| Name | albums |
+|---|---|
+| Iron Maiden | 21 |
+| Led Zeppelin | 14 |
+| Deep Purple | 11 |
+| Metallica | 10 |
+| U2 | 10 |
+<!-- /result -->
+
+
+
+
 Группируем по `ArtistId`, а не только по имени: два разных исполнителя могут называться одинаково, и по имени они склеились бы в одного.
 
 ### Задание 4. Выручка по годам
@@ -522,6 +902,21 @@ FROM Invoice
 GROUP BY year
 ORDER BY year;
 ```
+
+<!-- result -->
+*Результат:*
+
+| year | revenue | invoices |
+|---|---|---|
+| 2021 | 449.46 | 83 |
+| 2022 | 481.45 | 83 |
+| 2023 | 469.58 | 83 |
+| 2024 | 477.53 | 83 |
+| 2025 | 450.58 | 80 |
+<!-- /result -->
+
+
+
 
 Число счетов добавлено намеренно: по нему видно, изменилась выручка из-за количества заказов или из-за их размера.
 
@@ -536,6 +931,26 @@ GROUP BY c.CustomerId, c.FirstName, c.LastName
 HAVING SUM(i.Total) > 40
 ORDER BY spent DESC;
 ```
+
+<!-- result -->
+*Результат:*
+
+| customer | spent |
+|---|---|
+| Helena Holý | 49.62 |
+| Richard Cunningham | 47.62 |
+| Luis Rojas | 46.62 |
+| Ladislav Kovács | 45.62 |
+| Hugh O'Reilly | 45.62 |
+| Frank Ralston | 43.62 |
+| Julia Barnett | 43.62 |
+| Fynn Zimmermann | 43.62 |
+
+*Показаны первые 8 строк из 14.*
+<!-- /result -->
+
+
+
 
 Условие на сумму стоит в `HAVING`, а не в `WHERE`: мы отбираем группы по результату агрегации. `WHERE Total > 40` означало бы совсем другое — «оставить отдельные счета дороже 40».
 
@@ -565,6 +980,26 @@ WHERE rn = 1
 ORDER BY country;
 ```
 
+<!-- result -->
+*Результат:*
+
+| country | genre | tracks_sold |
+|---|---|---|
+| Argentina | Alternative & Punk | 9 |
+| Australia | Rock | 22 |
+| Austria | Rock | 15 |
+| Belgium | Rock | 21 |
+| Brazil | Rock | 81 |
+| Canada | Rock | 107 |
+| Chile | Rock | 9 |
+| Czech Republic | Rock | 25 |
+
+*Показаны первые 8 строк из 24.*
+<!-- /result -->
+
+
+
+
 Два шага — два CTE: сначала считаем продажи по парам «страна — жанр», потом нумеруем жанры внутри страны. Если хочешь при равенстве показать все жанры-лидеры, замени `ROW_NUMBER` на `RANK`.
 
 ### Задание 7. Первая покупка и «срок жизни» клиента
@@ -578,6 +1013,26 @@ FROM Invoice
 GROUP BY CustomerId
 ORDER BY days_between DESC;
 ```
+
+<!-- result -->
+*Результат:*
+
+| CustomerId | first_purchase | last_purchase | days_between |
+|---|---|---|---|
+| 23 | 2021-01-11 00:00:00 | 2025-12-04 00:00:00 | 1788 |
+| 4 | 2021-01-02 00:00:00 | 2025-10-03 00:00:00 | 1735 |
+| 8 | 2021-01-03 00:00:00 | 2025-10-04 00:00:00 | 1735 |
+| 21 | 2021-03-05 00:00:00 | 2025-12-04 00:00:00 | 1735 |
+| 25 | 2021-03-06 00:00:00 | 2025-12-05 00:00:00 | 1735 |
+| 42 | 2021-02-02 00:00:00 | 2025-11-03 00:00:00 | 1735 |
+| 46 | 2021-02-03 00:00:00 | 2025-11-04 00:00:00 | 1735 |
+| 12 | 2021-05-23 00:00:00 | 2025-10-05 00:00:00 | 1596 |
+
+*Показаны первые 8 строк из 59.*
+<!-- /result -->
+
+
+
 
 В SQLite даты хранятся текстом, поэтому вычитать их напрямую нельзя: `julianday` переводит дату в число дней. В PostgreSQL то же самое пишется проще: `MAX(invoice_date) - MIN(invoice_date)`.
 
@@ -598,6 +1053,26 @@ FROM monthly
 ORDER BY month;
 ```
 
+<!-- result -->
+*Результат:*
+
+| month | revenue | change_percent |
+|---|---|---|
+| 2021-01 | 35.64 | NULL |
+| 2021-02 | 37.62 | 5.6 |
+| 2021-03 | 37.62 | 0 |
+| 2021-04 | 37.62 | 0 |
+| 2021-05 | 37.62 | 0 |
+| 2021-06 | 37.62 | 0 |
+| 2021-07 | 37.62 | 0 |
+| 2021-08 | 37.62 | 0 |
+
+*Показаны первые 8 строк из 60.*
+<!-- /result -->
+
+
+
+
 У первого месяца `change_percent` будет `NULL` — предыдущего месяца нет, и это правильный ответ, а не ошибка. Множитель `100.0` (с точкой) снова защищает от целочисленного деления.
 
 ### Задание 9. Треки, которые ни разу не купили
@@ -610,6 +1085,26 @@ LEFT JOIN InvoiceLine AS il ON il.TrackId = t.TrackId
 WHERE il.InvoiceLineId IS NULL
 ORDER BY t.Name;
 ```
+
+<!-- result -->
+*Результат:*
+
+| TrackId | Name |
+|---|---|
+| 3027 | "40" |
+| 3412 | "Eine Kleine Nachtmusik" Serenade In G, K. 525: I. Allegro |
+| 109 | #1 Zero |
+| 570 | (Da Le) Yaleo |
+| 3045 | (I Can't Help) Falling In Love With You |
+| 3057 | (Oh) Pretty Woman |
+| 3471 | (There Is) No Greater Love (Teo Licks) |
+| 1947 | (We Are) The Road Crew |
+
+*Показаны первые 8 строк из 1519.*
+<!-- /result -->
+
+
+
 
 Классический приём «найти то, чего нет»: `LEFT JOIN` сохраняет все треки, а у непроданных в правой части оказывается `NULL`. Тот же результат даёт `WHERE NOT EXISTS (SELECT 1 FROM InvoiceLine AS il WHERE il.TrackId = t.TrackId)`.
 
@@ -625,5 +1120,18 @@ JOIN Invoice  AS i ON i.CustomerId = c.CustomerId
 GROUP BY e.EmployeeId, e.FirstName, e.LastName
 ORDER BY revenue DESC;
 ```
+
+<!-- result -->
+*Результат:*
+
+| employee | customers | revenue |
+|---|---|---|
+| Jane Peacock | 21 | 833.04 |
+| Margaret Park | 20 | 775.4 |
+| Steve Johnson | 18 | 720.16 |
+<!-- /result -->
+
+
+
 
 Здесь обязателен `COUNT(DISTINCT ...)`. После соединения с `Invoice` каждый клиент повторяется столько раз, сколько у него счетов, и обычный `COUNT(*)` посчитал бы счета, а не клиентов. Это та самая ловушка размножения строк из раздела 3.5.

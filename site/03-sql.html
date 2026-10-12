@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -107,6 +120,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 <span class="t-kw">WHERE</span> Country = <span class="t-str">&#x27;Brazil&#x27;</span>
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> LastName
 <span class="t-kw">LIMIT</span> <span class="t-num">5</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>FirstName</th><th>LastName</th><th>Country</th></tr></thead><tbody><tr><td>Roberto</td><td>Almeida</td><td>Brazil</td></tr><tr><td>Luís</td><td>Gonçalves</td><td>Brazil</td></tr><tr><td>Eduardo</td><td>Martins</td><td>Brazil</td></tr><tr><td>Fernanda</td><td>Ramos</td><td>Brazil</td></tr><tr><td>Alexandre</td><td>Rocha</td><td>Brazil</td></tr></tbody></table></div></div>
 <ul>
 <li><code>SELECT</code> — какие столбцы показать (<code>*</code> — все);</li>
 <li><code>FROM</code> — из какой таблицы;</li>
@@ -117,20 +131,25 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 <p>Условия в <code>WHERE</code>:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> Name, Milliseconds / <span class="t-num">60000.0</span> <span class="t-kw">AS</span> minutes, UnitPrice
 <span class="t-kw">FROM</span> Track
-<span class="t-kw">WHERE</span> UnitPrice &gt; <span class="t-num">0.99</span>
+<span class="t-kw">WHERE</span> UnitPrice &lt;= <span class="t-num">0.99</span>
   <span class="t-kw">AND</span> Milliseconds <span class="t-kw">BETWEEN</span> <span class="t-num">180000</span> <span class="t-kw">AND</span> <span class="t-num">300000</span>
   <span class="t-kw">AND</span> Name <span class="t-kw">LIKE</span> <span class="t-str">&#x27;%Love%&#x27;</span>
   <span class="t-kw">AND</span> Composer <span class="t-kw">IS</span> <span class="t-kw">NOT</span> <span class="t-kw">NULL</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>Name</th><th>minutes</th><th>UnitPrice</th></tr></thead><tbody><tr><td>My Love</td><td>3.3916</td><td>0.99</td></tr><tr><td>The Girl I Love She Got Long Black Wavy Hair</td><td>3.0554</td><td>0.99</td></tr><tr><td>Love Gun</td><td>3.271</td><td>0.99</td></tr><tr><td>Do You Love Me</td><td>3.5831</td><td>0.99</td></tr><tr><td>Calling Dr. Love</td><td>3.7555</td><td>0.99</td></tr><tr><td>Cry For Love</td><td>4.8836</td><td>0.99</td></tr><tr><td>I Need Love</td><td>4.3973</td><td>0.99</td></tr><tr><td>Love Child</td><td>3.136</td><td>0.99</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 60.</em></p></div>
 <div class="table"><table><thead><tr><th>Оператор</th><th>Смысл</th></tr></thead><tbody><tr><td><code>=</code>, <code>&lt;&gt;</code>, <code>&gt;</code>, <code>&lt;</code></td><td>Сравнение</td></tr><tr><td><code>AND</code>, <code>OR</code>, <code>NOT</code></td><td>Логика</td></tr><tr><td><code>IN (&#x27;USA&#x27;, &#x27;Canada&#x27;)</code></td><td>Значение из списка</td></tr><tr><td><code>BETWEEN a AND b</code></td><td>В диапазоне, границы включены</td></tr><tr><td><code>LIKE &#x27;%Love%&#x27;</code></td><td>Поиск по шаблону: <code>%</code> — любые символы</td></tr><tr><td><code>IS NULL</code> / <code>IS NOT NULL</code></td><td>Проверка на пустое значение</td></tr></tbody></table></div>
 <p><code>NULL</code> — это «значение неизвестно». С ним нельзя сравнивать через <code>=</code>: условие <code>Composer = NULL</code> никогда не истинно. Только <code>IS NULL</code>.</p>
 <p><code>DISTINCT</code> оставляет уникальные значения:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-kw">DISTINCT</span> Country <span class="t-kw">FROM</span> Customer <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> Country;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>Country</th></tr></thead><tbody><tr><td>Argentina</td></tr><tr><td>Australia</td></tr><tr><td>Austria</td></tr><tr><td>Belgium</td></tr><tr><td>Brazil</td></tr><tr><td>Canada</td></tr><tr><td>Chile</td></tr><tr><td>Czech Republic</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 24.</em></p></div>
 <h2 id="33-агрегация-и-group-by">3.3. Агрегация и GROUP BY</h2>
 <p>Агрегатные функции сворачивают много строк в одно число: <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code>.</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-fn">COUNT</span>(*)   <span class="t-kw">AS</span> invoices,
        <span class="t-fn">SUM</span>(Total) <span class="t-kw">AS</span> revenue,
        <span class="t-fn">AVG</span>(Total) <span class="t-kw">AS</span> avg_check
 <span class="t-kw">FROM</span> Invoice;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>invoices</th><th>revenue</th><th>avg_check</th></tr></thead><tbody><tr><td>412</td><td>2328.6</td><td>5.6519</td></tr></tbody></table></div></div>
 <p><code>GROUP BY</code> считает агрегаты отдельно для каждой группы — это сводная таблица из главы 1:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> BillingCountry,
        <span class="t-fn">COUNT</span>(*)             <span class="t-kw">AS</span> invoices,
@@ -139,14 +158,17 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> BillingCountry
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> revenue <span class="t-kw">DESC</span>
 <span class="t-kw">LIMIT</span> <span class="t-num">10</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>BillingCountry</th><th>invoices</th><th>revenue</th></tr></thead><tbody><tr><td>USA</td><td>91</td><td>523.06</td></tr><tr><td>Canada</td><td>56</td><td>303.96</td></tr><tr><td>France</td><td>35</td><td>195.1</td></tr><tr><td>Brazil</td><td>35</td><td>190.1</td></tr><tr><td>Germany</td><td>28</td><td>156.48</td></tr><tr><td>United Kingdom</td><td>21</td><td>112.86</td></tr><tr><td>Czech Republic</td><td>14</td><td>90.24</td></tr><tr><td>Portugal</td><td>14</td><td>77.24</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 10.</em></p></div>
 <p>Правило: в <code>SELECT</code> при группировке могут стоять только столбцы из <code>GROUP BY</code> и агрегатные функции.</p>
 <p><code>HAVING</code> фильтрует <strong>группы</strong> — так же, как <code>WHERE</code> фильтрует строки:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> BillingCountry, <span class="t-fn">COUNT</span>(*) <span class="t-kw">AS</span> invoices
 <span class="t-kw">FROM</span> Invoice
-<span class="t-kw">WHERE</span> InvoiceDate &gt;= <span class="t-str">&#x27;2010-01-01&#x27;</span>   <span class="t-com">-- фильтр строк ДО группировки</span>
+<span class="t-kw">WHERE</span> InvoiceDate &gt;= <span class="t-str">&#x27;2023-01-01&#x27;</span>   <span class="t-com">-- фильтр строк ДО группировки</span>
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> BillingCountry
 <span class="t-kw">HAVING</span> <span class="t-fn">COUNT</span>(*) &gt;= <span class="t-num">10</span>               <span class="t-com">-- фильтр групп ПОСЛЕ группировки</span>
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> invoices <span class="t-kw">DESC</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>BillingCountry</th><th>invoices</th></tr></thead><tbody><tr><td>USA</td><td>56</td></tr><tr><td>Canada</td><td>34</td></tr><tr><td>France</td><td>21</td></tr><tr><td>Brazil</td><td>20</td></tr><tr><td>Germany</td><td>15</td></tr><tr><td>United Kingdom</td><td>12</td></tr><tr><td>Czech Republic</td><td>10</td></tr></tbody></table></div></div>
 <p>Три варианта <code>COUNT</code>, которые любят спрашивать на собеседованиях:</p>
 <ul>
 <li><code>COUNT(*)</code> — все строки;</li>
@@ -165,6 +187,8 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 <span class="t-kw">JOIN</span> Artist <span class="t-kw">AS</span> ar <span class="t-kw">ON</span> ar.ArtistId = al.ArtistId
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> ar.Name
 <span class="t-kw">LIMIT</span> <span class="t-num">10</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>artist</th><th>album</th></tr></thead><tbody><tr><td>AC/DC</td><td>For Those About To Rock We Salute You</td></tr><tr><td>AC/DC</td><td>Let There Be Rock</td></tr><tr><td>Aaron Copland &amp; London Symphony Orchestra</td><td>A Copland Celebration, Vol. I</td></tr><tr><td>Aaron Goldberg</td><td>Worlds</td></tr><tr><td>Academy of St. Martin in the Fields &amp; Sir Neville Marriner</td><td>The World of Classical Favourites</td></tr><tr><td>Academy of St. Martin in the Fields Chamber Ensemble &amp; Sir Neville Marriner</td><td>Sir Neville Marriner: A Celebration</td></tr><tr><td>Academy of St. Martin in the Fields, John Birch, Sir Neville Marriner &amp; Sylvia McNair</td><td>Fauré: Requiem, Ravel: Pavane &amp; Others</td></tr><tr><td>Academy of St. Martin in the Fields, Sir Neville Marriner &amp; Thurston Dart</td><td>Bach: Orchestral Suites Nos. 1 - 4</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 10.</em></p></div>
 <p><code>al</code> и <code>ar</code> — псевдонимы таблиц, чтобы не писать полные имена.</p>
 <p>Виды соединений:</p>
 <div class="table"><table><thead><tr><th>Вид</th><th>Что попадает в результат</th></tr></thead><tbody><tr><td><code>INNER JOIN</code> (или просто <code>JOIN</code>)</td><td>Только строки, у которых есть пара в обеих таблицах</td></tr><tr><td><code>LEFT JOIN</code></td><td>Все строки левой таблицы; если пары нет — справа <code>NULL</code></td></tr><tr><td><code>RIGHT JOIN</code></td><td>Зеркально <code>LEFT</code></td></tr><tr><td><code>FULL JOIN</code></td><td>Все строки обеих таблиц</td></tr><tr><td><code>CROSS JOIN</code></td><td>Каждая строка с каждой</td></tr></tbody></table></div>
@@ -174,6 +198,8 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 <span class="t-kw">FROM</span> Artist <span class="t-kw">AS</span> ar
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> Album <span class="t-kw">AS</span> al <span class="t-kw">ON</span> al.ArtistId = ar.ArtistId
 <span class="t-kw">WHERE</span> al.AlbumId <span class="t-kw">IS</span> <span class="t-kw">NULL</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>Name</th></tr></thead><tbody><tr><td>Milton Nascimento &amp; Bebeto</td></tr><tr><td>Azymuth</td></tr><tr><td>João Gilberto</td></tr><tr><td>Bebel Gilberto</td></tr><tr><td>Jorge Vercilo</td></tr><tr><td>Baby Consuelo</td></tr><tr><td>Ney Matogrosso</td></tr><tr><td>Luiz Melodia</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 71.</em></p></div>
 <p>Соединять можно сколько угодно таблиц. Выручка по жанрам:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> g.Name                                   <span class="t-kw">AS</span> genre,
        <span class="t-fn">ROUND</span>(<span class="t-fn">SUM</span>(il.UnitPrice * il.Quantity), <span class="t-num">2</span>) <span class="t-kw">AS</span> revenue
@@ -183,6 +209,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> g.Name
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> revenue <span class="t-kw">DESC</span>
 <span class="t-kw">LIMIT</span> <span class="t-num">5</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>genre</th><th>revenue</th></tr></thead><tbody><tr><td>Rock</td><td>826.65</td></tr><tr><td>Latin</td><td>382.14</td></tr><tr><td>Metal</td><td>261.36</td></tr><tr><td>Alternative &amp; Punk</td><td>241.56</td></tr><tr><td>TV Shows</td><td>93.53</td></tr></tbody></table></div></div>
 <p><strong>Главная ловушка JOIN — размножение строк.</strong> Если соединить <code>Invoice</code> с <code>InvoiceLine</code> и посчитать <code>SUM(Invoice.Total)</code>, сумма счёта учтётся столько раз, сколько в нём позиций. Привычка: после каждого <code>JOIN</code> проверяй через <code>COUNT(*)</code>, что строк столько, сколько ты ожидаешь.</p>
 <h3 id="join-на-маленьком-примере">JOIN на маленьком примере</h3>
 <p>На большой базе трудно увидеть, что именно делает соединение. Разберём на двух таблицах по три строки — их можно удержать в голове. Пример запускается из Python и не требует Chinook.</p>
@@ -257,6 +284,14 @@ show(<span class="t-str">&quot;Заказы без клиента (меняем 
     LEFT JOIN customers AS c ON c.customer_id = o.customer_id
     WHERE c.customer_id IS NULL
 &quot;&quot;&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Сколько заказов и на какую сумму у каждого клиента:
+   (&#x27;Анна&#x27;, 2, 800)
+   (&#x27;Борис&#x27;, 1, 700)
+   (&#x27;Вера&#x27;, 0, 0)
+Клиенты без заказов:
+   (&#x27;Вера&#x27;,)
+Заказы без клиента (меняем таблицы местами):
+   (13,)</code></pre></div>
 <p>Обрати внимание на первый запрос:</p>
 <ul>
 <li><code>COUNT(o.order_id)</code>, а не <code>COUNT(*)</code>. У Веры после LEFT JOIN есть одна строка — с пустым заказом. <code>COUNT(*)</code> посчитал бы её и выдал 1, а <code>COUNT(o.order_id)</code> пропускает <code>NULL</code> и честно даёт 0.</li>
@@ -273,6 +308,7 @@ show(<span class="t-str">&quot;Заказы без клиента (меняем 
        <span class="t-fn">COUNT</span>(*) <span class="t-kw">AS</span> invoices
 <span class="t-kw">FROM</span> Invoice
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> segment;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>segment</th><th>invoices</th></tr></thead><tbody><tr><td>крупный</td><td>64</td></tr><tr><td>мелкий</td><td>233</td></tr><tr><td>средний</td><td>115</td></tr></tbody></table></div></div>
 <h3 id="даты">Даты</h3>
 <p>Функции дат — самое разное место в диалектах SQL. Выручка по месяцам:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- SQLite</span>
@@ -281,6 +317,8 @@ show(<span class="t-str">&quot;Заказы без клиента (меняем 
 <span class="t-kw">FROM</span> Invoice
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> month
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> month;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>month</th><th>revenue</th></tr></thead><tbody><tr><td>2021-01</td><td>35.64</td></tr><tr><td>2021-02</td><td>37.62</td></tr><tr><td>2021-03</td><td>37.62</td></tr><tr><td>2021-04</td><td>37.62</td></tr><tr><td>2021-05</td><td>37.62</td></tr><tr><td>2021-06</td><td>37.62</td></tr><tr><td>2021-07</td><td>37.62</td></tr><tr><td>2021-08</td><td>37.62</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 60.</em></p></div>
 <p>В PostgreSQL вместо <code>strftime</code> используют <code>DATE_TRUNC(&#x27;month&#x27;, invoice_date)</code>.</p>
 <h3 id="подзапрос">Подзапрос</h3>
 <p>Запрос внутри запроса. Счета дороже среднего:</p>
@@ -288,6 +326,8 @@ show(<span class="t-str">&quot;Заказы без клиента (меняем 
 <span class="t-kw">FROM</span> Invoice
 <span class="t-kw">WHERE</span> Total &gt; (<span class="t-kw">SELECT</span> <span class="t-fn">AVG</span>(Total) <span class="t-kw">FROM</span> Invoice)
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> Total <span class="t-kw">DESC</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>InvoiceId</th><th>Total</th></tr></thead><tbody><tr><td>404</td><td>25.86</td></tr><tr><td>299</td><td>23.86</td></tr><tr><td>96</td><td>21.86</td></tr><tr><td>194</td><td>21.86</td></tr><tr><td>89</td><td>18.86</td></tr><tr><td>201</td><td>18.86</td></tr><tr><td>88</td><td>17.91</td></tr><tr><td>306</td><td>16.86</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 179.</em></p></div>
 <h3 id="cte-with">CTE (WITH)</h3>
 <p>CTE — именованный подзапрос, вынесенный в начало. Он превращает сложный запрос в последовательность понятных шагов. Привыкай писать именно так:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> customer_revenue <span class="t-kw">AS</span> (
@@ -303,6 +343,8 @@ show(<span class="t-str">&quot;Заказы без клиента (меняем 
 <span class="t-kw">JOIN</span> Customer <span class="t-kw">AS</span> c <span class="t-kw">ON</span> c.CustomerId = cr.CustomerId
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> cr.revenue <span class="t-kw">DESC</span>
 <span class="t-kw">LIMIT</span> <span class="t-num">10</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>customer</th><th>Country</th><th>revenue</th></tr></thead><tbody><tr><td>Helena Holý</td><td>Czech Republic</td><td>49.62</td></tr><tr><td>Richard Cunningham</td><td>USA</td><td>47.62</td></tr><tr><td>Luis Rojas</td><td>Chile</td><td>46.62</td></tr><tr><td>Ladislav Kovács</td><td>Hungary</td><td>45.62</td></tr><tr><td>Hugh O'Reilly</td><td>Ireland</td><td>45.62</td></tr><tr><td>Frank Ralston</td><td>USA</td><td>43.62</td></tr><tr><td>Julia Barnett</td><td>USA</td><td>43.62</td></tr><tr><td>Fynn Zimmermann</td><td>Germany</td><td>43.62</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 10.</em></p></div>
 <h2 id="37-оконные-функции">3.7. Оконные функции</h2>
 <p>Тема, которая отделяет новичка от уверенного пользователя. <code>GROUP BY</code> схлопывает строки группы в одну. Оконная функция считает то же самое, но <strong>оставляет все строки на месте</strong>.</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> InvoiceId,
@@ -310,6 +352,8 @@ show(<span class="t-str">&quot;Заказы без клиента (меняем 
        Total,
        <span class="t-fn">SUM</span>(Total) <span class="t-kw">OVER</span> (<span class="t-kw">PARTITION</span> <span class="t-kw">BY</span> BillingCountry) <span class="t-kw">AS</span> country_revenue
 <span class="t-kw">FROM</span> Invoice;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>InvoiceId</th><th>BillingCountry</th><th>Total</th><th>country_revenue</th></tr></thead><tbody><tr><td>119</td><td>Argentina</td><td>1.98</td><td>37.62</td></tr><tr><td>142</td><td>Argentina</td><td>3.96</td><td>37.62</td></tr><tr><td>164</td><td>Argentina</td><td>5.94</td><td>37.62</td></tr><tr><td>216</td><td>Argentina</td><td>0.99</td><td>37.62</td></tr><tr><td>337</td><td>Argentina</td><td>1.98</td><td>37.62</td></tr><tr><td>348</td><td>Argentina</td><td>13.86</td><td>37.62</td></tr><tr><td>403</td><td>Argentina</td><td>8.91</td><td>37.62</td></tr><tr><td>21</td><td>Australia</td><td>1.98</td><td>37.62</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 412.</em></p></div>
 <p>Конструкция <code>OVER (...)</code> задаёт окно:</p>
 <ul>
 <li><code>PARTITION BY</code> — на какие группы делить (аналог <code>GROUP BY</code>);</li>
@@ -331,6 +375,8 @@ show(<span class="t-str">&quot;Заказы без клиента (меняем 
 <span class="t-kw">SELECT</span> *
 <span class="t-kw">FROM</span> ranked
 <span class="t-kw">WHERE</span> rn &lt;= <span class="t-num">3</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>BillingCountry</th><th>InvoiceId</th><th>Total</th><th>rn</th></tr></thead><tbody><tr><td>Argentina</td><td>348</td><td>13.86</td><td>1</td></tr><tr><td>Argentina</td><td>403</td><td>8.91</td><td>2</td></tr><tr><td>Argentina</td><td>164</td><td>5.94</td><td>3</td></tr><tr><td>Australia</td><td>250</td><td>13.86</td><td>1</td></tr><tr><td>Australia</td><td>305</td><td>8.91</td><td>2</td></tr><tr><td>Australia</td><td>66</td><td>5.94</td><td>3</td></tr><tr><td>Austria</td><td>89</td><td>18.86</td><td>1</td></tr><tr><td>Austria</td><td>144</td><td>8.91</td><td>2</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 72.</em></p></div>
 <p>Фильтровать по <code>rn</code> в том же запросе нельзя — оконные функции вычисляются после <code>WHERE</code>. Поэтому нужен CTE.</p>
 <h3 id="накопительный-итог-и-сравнение-с-прошлым-периодом">Накопительный итог и сравнение с прошлым периодом</h3>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> monthly <span class="t-kw">AS</span> (
@@ -346,6 +392,8 @@ show(<span class="t-str">&quot;Заказы без клиента (меняем 
        <span class="t-fn">ROUND</span>(revenue - <span class="t-fn">LAG</span>(revenue) <span class="t-kw">OVER</span> (<span class="t-kw">ORDER</span> <span class="t-kw">BY</span> month), <span class="t-num">2</span>) <span class="t-kw">AS</span> diff
 <span class="t-kw">FROM</span> monthly
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> month;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>month</th><th>revenue</th><th>running_total</th><th>prev_month</th><th>diff</th></tr></thead><tbody><tr><td>2021-01</td><td>35.64</td><td>35.64</td><td>NULL</td><td>NULL</td></tr><tr><td>2021-02</td><td>37.62</td><td>73.26</td><td>35.64</td><td>1.98</td></tr><tr><td>2021-03</td><td>37.62</td><td>110.88</td><td>37.62</td><td>0</td></tr><tr><td>2021-04</td><td>37.62</td><td>148.5</td><td>37.62</td><td>0</td></tr><tr><td>2021-05</td><td>37.62</td><td>186.12</td><td>37.62</td><td>0</td></tr><tr><td>2021-06</td><td>37.62</td><td>223.74</td><td>37.62</td><td>0</td></tr><tr><td>2021-07</td><td>37.62</td><td>261.36</td><td>37.62</td><td>0</td></tr><tr><td>2021-08</td><td>37.62</td><td>298.98</td><td>37.62</td><td>0</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 60.</em></p></div>
 <ul>
 <li><code>SUM(...) OVER (ORDER BY ...)</code> — накопительная сумма;</li>
 <li><code>LAG(x)</code> — значение из предыдущей строки, <code>LEAD(x)</code> — из следующей.</li>
@@ -378,6 +426,12 @@ ORDER BY revenue DESC
 df = pd.read_sql(query, conn)
 <span class="t-fn">print</span>(df.head())
 conn.close()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>   country  invoices  revenue
+0      USA        91   523.06
+1   Canada        56   303.96
+2   France        35   195.10
+3   Brazil        35   190.10
+4  Germany        28   156.48</code></pre></div>
 <p>Правило разделения труда: отбор, соединение и группировку больших таблиц делай в SQL (база справится быстрее), а расчёты, статистику и графики — в pandas.</p>
 <h2 id="что-дальше">Что дальше</h2>
 <p>Когда освоишься с материалом этой главы, переходи к углублённой: <a href="03a-sql-priemy.html">Глава 3А. SQL: приёмы и трюки</a>.</p>
@@ -418,12 +472,16 @@ conn.close()</code></pre></div>
 <span class="t-kw">FROM</span> Customer
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> Country
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> customers <span class="t-kw">DESC</span>, Country;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>Country</th><th>customers</th></tr></thead><tbody><tr><td>USA</td><td>13</td></tr><tr><td>Canada</td><td>8</td></tr><tr><td>Brazil</td><td>5</td></tr><tr><td>France</td><td>5</td></tr><tr><td>Germany</td><td>4</td></tr><tr><td>United Kingdom</td><td>3</td></tr><tr><td>Czech Republic</td><td>2</td></tr><tr><td>India</td><td>2</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 24.</em></p></div>
 <p>Вторая колонка сортировки (<code>Country</code>) нужна, чтобы страны с одинаковым числом клиентов шли в предсказуемом порядке.</p></details>
 <details class="sol"><summary>Задание 2. Десять самых длинных треков</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> Name,
        <span class="t-fn">ROUND</span>(Milliseconds / <span class="t-num">60000.0</span>, <span class="t-num">1</span>) <span class="t-kw">AS</span> minutes
 <span class="t-kw">FROM</span> Track
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> Milliseconds <span class="t-kw">DESC</span>
 <span class="t-kw">LIMIT</span> <span class="t-num">10</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>Name</th><th>minutes</th></tr></thead><tbody><tr><td>Occupation / Precipice</td><td>88.1</td></tr><tr><td>Through a Looking Glass</td><td>84.8</td></tr><tr><td>Greetings from Earth, Pt. 1</td><td>49.3</td></tr><tr><td>The Man With Nine Lives</td><td>49.3</td></tr><tr><td>Battlestar Galactica, Pt. 2</td><td>49.3</td></tr><tr><td>Battlestar Galactica, Pt. 1</td><td>49.2</td></tr><tr><td>Murder On the Rising Star</td><td>48.9</td></tr><tr><td>Battlestar Galactica, Pt. 3</td><td>48.8</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 10.</em></p></div>
 <p>Делим на <code>60000.0</code>, а не на <code>60000</code>: при делении целого на целое SQLite отбросит дробную часть. Сортируем по исходному столбцу, а не по округлённому — так точнее.</p></details>
 <details class="sol"><summary>Задание 3. Исполнители с наибольшим числом альбомов</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> ar.Name,
        <span class="t-fn">COUNT</span>(al.AlbumId) <span class="t-kw">AS</span> albums
@@ -432,6 +490,7 @@ conn.close()</code></pre></div>
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> ar.ArtistId, ar.Name
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> albums <span class="t-kw">DESC</span>
 <span class="t-kw">LIMIT</span> <span class="t-num">5</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>Name</th><th>albums</th></tr></thead><tbody><tr><td>Iron Maiden</td><td>21</td></tr><tr><td>Led Zeppelin</td><td>14</td></tr><tr><td>Deep Purple</td><td>11</td></tr><tr><td>Metallica</td><td>10</td></tr><tr><td>U2</td><td>10</td></tr></tbody></table></div></div>
 <p>Группируем по <code>ArtistId</code>, а не только по имени: два разных исполнителя могут называться одинаково, и по имени они склеились бы в одного.</p></details>
 <details class="sol"><summary>Задание 4. Выручка по годам</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-fn">strftime</span>(<span class="t-str">&#x27;%Y&#x27;</span>, InvoiceDate) <span class="t-kw">AS</span> year,
        <span class="t-fn">ROUND</span>(<span class="t-fn">SUM</span>(Total), <span class="t-num">2</span>)        <span class="t-kw">AS</span> revenue,
@@ -439,6 +498,7 @@ conn.close()</code></pre></div>
 <span class="t-kw">FROM</span> Invoice
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> year
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> year;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>year</th><th>revenue</th><th>invoices</th></tr></thead><tbody><tr><td>2021</td><td>449.46</td><td>83</td></tr><tr><td>2022</td><td>481.45</td><td>83</td></tr><tr><td>2023</td><td>469.58</td><td>83</td></tr><tr><td>2024</td><td>477.53</td><td>83</td></tr><tr><td>2025</td><td>450.58</td><td>80</td></tr></tbody></table></div></div>
 <p>Число счетов добавлено намеренно: по нему видно, изменилась выручка из-за количества заказов или из-за их размера.</p></details>
 <details class="sol"><summary>Задание 5. Клиенты, потратившие больше 40 долларов</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> c.FirstName || <span class="t-str">&#x27; &#x27;</span> || c.LastName <span class="t-kw">AS</span> customer,
        <span class="t-fn">ROUND</span>(<span class="t-fn">SUM</span>(i.Total), <span class="t-num">2</span>)           <span class="t-kw">AS</span> spent
@@ -447,6 +507,8 @@ conn.close()</code></pre></div>
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> c.CustomerId, c.FirstName, c.LastName
 <span class="t-kw">HAVING</span> <span class="t-fn">SUM</span>(i.Total) &gt; <span class="t-num">40</span>
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> spent <span class="t-kw">DESC</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>customer</th><th>spent</th></tr></thead><tbody><tr><td>Helena Holý</td><td>49.62</td></tr><tr><td>Richard Cunningham</td><td>47.62</td></tr><tr><td>Luis Rojas</td><td>46.62</td></tr><tr><td>Ladislav Kovács</td><td>45.62</td></tr><tr><td>Hugh O'Reilly</td><td>45.62</td></tr><tr><td>Frank Ralston</td><td>43.62</td></tr><tr><td>Julia Barnett</td><td>43.62</td></tr><tr><td>Fynn Zimmermann</td><td>43.62</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 14.</em></p></div>
 <p>Условие на сумму стоит в <code>HAVING</code>, а не в <code>WHERE</code>: мы отбираем группы по результату агрегации. <code>WHERE Total &gt; 40</code> означало бы совсем другое — «оставить отдельные счета дороже 40».</p></details>
 <details class="sol"><summary>Задание 6. Самый популярный жанр в каждой стране</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> genre_sales <span class="t-kw">AS</span> (
     <span class="t-kw">SELECT</span> i.BillingCountry <span class="t-kw">AS</span> country,
@@ -469,6 +531,8 @@ ranked <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> ranked
 <span class="t-kw">WHERE</span> rn = <span class="t-num">1</span>
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> country;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>country</th><th>genre</th><th>tracks_sold</th></tr></thead><tbody><tr><td>Argentina</td><td>Alternative &amp; Punk</td><td>9</td></tr><tr><td>Australia</td><td>Rock</td><td>22</td></tr><tr><td>Austria</td><td>Rock</td><td>15</td></tr><tr><td>Belgium</td><td>Rock</td><td>21</td></tr><tr><td>Brazil</td><td>Rock</td><td>81</td></tr><tr><td>Canada</td><td>Rock</td><td>107</td></tr><tr><td>Chile</td><td>Rock</td><td>9</td></tr><tr><td>Czech Republic</td><td>Rock</td><td>25</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 24.</em></p></div>
 <p>Два шага — два CTE: сначала считаем продажи по парам «страна — жанр», потом нумеруем жанры внутри страны. Если хочешь при равенстве показать все жанры-лидеры, замени <code>ROW_NUMBER</code> на <code>RANK</code>.</p></details>
 <details class="sol"><summary>Задание 7. Первая покупка и «срок жизни» клиента</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> CustomerId,
        <span class="t-fn">MIN</span>(InvoiceDate)                                         <span class="t-kw">AS</span> first_purchase,
@@ -477,6 +541,8 @@ ranked <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> Invoice
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> CustomerId
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> days_between <span class="t-kw">DESC</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>CustomerId</th><th>first_purchase</th><th>last_purchase</th><th>days_between</th></tr></thead><tbody><tr><td>23</td><td>2021-01-11 00:00:00</td><td>2025-12-04 00:00:00</td><td>1788</td></tr><tr><td>4</td><td>2021-01-02 00:00:00</td><td>2025-10-03 00:00:00</td><td>1735</td></tr><tr><td>8</td><td>2021-01-03 00:00:00</td><td>2025-10-04 00:00:00</td><td>1735</td></tr><tr><td>21</td><td>2021-03-05 00:00:00</td><td>2025-12-04 00:00:00</td><td>1735</td></tr><tr><td>25</td><td>2021-03-06 00:00:00</td><td>2025-12-05 00:00:00</td><td>1735</td></tr><tr><td>42</td><td>2021-02-02 00:00:00</td><td>2025-11-03 00:00:00</td><td>1735</td></tr><tr><td>46</td><td>2021-02-03 00:00:00</td><td>2025-11-04 00:00:00</td><td>1735</td></tr><tr><td>12</td><td>2021-05-23 00:00:00</td><td>2025-10-05 00:00:00</td><td>1596</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 59.</em></p></div>
 <p>В SQLite даты хранятся текстом, поэтому вычитать их напрямую нельзя: <code>julianday</code> переводит дату в число дней. В PostgreSQL то же самое пишется проще: <code>MAX(invoice_date) - MIN(invoice_date)</code>.</p></details>
 <details class="sol"><summary>Задание 8. Изменение выручки к предыдущему месяцу</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> monthly <span class="t-kw">AS</span> (
     <span class="t-kw">SELECT</span> <span class="t-fn">strftime</span>(<span class="t-str">&#x27;%Y-%m&#x27;</span>, InvoiceDate) <span class="t-kw">AS</span> month,
@@ -490,6 +556,8 @@ ranked <span class="t-kw">AS</span> (
              / <span class="t-fn">LAG</span>(revenue) <span class="t-kw">OVER</span> (<span class="t-kw">ORDER</span> <span class="t-kw">BY</span> month), <span class="t-num">1</span>) <span class="t-kw">AS</span> change_percent
 <span class="t-kw">FROM</span> monthly
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> month;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>month</th><th>revenue</th><th>change_percent</th></tr></thead><tbody><tr><td>2021-01</td><td>35.64</td><td>NULL</td></tr><tr><td>2021-02</td><td>37.62</td><td>5.6</td></tr><tr><td>2021-03</td><td>37.62</td><td>0</td></tr><tr><td>2021-04</td><td>37.62</td><td>0</td></tr><tr><td>2021-05</td><td>37.62</td><td>0</td></tr><tr><td>2021-06</td><td>37.62</td><td>0</td></tr><tr><td>2021-07</td><td>37.62</td><td>0</td></tr><tr><td>2021-08</td><td>37.62</td><td>0</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 60.</em></p></div>
 <p>У первого месяца <code>change_percent</code> будет <code>NULL</code> — предыдущего месяца нет, и это правильный ответ, а не ошибка. Множитель <code>100.0</code> (с точкой) снова защищает от целочисленного деления.</p></details>
 <details class="sol"><summary>Задание 9. Треки, которые ни разу не купили</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> t.TrackId,
        t.Name
@@ -497,6 +565,8 @@ ranked <span class="t-kw">AS</span> (
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> InvoiceLine <span class="t-kw">AS</span> il <span class="t-kw">ON</span> il.TrackId = t.TrackId
 <span class="t-kw">WHERE</span> il.InvoiceLineId <span class="t-kw">IS</span> <span class="t-kw">NULL</span>
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> t.Name;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>TrackId</th><th>Name</th></tr></thead><tbody><tr><td>3027</td><td>"40"</td></tr><tr><td>3412</td><td>"Eine Kleine Nachtmusik" Serenade In G, K. 525: I. Allegro</td></tr><tr><td>109</td><td>#1 Zero</td></tr><tr><td>570</td><td>(Da Le) Yaleo</td></tr><tr><td>3045</td><td>(I Can't Help) Falling In Love With You</td></tr><tr><td>3057</td><td>(Oh) Pretty Woman</td></tr><tr><td>3471</td><td>(There Is) No Greater Love (Teo Licks)</td></tr><tr><td>1947</td><td>(We Are) The Road Crew</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 1519.</em></p></div>
 <p>Классический приём «найти то, чего нет»: <code>LEFT JOIN</code> сохраняет все треки, а у непроданных в правой части оказывается <code>NULL</code>. Тот же результат даёт <code>WHERE NOT EXISTS (SELECT 1 FROM InvoiceLine AS il WHERE il.TrackId = t.TrackId)</code>.</p></details>
 <details class="sol"><summary>Задание 10. Клиенты и выручка сотрудников поддержки</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> e.FirstName || <span class="t-str">&#x27; &#x27;</span> || e.LastName <span class="t-kw">AS</span> employee,
        <span class="t-fn">COUNT</span>(<span class="t-kw">DISTINCT</span> c.CustomerId)     <span class="t-kw">AS</span> customers,
@@ -506,6 +576,7 @@ ranked <span class="t-kw">AS</span> (
 <span class="t-kw">JOIN</span> Invoice  <span class="t-kw">AS</span> i <span class="t-kw">ON</span> i.CustomerId = c.CustomerId
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> e.EmployeeId, e.FirstName, e.LastName
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> revenue <span class="t-kw">DESC</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>employee</th><th>customers</th><th>revenue</th></tr></thead><tbody><tr><td>Jane Peacock</td><td>21</td><td>833.04</td></tr><tr><td>Margaret Park</td><td>20</td><td>775.4</td></tr><tr><td>Steve Johnson</td><td>18</td><td>720.16</td></tr></tbody></table></div></div>
 <p>Здесь обязателен <code>COUNT(DISTINCT ...)</code>. После соединения с <code>Invoice</code> каждый клиент повторяется столько раз, сколько у него счетов, и обычный <code>COUNT(*)</code> посчитал бы счета, а не клиентов. Это та самая ловушка размножения строк из раздела 3.5.</p></details><nav class="nav "><a class="prev" href="02c-chistyj-kod.html" id=prev><small>← Назад</small><b>Глава 2В. Красивый код и паттерны</b></a><a class="next" href="03a-sql-priemy.html" id=next><small>Вперёд →</small><b>Глава 3А. SQL: приёмы и трюки</b></a></nav>
 </main>
 <footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>

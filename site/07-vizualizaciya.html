@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -111,6 +124,7 @@ ax.grid(alpha=<span class="t-num">0.3</span>)
 fig.tight_layout()
 fig.savefig(<span class="t-str">&quot;weekly_revenue.png&quot;</span>, dpi=<span class="t-num">150</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-01.png" alt="Результат" loading="lazy"></p></div>
 <p>Два объекта, которые нужно различать:</p>
 <ul>
 <li><code>fig</code> (Figure) — весь рисунок целиком, «лист бумаги»;</li>
@@ -129,6 +143,7 @@ axes[<span class="t-num">1</span>].set_title(<span class="t-str">&quot;Расп�
 
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-02.png" alt="Результат" loading="lazy"></p></div>
 <h2 id="73-быстрые-графики-из-pandas">7.3. Быстрые графики из pandas</h2>
 <p>Для черновиков — метод <code>.plot()</code> прямо у таблицы:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>().sort_values().plot(kind=<span class="t-str">&quot;barh&quot;</span>, title=<span class="t-str">&quot;Выручка по городам&quot;</span>)
@@ -143,6 +158,9 @@ df[<span class="t-str">&quot;month&quot;</span>] = df[<span class="t-str">&quot;
       .plot(kind=<span class="t-str">&quot;bar&quot;</span>, stacked=<span class="t-num">True</span>, title=<span class="t-str">&quot;Выручка по месяцам и категориям&quot;</span>)
 )
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-03.png" alt="Результат" loading="lazy"></p>
+<p><img src="img/07-04.png" alt="Результат" loading="lazy"></p>
+<p><img src="img/07-05.png" alt="Результат" loading="lazy"></p></div>
 <h2 id="74-seaborn-статистические-графики">7.4. Seaborn: статистические графики</h2>
 <p>Seaborn умеет сам группировать данные и рисует аккуратнее по умолчанию. В него передают таблицу в длинном формате и названия столбцов.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> seaborn <span class="t-kw">as</span> sns
@@ -165,6 +183,9 @@ plt.show()
 fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">4</span>))
 sns.barplot(data=df, x=<span class="t-str">&quot;category&quot;</span>, y=<span class="t-str">&quot;amount&quot;</span>, hue=<span class="t-str">&quot;city&quot;</span>, ax=ax)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-06.png" alt="Результат" loading="lazy"></p>
+<p><img src="img/07-07.png" alt="Результат" loading="lazy"></p>
+<p><img src="img/07-08.png" alt="Результат" loading="lazy"></p></div>
 <h3 id="как-читать-ящик-с-усами-boxplot">Как читать ящик с усами (boxplot)</h3>
 <ul>
 <li>линия внутри ящика — медиана;</li>
@@ -194,8 +215,12 @@ plt.show()
 pivot = df.pivot_table(index=<span class="t-str">&quot;city&quot;</span>, columns=<span class="t-str">&quot;category&quot;</span>, values=<span class="t-str">&quot;amount&quot;</span>, aggfunc=<span class="t-str">&quot;mean&quot;</span>)
 fig, ax = plt.subplots(figsize=(<span class="t-num">6</span>, <span class="t-num">4</span>))
 sns.heatmap(pivot, annot=<span class="t-num">True</span>, fmt=<span class="t-str">&quot;.0f&quot;</span>, cmap=<span class="t-str">&quot;Blues&quot;</span>, ax=ax)
+ax.tick_params(axis=<span class="t-str">&quot;y&quot;</span>, rotation=<span class="t-num">0</span>)        <span class="t-com"># подписи строк — горизонтально</span>
 ax.set_title(<span class="t-str">&quot;Средний чек: город × категория&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-09.png" alt="Результат" loading="lazy"></p>
+<p><img src="img/07-10.png" alt="Результат" loading="lazy"></p>
+<p><img src="img/07-11.png" alt="Результат" loading="lazy"></p></div>
 <h3 id="воронка">Воронка</h3>
 <p>Готовой функции нет, воронку рисуют горизонтальными столбцами:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>steps = [<span class="t-str">&quot;Зашли на сайт&quot;</span>, <span class="t-str">&quot;Открыли товар&quot;</span>, <span class="t-str">&quot;Добавили в корзину&quot;</span>, <span class="t-str">&quot;Оплатили&quot;</span>]
@@ -210,6 +235,7 @@ ax.set_xlim(<span class="t-num">0</span>, users_count[<span class="t-num">0</spa
 ax.set_title(<span class="t-str">&quot;Воронка покупки&quot;</span>)
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-12.png" alt="Результат" loading="lazy"></p></div>
 <h2 id="75-как-сделать-график-понятным">7.5. Как сделать график понятным</h2>
 <p>График для отчёта — это не то, что получилось по умолчанию.</p>
 <ol>
@@ -234,6 +260,7 @@ ax.set_xlabel(<span class="t-str">&quot;Выручка, руб.&quot;</span>)
     ax.spines[side].set_visible(<span class="t-num">False</span>)
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-13.png" alt="Результат" loading="lazy"></p></div>
 <h3 id="как-графиком-обманывают">Как графиком обманывают</h3>
 <p>Знай эти приёмы, чтобы не применять случайно и замечать у других:</p>
 <ul>
@@ -302,6 +329,7 @@ ax.set_ylabel(<span class="t-str">&quot;Заказов&quot;</span>)
 ax.legend()
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-14.png" alt="Результат" loading="lazy"></p></div>
 <p>Дневной ряд шумный, поэтому он нарисован серым и тонким, а сглаженная линия — яркой: глаз сразу видит тренд. Окно в 7 дней выбрано не случайно — оно гасит недельную сезонность. Первые шесть значений скользящего среднего пустые: для них ещё не набралось семи дней.</p></details>
 <details class="sol"><summary>Задание 2. Гистограмма суммы и её логарифма</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>fig, axes = plt.subplots(<span class="t-num">1</span>, <span class="t-num">2</span>, figsize=(<span class="t-num">12</span>, <span class="t-num">4</span>))
 
@@ -317,6 +345,7 @@ axes[<span class="t-num">1</span>].set_xlabel(<span class="t-str">&quot;log(amou
 
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-15.png" alt="Результат" loading="lazy"></p></div>
 <p>Исходное распределение скошено вправо: большинство заказов небольшие, и есть длинный хвост крупных. Среднее лежит правее медианы — это видно по двум вертикальным линиям. После логарифмирования распределение становится заметно симметричнее. Такая форма типична для денег: доходов, чеков, цен.</p></details>
 <details class="sol"><summary>Задание 3. Сравнение категорий</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>order = df.groupby(<span class="t-str">&quot;category&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].median().sort_values(ascending=<span class="t-num">False</span>).index
 
@@ -328,6 +357,12 @@ ax.set_ylabel(<span class="t-str">&quot;Сумма, руб.&quot;</span>)
 plt.show()
 
 <span class="t-fn">print</span>(df.groupby(<span class="t-str">&quot;category&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].describe().<span class="t-fn">round</span>(<span class="t-num">0</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>          count    mean     std    min     25%     50%     75%      max
+category                                                               
+Книги     160.0  2945.0  2142.0   88.0  1481.0  2510.0  3910.0  13120.0
+Одежда    156.0  3036.0  2198.0   78.0  1348.0  2466.0  4031.0  10171.0
+Техника   154.0  2954.0  2168.0  116.0  1392.0  2616.0  3623.0  12842.0</code></pre>
+<p><img src="img/07-16.png" alt="Результат" loading="lazy"></p></div>
 <p>Категории отсортированы по медиане. Смотри на три вещи: положение линии медианы, высоту ящика (разброс) и точки-выбросы. Если ящики сильно перекрываются, уверенно говорить о различии категорий нельзя — нужна проверка из главы 9.</p></details>
 <details class="sol"><summary>Задание 4. Тепловая карта: день недели × город</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>weekdays = [<span class="t-str">&quot;Monday&quot;</span>, <span class="t-str">&quot;Tuesday&quot;</span>, <span class="t-str">&quot;Wednesday&quot;</span>, <span class="t-str">&quot;Thursday&quot;</span>, <span class="t-str">&quot;Friday&quot;</span>, <span class="t-str">&quot;Saturday&quot;</span>, <span class="t-str">&quot;Sunday&quot;</span>]
 
@@ -342,10 +377,12 @@ ax.set_title(<span class="t-str">&quot;Число заказов: день не�
 ax.set_xlabel(<span class="t-str">&quot;&quot;</span>)
 ax.set_ylabel(<span class="t-str">&quot;&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-17.png" alt="Результат" loading="lazy"></p></div>
 <p>На такой карте в первую очередь бросается в глаза самый крупный город: у него всё темнее просто из-за объёма. Чтобы сравнить <strong>структуру</strong> по дням, пронормируй столбцы — тогда в каждом городе сумма будет 100 %:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>share = heat / heat.<span class="t-fn">sum</span>()
 sns.heatmap(share, annot=<span class="t-num">True</span>, fmt=<span class="t-str">&quot;.0%&quot;</span>, cmap=<span class="t-str">&quot;Blues&quot;</span>)
-plt.show()</code></pre></div></details>
+plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-18.png" alt="Результат" loading="lazy"></p></div></details>
 <details class="sol"><summary>Задание 5. График уровня отчёта</summary><p>Берём график выручки по городам и проходим по семи правилам раздела 7.5:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>city_revenue = df.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>().sort_values()        <span class="t-com"># правило 4: сортировка</span>
 leader = city_revenue.index[-<span class="t-num">1</span>]
@@ -370,6 +407,7 @@ ax.set_xticks([])
 fig.tight_layout()
 fig.savefig(<span class="t-str">&quot;revenue_by_city.png&quot;</span>, dpi=<span class="t-num">150</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07-19.png" alt="Результат" loading="lazy"></p></div>
 <p>Значения подписаны прямо на столбцах, поэтому ось и сетка стали не нужны и убраны. Правило 7 (одна мысль) выполнено: график говорит только о доле лидера.</p></details>
 <details class="sol"><summary>Задание 6. Дашборд</summary><p>Готового кода здесь нет — дашборд собирается мышкой. План для Yandex DataLens (в Power BI и Tableau шаги те же, названия другие):</p>
 <ol>

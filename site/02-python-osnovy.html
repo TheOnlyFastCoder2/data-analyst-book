@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -101,16 +114,26 @@ nothing = <span class="t-num">None</span>        <span class="t-com"># None — 
 final_price = price * (<span class="t-num">1</span> - discount)
 <span class="t-fn">print</span>(final_price)        <span class="t-com"># 1020.0</span>
 <span class="t-fn">print</span>(<span class="t-fn">type</span>(final_price))  <span class="t-com"># &lt;class &#x27;float&#x27;&gt;</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>1020.0
+&lt;class &#x27;float&#x27;&gt;</code></pre></div>
 <p>Арифметика:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(<span class="t-num">7</span> + <span class="t-num">2</span>)    <span class="t-com"># 9</span>
 <span class="t-fn">print</span>(<span class="t-num">7</span> / <span class="t-num">2</span>)    <span class="t-com"># 3.5  — обычное деление, всегда float</span>
 <span class="t-fn">print</span>(<span class="t-num">7</span> // <span class="t-num">2</span>)   <span class="t-com"># 3    — целая часть</span>
 <span class="t-fn">print</span>(<span class="t-num">7</span> % <span class="t-num">2</span>)    <span class="t-com"># 1    — остаток</span>
 <span class="t-fn">print</span>(<span class="t-num">7</span> ** <span class="t-num">2</span>)   <span class="t-com"># 49   — степень</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>9
+3.5
+3
+1
+49</code></pre></div>
 <p>Преобразование типов — частая операция при очистке данных:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(<span class="t-fn">int</span>(<span class="t-str">&quot;42&quot;</span>) + <span class="t-num">1</span>)      <span class="t-com"># 43</span>
 <span class="t-fn">print</span>(<span class="t-fn">float</span>(<span class="t-str">&quot;3.14&quot;</span>) * <span class="t-num">2</span>)  <span class="t-com"># 6.28</span>
 <span class="t-fn">print</span>(<span class="t-fn">str</span>(<span class="t-num">100</span>) + <span class="t-str">&quot; руб.&quot;</span>) <span class="t-com"># 100 руб.</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>43
+6.28
+100 руб.</code></pre></div>
 <h2 id="22-строки">2.2. Строки</h2>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>name = <span class="t-str">&quot;  Иван Петров  &quot;</span>
 
@@ -120,17 +143,28 @@ final_price = price * (<span class="t-num">1</span> - discount)
 <span class="t-fn">print</span>(name.replace(<span class="t-str">&quot;Иван&quot;</span>, <span class="t-str">&quot;Пётр&quot;</span>))
 <span class="t-fn">print</span>(<span class="t-fn">len</span>(name.strip()))       <span class="t-com"># 11 — длина</span>
 <span class="t-fn">print</span>(<span class="t-str">&quot;Петров&quot;</span> <span class="t-kw">in</span> name)        <span class="t-com"># True — проверка вхождения</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Иван Петров
+иван петров
+[&#x27;Иван&#x27;, &#x27;Петров&#x27;]
+  Пётр Петров  
+11
+True</code></pre></div>
 <p>f-строки подставляют значения прямо в текст:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>city = <span class="t-str">&quot;Казань&quot;</span>
 revenue = <span class="t-num">1534200.5</span>
 <span class="t-fn">print</span>(<span class="t-str">f&quot;Выручка в городе {city}: {revenue:,.0f} руб.&quot;</span>)
 <span class="t-com"># Выручка в городе Казань: 1,534,200 руб.</span>
 <span class="t-fn">print</span>(<span class="t-str">f&quot;Доля: {0.1234:.1%}&quot;</span>)   <span class="t-com"># Доля: 12.3%</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Выручка в городе Казань: 1,534,200 руб.
+Доля: 12.3%</code></pre></div>
 <p>Срезы — способ взять часть строки (и списка). Нумерация идёт с нуля, правая граница не включается:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>date = <span class="t-str">&quot;2026-03-15&quot;</span>
 <span class="t-fn">print</span>(date[<span class="t-num">0</span>:<span class="t-num">4</span>])   <span class="t-com"># &#x27;2026&#x27;</span>
 <span class="t-fn">print</span>(date[<span class="t-num">5</span>:<span class="t-num">7</span>])   <span class="t-com"># &#x27;03&#x27;</span>
 <span class="t-fn">print</span>(date[-<span class="t-num">2</span>:])   <span class="t-com"># &#x27;15&#x27; — два последних символа</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2026
+03
+15</code></pre></div>
 <h2 id="23-коллекции">2.3. Коллекции</h2>
 <h3 id="список-list--упорядоченный-и-изменяемый">Список (list) — упорядоченный и изменяемый</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>sales = [<span class="t-num">120</span>, <span class="t-num">340</span>, <span class="t-num">90</span>, <span class="t-num">410</span>]
@@ -144,6 +178,13 @@ sales.append(<span class="t-num">250</span>)    <span class="t-com"># добав
 <span class="t-fn">print</span>(<span class="t-fn">sum</span>(sales))    <span class="t-com"># 1210</span>
 <span class="t-fn">print</span>(<span class="t-fn">max</span>(sales))    <span class="t-com"># 410</span>
 <span class="t-fn">print</span>(<span class="t-fn">sorted</span>(sales, reverse=<span class="t-num">True</span>))  <span class="t-com"># [410, 340, 250, 120, 90]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>120
+410
+[340, 90]
+5
+1210
+410
+[410, 340, 250, 120, 90]</code></pre></div>
 <h3 id="словарь-dict--пары-ключ-значение">Словарь (dict) — пары «ключ: значение»</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>order = {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">17</span>, <span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">1200</span>}
 
@@ -153,6 +194,12 @@ order[<span class="t-str">&quot;status&quot;</span>] = <span class="t-str">&quot
 
 <span class="t-kw">for</span> key, value <span class="t-kw">in</span> order.items():
     <span class="t-fn">print</span>(key, <span class="t-str">&quot;=&quot;</span>, value)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Москва
+нет
+id = 17
+city = Москва
+amount = 1200
+status = paid</code></pre></div>
 <p>Словарь — это прообраз строки таблицы, а список словарей — прообраз самой таблицы. Именно в таком виде данные приходят из API (глава 6).</p>
 <h3 id="кортеж-tuple-и-множество-set">Кортеж (tuple) и множество (set)</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>point = (<span class="t-num">55.75</span>, <span class="t-num">37.62</span>)      <span class="t-com"># кортеж: как список, но изменить нельзя</span>
@@ -161,6 +208,8 @@ lat, lon = point            <span class="t-com"># распаковка</span>
 cities = [<span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>, <span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>]
 <span class="t-fn">print</span>(<span class="t-fn">set</span>(cities))          <span class="t-com"># множество: только уникальные значения</span>
 <span class="t-fn">print</span>(<span class="t-fn">len</span>(<span class="t-fn">set</span>(cities)))     <span class="t-com"># 3</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>{&#x27;Казань&#x27;, &#x27;Уфа&#x27;, &#x27;Москва&#x27;}
+3</code></pre></div>
 <h2 id="24-условия">2.4. Условия</h2>
 <p>Блоки кода в Python выделяются <strong>отступом в 4 пробела</strong>. Это не оформление, а синтаксис.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>amount = <span class="t-num">7500</span>
@@ -173,10 +222,12 @@ cities = [<span class="t-str">&quot;Москва&quot;</span>, <span class="t-st
     segment = <span class="t-str">&quot;мелкий&quot;</span>
 
 <span class="t-fn">print</span>(segment)   <span class="t-com"># средний</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>средний</code></pre></div>
 <p>Операторы сравнения: <code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>. Логические: <code>and</code>, <code>or</code>, <code>not</code>.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>city = <span class="t-str">&quot;Москва&quot;</span>
 <span class="t-kw">if</span> city == <span class="t-str">&quot;Москва&quot;</span> <span class="t-kw">and</span> amount &gt; <span class="t-num">5000</span>:
     <span class="t-fn">print</span>(<span class="t-str">&quot;Крупный заказ из Москвы&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Крупный заказ из Москвы</code></pre></div>
 <p>Частая ошибка: <code>=</code> — это присваивание, <code>==</code> — сравнение.</p>
 <h2 id="25-циклы">2.5. Циклы</h2>
 <p><code>for</code> перебирает элементы коллекции:</p>
@@ -192,6 +243,14 @@ total = <span class="t-num">0</span>
 
 <span class="t-kw">for</span> i, s <span class="t-kw">in</span> <span class="t-fn">enumerate</span>(sales):   <span class="t-com"># номер и значение одновременно</span>
     <span class="t-fn">print</span>(i, s)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>960
+0
+1
+2
+0 120
+1 340
+2 90
+3 410</code></pre></div>
 <p><code>while</code> повторяет, пока условие истинно:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>balance = <span class="t-num">1000</span>
 months = <span class="t-num">0</span>
@@ -199,6 +258,7 @@ months = <span class="t-num">0</span>
     balance *= <span class="t-num">1.1</span>
     months += <span class="t-num">1</span>
 <span class="t-fn">print</span>(months)   <span class="t-com"># 8</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>8</code></pre></div>
 <h3 id="генераторы-списков">Генераторы списков</h3>
 <p>Короткая запись цикла, который строит новый список. В чужом коде встречается постоянно:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>sales = [<span class="t-num">120</span>, <span class="t-num">340</span>, <span class="t-num">90</span>, <span class="t-num">410</span>]
@@ -208,6 +268,8 @@ big = [s <span class="t-kw">for</span> s <span class="t-kw">in</span> sales <spa
 
 <span class="t-fn">print</span>(with_tax)   <span class="t-com"># [144.0, 408.0, 108.0, 492.0]</span>
 <span class="t-fn">print</span>(big)        <span class="t-com"># [120, 340, 410]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[144.0, 408.0, 108.0, 492.0]
+[120, 340, 410]</code></pre></div>
 <h2 id="26-функции">2.6. Функции</h2>
 <p>Функция — именованный кусок кода, который можно вызывать много раз.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">conversion</span>(orders, visits):
@@ -218,16 +280,21 @@ big = [s <span class="t-kw">for</span> s <span class="t-kw">in</span> sales <spa
 
 <span class="t-fn">print</span>(conversion(<span class="t-num">30</span>, <span class="t-num">1200</span>))             <span class="t-com"># 2.5</span>
 <span class="t-fn">print</span>(conversion(orders=<span class="t-num">5</span>, visits=<span class="t-num">0</span>))   <span class="t-com"># 0.0</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2.5
+0.0</code></pre></div>
 <p>Аргументы со значением по умолчанию:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">segment</span>(amount, threshold=<span class="t-num">10000</span>):
     <span class="t-kw">return</span> <span class="t-str">&quot;крупный&quot;</span> <span class="t-kw">if</span> amount &gt;= threshold <span class="t-kw">else</span> <span class="t-str">&quot;обычный&quot;</span>
 
 <span class="t-fn">print</span>(segment(<span class="t-num">12000</span>))                    <span class="t-com"># крупный</span>
 <span class="t-fn">print</span>(segment(<span class="t-num">12000</span>, threshold=<span class="t-num">20000</span>))   <span class="t-com"># обычный</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>крупный
+обычный</code></pre></div>
 <p><code>lambda</code> — функция в одну строку без имени. В pandas её передают в методы <code>apply</code> и <code>sort_values</code>:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>orders = [{<span class="t-str">&quot;id&quot;</span>: <span class="t-num">1</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">500</span>}, {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">2</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">90</span>}]
 orders_sorted = <span class="t-fn">sorted</span>(orders, key=<span class="t-kw">lambda</span> o: o[<span class="t-str">&quot;amount&quot;</span>])
 <span class="t-fn">print</span>(orders_sorted[<span class="t-num">0</span>][<span class="t-str">&quot;id&quot;</span>])   <span class="t-com"># 2</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2</code></pre></div>
 <p>Правило: если один и тот же код ты скопировал третий раз — вынеси его в функцию.</p>
 <h2 id="27-модули-и-библиотеки">2.7. Модули и библиотеки</h2>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> math
@@ -242,6 +309,10 @@ d = date(<span class="t-num">2026</span>, <span class="t-num">3</span>, <span cl
 
 cities = [<span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>, <span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>, <span class="t-str">&quot;Москва&quot;</span>]
 <span class="t-fn">print</span>(Counter(cities).most_common(<span class="t-num">2</span>))       <span class="t-com"># [(&#x27;Москва&#x27;, 3), (&#x27;Казань&#x27;, 1)]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>4.0
+2026-04-14
+6
+[(&#x27;Москва&#x27;, 3), (&#x27;Казань&#x27;, 1)]</code></pre></div>
 <p>Сторонние библиотеки по традиции импортируют под короткими именами. Запомни их — так пишут все:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
 <span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
@@ -254,6 +325,8 @@ cities = [<span class="t-str">&quot;Москва&quot;</span>, <span class="t-st
 <span class="t-kw">with</span> <span class="t-fn">open</span>(<span class="t-str">&quot;notes.txt&quot;</span>, encoding=<span class="t-str">&quot;utf-8&quot;</span>) <span class="t-kw">as</span> f:
     <span class="t-kw">for</span> line <span class="t-kw">in</span> f:
         <span class="t-fn">print</span>(line.strip())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Первая строка
+Вторая строка</code></pre></div>
 <p>Конструкция <code>with</code> сама закроет файл. Всегда указывай <code>encoding=&quot;utf-8&quot;</code>. На macOS это кодировка по умолчанию, но на Windows — нет: без явного указания твой код на компьютере коллеги превратит русские буквы в кракозябры.</p>
 <h2 id="29-ошибки">2.9. Ошибки</h2>
 <p>Сообщение об ошибке (traceback) читают <strong>снизу вверх</strong>: последняя строка говорит, что случилось, строки выше — где.</p>
@@ -269,6 +342,8 @@ values = []
         <span class="t-fn">print</span>(<span class="t-str">f&quot;Пропускаю: {item}&quot;</span>)
 
 <span class="t-fn">print</span>(values)   <span class="t-com"># [100, 250, 80]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Пропускаю: н/д
+[100, 250, 80]</code></pre></div>
 <p>Когда не получается: прочитай последнюю строку ошибки, вбей её в поиск и только потом проси помощи. Умение гуглить ошибки — рабочий навык, а не слабость.</p>
 <h3 id="как-искать-ошибку-когда-код-работает-неправильно">Как искать ошибку, когда код работает неправильно</h3>
 <p>Хуже ошибки с красным текстом — код, который выполнился, но посчитал не то. Приёмы поиска:</p>
@@ -280,6 +355,10 @@ quantity = <span class="t-num">3</span>
 <span class="t-fn">print</span>(<span class="t-fn">type</span>(price), <span class="t-fn">type</span>(quantity))
 <span class="t-fn">print</span>(price * quantity)               <span class="t-com"># 120012001200 — строка повторилась три раза</span>
 <span class="t-fn">print</span>(<span class="t-fn">int</span>(price) * quantity)          <span class="t-com"># 3600</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>price=&#x27;1200&#x27; quantity=3
+&lt;class &#x27;str&#x27;&gt; &lt;class &#x27;int&#x27;&gt;
+120012001200
+3600</code></pre></div>
 <p>Самая частая причина неверного результата — значение не того типа: число, прочитанное как строка.</p>
 <p><strong>2. Проверяй по частям.</strong> Длинное выражение разбей на шаги и посмотри результат каждого:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>orders = [{<span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot; Москва&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">1200</span>}, {<span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;москва&quot;</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">300</span>}]
@@ -294,6 +373,10 @@ cities = [o[<span class="t-str">&quot;city&quot;</span>] <span class="t-kw">for<
 clean = [o[<span class="t-str">&quot;city&quot;</span>].strip().capitalize() <span class="t-kw">for</span> o <span class="t-kw">in</span> orders]
 <span class="t-fn">print</span>(clean)                          <span class="t-com"># [&#x27;Москва&#x27;, &#x27;Москва&#x27;]</span>
 <span class="t-fn">print</span>(<span class="t-fn">sum</span>(o[<span class="t-str">&quot;amount&quot;</span>] <span class="t-kw">for</span> o <span class="t-kw">in</span> orders <span class="t-kw">if</span> o[<span class="t-str">&quot;city&quot;</span>].strip().capitalize() == <span class="t-str">&quot;Москва&quot;</span>))   <span class="t-com"># 1500</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0
+[&#x27; Москва&#x27;, &#x27;москва&#x27;]
+[&#x27;Москва&#x27;, &#x27;Москва&#x27;]
+1500</code></pre></div>
 <p><strong>3. Уменьши задачу.</strong> Не ищи ошибку на миллионе строк. Возьми три строки, для которых знаешь правильный ответ, и проверь на них.</p>
 <p><strong>4. Читай справку.</strong> <code>help(функция)</code> или <code>функция?</code> в Jupyter покажут, что функция принимает и возвращает. <code>dir(объект)</code> — список всех методов объекта.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>help(<span class="t-fn">str</span>.split)
@@ -369,6 +452,7 @@ avg = <span class="t-fn">sum</span>(o[<span class="t-str">&quot;amount&quot;</sp
     <span class="t-kw">return</span> total / count
 
 <span class="t-fn">print</span>(mean([<span class="t-num">12</span>, <span class="t-num">15</span>, <span class="t-num">11</span>, <span class="t-num">19</span>]))     <span class="t-com"># 14.25</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>14.25</code></pre></div>
 <p>Сумму и количество накапливаем в одном проходе. Проверка на пустой список нужна, иначе получится деление на ноль с непонятным сообщением.</p></details>
 <details class="sol"><summary>Задание 2. Медиана</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">median</span>(values):
     ordered = <span class="t-fn">sorted</span>(values)              <span class="t-com"># sorted возвращает новый список, исходный не меняется</span>
@@ -380,6 +464,8 @@ avg = <span class="t-fn">sum</span>(o[<span class="t-str">&quot;amount&quot;</sp
 
 <span class="t-fn">print</span>(median([<span class="t-num">5</span>, <span class="t-num">1</span>, <span class="t-num">3</span>]))          <span class="t-com"># 3</span>
 <span class="t-fn">print</span>(median([<span class="t-num">5</span>, <span class="t-num">1</span>, <span class="t-num">3</span>, <span class="t-num">100</span>]))     <span class="t-com"># 4.0</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>3
+4.0</code></pre></div>
 <p>Частая ошибка — забыть отсортировать. Вторая — использовать <code>values.sort()</code>: он меняет список, который передали в функцию.</p></details>
 <details class="sol"><summary>Задание 3. Города</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>raw = [<span class="t-str">&quot;  Москва&quot;</span>, <span class="t-str">&quot;москва &quot;</span>, <span class="t-str">&quot;КАЗАНЬ&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>]
 
@@ -389,6 +475,7 @@ counts = {}
     counts[clean] = counts.get(clean, <span class="t-num">0</span>) + <span class="t-num">1</span>
 
 <span class="t-fn">print</span>(counts)                     <span class="t-com"># {&#x27;Москва&#x27;: 2, &#x27;Казань&#x27;: 2}</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>{&#x27;Москва&#x27;: 2, &#x27;Казань&#x27;: 2}</code></pre></div>
 <p>Цепочка <code>strip → lower → capitalize</code> приводит любое написание к одному виду. Порядок важен: сначала убираем пробелы, иначе <code>capitalize</code> попытается сделать заглавным пробел.</p></details>
 <details class="sol"><summary>Задание 4. Заказы и средний чек по категориям</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>orders = [
     {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">1</span>, <span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;category&quot;</span>: <span class="t-str">&quot;Книги&quot;</span>,   <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">1200</span>},
@@ -408,6 +495,8 @@ stats = {}
 
 <span class="t-kw">for</span> category, s <span class="t-kw">in</span> stats.items():
     <span class="t-fn">print</span>(<span class="t-str">f&quot;{category}: заказов {s[&#x27;count&#x27;]}, средний чек {s[&#x27;total&#x27;] / s[&#x27;count&#x27;]:.0f}&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Книги: заказов 3, средний чек 1333
+Техника: заказов 2, средний чек 12150</code></pre></div>
 <p>Результат: «Книги: заказов 3, средний чек 1333» и «Техника: заказов 2, средний чек 12150». Средний чек считаем в конце, из накопленных суммы и количества: усреднять «на ходу» нельзя.</p></details>
 <details class="sol"><summary>Задание 5. Квартал по дате</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">quarter</span>(date_text):
     month = <span class="t-fn">int</span>(date_text[<span class="t-num">5</span>:<span class="t-num">7</span>])           <span class="t-com"># символы с индексами 5 и 6 — месяц</span>
@@ -415,6 +504,10 @@ stats = {}
 
 <span class="t-kw">for</span> d <span class="t-kw">in</span> [<span class="t-str">&quot;2026-01-10&quot;</span>, <span class="t-str">&quot;2026-03-15&quot;</span>, <span class="t-str">&quot;2026-04-01&quot;</span>, <span class="t-str">&quot;2026-12-31&quot;</span>]:
     <span class="t-fn">print</span>(d, quarter(d))                  <span class="t-com"># 1, 1, 2, 4</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2026-01-10 1
+2026-03-15 1
+2026-04-01 2
+2026-12-31 4</code></pre></div>
 <p>Формула <code>(month - 1) // 3 + 1</code>: вычитаем единицу, чтобы месяцы 1–3 попали в одну тройку (0, 1, 2 → 0), делим нацело и возвращаем нумерацию с единицы.</p></details>
 <details class="sol"><summary>Задание 6. Сохранение в файл</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">with</span> <span class="t-fn">open</span>(<span class="t-str">&quot;category_report.txt&quot;</span>, <span class="t-str">&quot;w&quot;</span>, encoding=<span class="t-str">&quot;utf-8&quot;</span>) <span class="t-kw">as</span> f:
     f.write(<span class="t-str">&quot;Категория;Заказов;Средний чек\n&quot;</span>)
@@ -423,6 +516,9 @@ stats = {}
 
 <span class="t-kw">with</span> <span class="t-fn">open</span>(<span class="t-str">&quot;category_report.txt&quot;</span>, encoding=<span class="t-str">&quot;utf-8&quot;</span>) <span class="t-kw">as</span> f:
     <span class="t-fn">print</span>(f.read())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Категория;Заказов;Средний чек
+Книги;3;1333
+Техника;2;12150</code></pre></div>
 <p>Сразу после записи читаем файл обратно и смотрим глазами — привычка проверять результат, а не верить, что «наверное, записалось».</p></details><nav class="nav "><a class="prev" href="01-excel.html" id=prev><small>← Назад</small><b>Глава 1. Таблицы: Excel и Google Sheets</b></a><a class="next" href="02a-python-dalshe.html" id=next><small>Вперёд →</small><b>Глава 2А. Python: следующий уровень</b></a></nav>
 </main>
 <footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>

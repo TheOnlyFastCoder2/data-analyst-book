@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -98,6 +111,8 @@ b = a            <span class="t-com"># второй ярлык на ТОТ ЖЕ 
 b.append(<span class="t-num">4</span>)
 <span class="t-fn">print</span>(a)         <span class="t-com"># [1, 2, 3, 4] — «изменился» и a, потому что список один</span>
 <span class="t-fn">print</span>(a <span class="t-kw">is</span> b)    <span class="t-com"># True — это один и тот же объект</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[1, 2, 3, 4]
+True</code></pre></div>
 <p>Чтобы получить независимую копию, её нужно создать явно:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>a = [<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">3</span>]
 c = a.copy()     <span class="t-com"># или list(a), или a[:]</span>
@@ -105,6 +120,9 @@ c.append(<span class="t-num">4</span>)
 <span class="t-fn">print</span>(a)         <span class="t-com"># [1, 2, 3] — оригинал не тронут</span>
 <span class="t-fn">print</span>(a <span class="t-kw">is</span> c)    <span class="t-com"># False</span>
 <span class="t-fn">print</span>(a == c[:<span class="t-num">3</span>])  <span class="t-com"># True: == сравнивает содержимое, is — сам объект</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[1, 2, 3]
+False
+True</code></pre></div>
 <h3 id="изменяемые-и-неизменяемые-типы">Изменяемые и неизменяемые типы</h3>
 <div class="table"><table><thead><tr><th>Неизменяемые (immutable)</th><th>Изменяемые (mutable)</th></tr></thead><tbody><tr><td><code>int</code>, <code>float</code>, <code>bool</code>, <code>str</code>, <code>tuple</code>, <code>frozenset</code>, <code>None</code></td><td><code>list</code>, <code>dict</code>, <code>set</code>, почти все пользовательские объекты, <code>DataFrame</code></td></tr></tbody></table></div>
 <p>Неизменяемый объект нельзя поменять — можно только создать новый:</p>
@@ -114,6 +132,8 @@ s.upper()          <span class="t-com"># создаёт НОВУЮ строку,
 
 s = s.upper()      <span class="t-com"># перепривязали ярлык к новой строке</span>
 <span class="t-fn">print</span>(s)           <span class="t-com"># МОСКВА</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>москва
+МОСКВА</code></pre></div>
 <p>Это объясняет, почему в pandas нужно писать <code>df = df.sort_values(...)</code>: метод возвращает новый объект.</p>
 <h3 id="ловушка-1-функция-меняет-переданный-список">Ловушка 1: функция меняет переданный список</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">add_total</span>(row):
@@ -123,12 +143,14 @@ s = s.upper()      <span class="t-com"># перепривязали ярлык �
 data = [<span class="t-num">10</span>, <span class="t-num">20</span>]
 result = add_total(data)
 <span class="t-fn">print</span>(data)                   <span class="t-com"># [10, 20, 30] — исходные данные испорчены</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[10, 20, 30]</code></pre></div>
 <p>Правильно — не трогать вход, а вернуть новое значение:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">with_total</span>(row):
     <span class="t-kw">return</span> row + [<span class="t-fn">sum</span>(row)]   <span class="t-com"># новый список</span>
 
 data = [<span class="t-num">10</span>, <span class="t-num">20</span>]
 <span class="t-fn">print</span>(with_total(data), data)   <span class="t-com"># [10, 20, 30] [10, 20]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[10, 20, 30] [10, 20]</code></pre></div>
 <h3 id="ловушка-2-изменяемое-значение-по-умолчанию">Ловушка 2: изменяемое значение по умолчанию</h3>
 <p>Классическая ошибка, которую спрашивают на собеседованиях:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">add_item</span>(item, basket=[]):       <span class="t-com"># список создаётся ОДИН раз — при определении функции</span>
@@ -137,6 +159,8 @@ data = [<span class="t-num">10</span>, <span class="t-num">20</span>]
 
 <span class="t-fn">print</span>(add_item(<span class="t-str">&quot;хлеб&quot;</span>))     <span class="t-com"># [&#x27;хлеб&#x27;]</span>
 <span class="t-fn">print</span>(add_item(<span class="t-str">&quot;молоко&quot;</span>))   <span class="t-com"># [&#x27;хлеб&#x27;, &#x27;молоко&#x27;] — корзина общая на все вызовы!</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[&#x27;хлеб&#x27;]
+[&#x27;хлеб&#x27;, &#x27;молоко&#x27;]</code></pre></div>
 <p>Решение — <code>None</code> как значение по умолчанию:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">add_item</span>(item, basket=<span class="t-num">None</span>):
     <span class="t-kw">if</span> basket <span class="t-kw">is</span> <span class="t-num">None</span>:
@@ -146,6 +170,8 @@ data = [<span class="t-num">10</span>, <span class="t-num">20</span>]
 
 <span class="t-fn">print</span>(add_item(<span class="t-str">&quot;хлеб&quot;</span>))     <span class="t-com"># [&#x27;хлеб&#x27;]</span>
 <span class="t-fn">print</span>(add_item(<span class="t-str">&quot;молоко&quot;</span>))   <span class="t-com"># [&#x27;молоко&#x27;]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[&#x27;хлеб&#x27;]
+[&#x27;молоко&#x27;]</code></pre></div>
 <h3 id="ловушка-3-поверхностная-копия">Ловушка 3: поверхностная копия</h3>
 <p><code>copy()</code> копирует только верхний уровень. Вложенные списки остаются общими:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> copy
@@ -157,6 +183,8 @@ deep = copy.deepcopy(matrix)
 matrix[<span class="t-num">0</span>].append(<span class="t-num">99</span>)
 <span class="t-fn">print</span>(shallow[<span class="t-num">0</span>])   <span class="t-com"># [1, 2, 99] — вложенный список общий</span>
 <span class="t-fn">print</span>(deep[<span class="t-num">0</span>])      <span class="t-com"># [1, 2]     — полная независимая копия</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[1, 2, 99]
+[1, 2]</code></pre></div>
 <h2 id="2а2-распаковка">2А.2. Распаковка</h2>
 <p>Распаковка — присваивание сразу нескольким именам. Делает код короче и понятнее.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>point = (<span class="t-num">55.75</span>, <span class="t-num">37.62</span>)
@@ -175,6 +203,10 @@ head, *middle, tail = [<span class="t-num">1</span>, <span class="t-num">2</span
 date_str = <span class="t-str">&quot;2026-03-15&quot;</span>
 year, month, day = date_str.split(<span class="t-str">&quot;-&quot;</span>)
 <span class="t-fn">print</span>(year, month, day)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2 1
+10 [20, 30, 40]
+1 [2, 3, 4] 5
+2026 03 15</code></pre></div>
 <p>Распаковка в цикле — самый частый случай:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>orders = [(<span class="t-str">&quot;Москва&quot;</span>, <span class="t-num">1200</span>), (<span class="t-str">&quot;Казань&quot;</span>, <span class="t-num">15400</span>), (<span class="t-str">&quot;Уфа&quot;</span>, <span class="t-num">700</span>)]
 
@@ -183,6 +215,12 @@ year, month, day = date_str.split(<span class="t-str">&quot;-&quot;</span>)
 
 <span class="t-kw">for</span> number, (city, amount) <span class="t-kw">in</span> <span class="t-fn">enumerate</span>(orders, start=<span class="t-num">1</span>):
     <span class="t-fn">print</span>(number, city, amount)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Москва: 1200
+Казань: 15400
+Уфа: 700
+1 Москва 1200
+2 Казань 15400
+3 Уфа 700</code></pre></div>
 <h3 id="zip-идём-по-нескольким-спискам-сразу">zip: идём по нескольким спискам сразу</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>cities = [<span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>]
 revenue = [<span class="t-num">12200</span>, <span class="t-num">15400</span>, <span class="t-num">700</span>]
@@ -196,6 +234,11 @@ by_city = <span class="t-fn">dict</span>(<span class="t-fn">zip</span>(cities, r
 pairs = [(<span class="t-str">&quot;a&quot;</span>, <span class="t-num">1</span>), (<span class="t-str">&quot;b&quot;</span>, <span class="t-num">2</span>)]
 letters, numbers = <span class="t-fn">zip</span>(*pairs)                <span class="t-com"># обратная операция: «расстегнуть»</span>
 <span class="t-fn">print</span>(letters, numbers)                       <span class="t-com"># (&#x27;a&#x27;, &#x27;b&#x27;) (1, 2)</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Москва 12200
+Казань 15400
+Уфа 700
+{&#x27;Москва&#x27;: 12200, &#x27;Казань&#x27;: 15400, &#x27;Уфа&#x27;: 700}
+(&#x27;a&#x27;, &#x27;b&#x27;) (1, 2)</code></pre></div>
 <h3 id="звёздочки-при-вызове-функции">Звёздочки при вызове функции</h3>
 <p><code>*</code> распаковывает список в позиционные аргументы, <code>**</code> — словарь в именованные:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">describe</span>(city, amount, currency=<span class="t-str">&quot;руб.&quot;</span>):
@@ -210,6 +253,9 @@ kwargs = {<span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot
 defaults = {<span class="t-str">&quot;sep&quot;</span>: <span class="t-str">&quot;;&quot;</span>, <span class="t-str">&quot;encoding&quot;</span>: <span class="t-str">&quot;utf-8&quot;</span>}
 custom = {**defaults, <span class="t-str">&quot;sep&quot;</span>: <span class="t-str">&quot;,&quot;</span>}            <span class="t-com"># объединение словарей, правый побеждает</span>
 <span class="t-fn">print</span>(custom)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Москва: 1200 руб.
+Казань: 500 USD
+{&#x27;sep&#x27;: &#x27;,&#x27;, &#x27;encoding&#x27;: &#x27;utf-8&#x27;}</code></pre></div>
 <p>Последний приём постоянно встречается в коде: «настройки по умолчанию плюс то, что передал пользователь».</p>
 <h2 id="2а3-функции-глубже">2А.3. Функции глубже</h2>
 <h3 id="args-и-kwargs"><code>*args</code> и <code>**kwargs</code></h3>
@@ -226,6 +272,10 @@ custom = {**defaults, <span class="t-str">&quot;sep&quot;</span>: <span class="t
     <span class="t-kw">return</span> <span class="t-str">&quot;\n&quot;</span>.join(lines)
 
 <span class="t-fn">print</span>(make_report(<span class="t-str">&quot;Итоги&quot;</span>, выручка=<span class="t-num">1200</span>, заказы=<span class="t-num">17</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>6
+Итоги
+  выручка: 1200
+  заказы: 17</code></pre></div>
 <p>Теперь понятна запись, которую ты увидишь в документации pandas: <code>df.plot(*args, **kwargs)</code> — «принимает что угодно и передаёт дальше».</p>
 <h3 id="только-именованные-аргументы">Только именованные аргументы</h3>
 <p>Всё, что стоит после <code>*</code>, можно передать только по имени. Это защищает от путаницы в порядке:</p>
@@ -235,6 +285,7 @@ custom = {**defaults, <span class="t-str">&quot;sep&quot;</span>: <span class="t
 
 <span class="t-fn">print</span>(conversion(<span class="t-num">30</span>, <span class="t-num">1200</span>, as_percent=<span class="t-num">True</span>))   <span class="t-com"># 2.5</span>
 <span class="t-com"># conversion(30, 1200, True)  → TypeError: так нельзя, и это хорошо</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2.5</code></pre></div>
 <p>Сравни: <code>conversion(30, 1200, True, 1)</code> — что такое <code>True</code> и <code>1</code>? С именами вопросов нет.</p>
 <h3 id="функции--это-объекты">Функции — это объекты</h3>
 <p>Функцию можно положить в переменную, в список, в словарь и передать в другую функцию. На этом построены <code>sorted(key=...)</code>, <code>df.apply(...)</code> и половина паттернов из главы 2В.</p>
@@ -249,6 +300,9 @@ metrics = {<span class="t-str">&quot;среднее&quot;</span>: mean, <span cl
 data = [<span class="t-num">12</span>, <span class="t-num">15</span>, <span class="t-num">11</span>, <span class="t-num">19</span>]
 <span class="t-kw">for</span> name, func <span class="t-kw">in</span> metrics.items():
     <span class="t-fn">print</span>(name, func(data))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>среднее 14.25
+размах 8
+максимум 19</code></pre></div>
 <h3 id="замыкания-функция-которая-помнит">Замыкания: функция, которая помнит</h3>
 <p>Функция, созданная внутри другой функции, запоминает переменные внешней:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">make_threshold_checker</span>(threshold):
@@ -260,6 +314,7 @@ is_big_order = make_threshold_checker(<span class="t-num">10000</span>)
 is_vip_order = make_threshold_checker(<span class="t-num">100000</span>)
 
 <span class="t-fn">print</span>(is_big_order(<span class="t-num">15000</span>), is_vip_order(<span class="t-num">15000</span>))   <span class="t-com"># True False</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>True False</code></pre></div>
 <p>Это основа декораторов (раздел 2А.6).</p>
 <h3 id="области-видимости">Области видимости</h3>
 <p>Python ищет имя в порядке <strong>LEGB</strong>: Local (внутри функции) → Enclosing (во внешней функции) → Global (в модуле) → Built-in (встроенные).</p>
@@ -270,6 +325,7 @@ is_vip_order = make_threshold_checker(<span class="t-num">100000</span>)
     <span class="t-kw">return</span> price + tax        <span class="t-com"># tax — локальная, снаружи её нет</span>
 
 <span class="t-fn">print</span>(with_tax(<span class="t-num">100</span>))          <span class="t-com"># 120.0</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>120.0</code></pre></div>
 <p>Читать глобальные переменные можно, <strong>менять их из функции — плохая практика</strong>: результат функции начинает зависеть от того, что происходило до вызова. Всё, что функции нужно, передавай аргументами.</p>
 <h2 id="2а4-включения-comprehensions">2А.4. Включения (comprehensions)</h2>
 <p>Короткая запись «построить коллекцию из другой коллекции». Бывают для списков, словарей и множеств.</p>
@@ -287,11 +343,17 @@ amount_by_id = {o[<span class="t-str">&quot;id&quot;</span>]: o[<span class="t-s
 cities = {o[<span class="t-str">&quot;city&quot;</span>] <span class="t-kw">for</span> o <span class="t-kw">in</span> orders}                             <span class="t-com"># множество</span>
 
 <span class="t-fn">print</span>(amounts, big_ids, labels, amount_by_id, cities, sep=<span class="t-str">&quot;\n&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[1200, 15400, 8900]
+[2, 3]
+[&#x27;обычный&#x27;, &#x27;крупный&#x27;, &#x27;крупный&#x27;]
+{1: 1200, 2: 15400, 3: 8900}
+{&#x27;Казань&#x27;, &#x27;Москва&#x27;}</code></pre></div>
 <p>Обрати внимание на разницу: <code>if</code> <strong>в конце</strong> отбирает элементы, <code>if ... else</code> <strong>в начале</strong> выбирает значение.</p>
 <p>Вложенное включение читается слева направо, как вложенные циклы:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>matrix = [[<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">3</span>], [<span class="t-num">4</span>, <span class="t-num">5</span>, <span class="t-num">6</span>]]
 flat = [x <span class="t-kw">for</span> row <span class="t-kw">in</span> matrix <span class="t-kw">for</span> x <span class="t-kw">in</span> row]
 <span class="t-fn">print</span>(flat)        <span class="t-com"># [1, 2, 3, 4, 5, 6]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[1, 2, 3, 4, 5, 6]</code></pre></div>
 <p>Правило меры: если включение не помещается в одну-две строки или в нём больше одного условия — пиши обычный цикл. Краткость не должна вредить понятности.</p>
 <h3 id="генераторное-выражение">Генераторное выражение</h3>
 <p>То же самое, но в круглых скобках. Оно не строит список в памяти, а выдаёт значения по одному:</p>
@@ -299,6 +361,7 @@ flat = [x <span class="t-kw">for</span> row <span class="t-kw">in</span> matrix 
 has_big = <span class="t-fn">any</span>(o[<span class="t-str">&quot;amount&quot;</span>] &gt; <span class="t-num">10000</span> <span class="t-kw">for</span> o <span class="t-kw">in</span> orders)       <span class="t-com"># остановится на первом True</span>
 all_positive = <span class="t-fn">all</span>(o[<span class="t-str">&quot;amount&quot;</span>] &gt; <span class="t-num">0</span> <span class="t-kw">for</span> o <span class="t-kw">in</span> orders)
 <span class="t-fn">print</span>(total, has_big, all_positive)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>25500 True True</code></pre></div>
 <p><code>any</code> и <code>all</code> заменяют целые циклы с флажками — запомни их.</p>
 <h2 id="2а5-итераторы-и-генераторы">2А.5. Итераторы и генераторы</h2>
 <p><strong>Итерируемый объект</strong> — всё, по чему можно пройти циклом <code>for</code>: список, строка, словарь, файл, DataFrame.</p>
@@ -314,6 +377,11 @@ all_positive = <span class="t-fn">all</span>(o[<span class="t-str">&quot;amount&
 gen = countdown(<span class="t-num">2</span>)
 <span class="t-fn">print</span>(<span class="t-fn">next</span>(gen))         <span class="t-com"># 2</span>
 <span class="t-fn">print</span>(<span class="t-fn">next</span>(gen))         <span class="t-com"># 1</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>3
+2
+1
+2
+1</code></pre></div>
 <p>Зачем это аналитику: обработка файла, который не помещается в память.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">with</span> <span class="t-fn">open</span>(<span class="t-str">&quot;big.csv&quot;</span>, <span class="t-str">&quot;w&quot;</span>, encoding=<span class="t-str">&quot;utf-8&quot;</span>) <span class="t-kw">as</span> f:       <span class="t-com"># создадим файл для примера</span>
     f.write(<span class="t-str">&quot;city,amount\n&quot;</span>)
@@ -331,6 +399,7 @@ gen = countdown(<span class="t-num">2</span>)
 
 total = <span class="t-fn">sum</span>(<span class="t-fn">int</span>(row[<span class="t-str">&quot;amount&quot;</span>]) <span class="t-kw">for</span> row <span class="t-kw">in</span> read_rows(<span class="t-str">&quot;big.csv&quot;</span>) <span class="t-kw">if</span> row[<span class="t-str">&quot;city&quot;</span>] == <span class="t-str">&quot;Москва&quot;</span>)
 <span class="t-fn">print</span>(total)             <span class="t-com"># 250000</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>250000</code></pre></div>
 <p>Файл читается по одной строке: в памяти в каждый момент ровно одна запись. Так же устроен параметр <code>chunksize</code> в <code>pd.read_csv</code>.</p>
 <p>Генераторы можно соединять в цепочку — получается конвейер обработки:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">only_city</span>(rows, city):
@@ -344,6 +413,7 @@ total = <span class="t-fn">sum</span>(<span class="t-fn">int</span>(row[<span cl
 
 pipeline = amounts(only_city(read_rows(<span class="t-str">&quot;big.csv&quot;</span>), <span class="t-str">&quot;Казань&quot;</span>))
 <span class="t-fn">print</span>(<span class="t-fn">max</span>(pipeline))     <span class="t-com"># 998</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>998</code></pre></div>
 <p>Важное свойство: <strong>генератор одноразовый</strong>. Пройдя его до конца, второй раз значения не получишь — нужно создать заново.</p>
 <h2 id="2а6-декораторы">2А.6. Декораторы</h2>
 <p>Декоратор — функция, которая принимает функцию и возвращает её улучшенную версию. Он добавляет поведение, не трогая код самой функции: замер времени, логирование, повтор при ошибке, кэширование.</p>
@@ -367,6 +437,8 @@ pipeline = amounts(only_city(read_rows(<span class="t-str">&quot;big.csv&quot;</
     <span class="t-kw">return</span> <span class="t-fn">sum</span>(i * i <span class="t-kw">for</span> i <span class="t-kw">in</span> <span class="t-fn">range</span>(n))
 
 <span class="t-fn">print</span>(slow_sum(<span class="t-num">100_000</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>slow_sum выполнилась за 0.0033 с
+333328333350000</code></pre></div>
 <p>Строка <code>@timer</code> над функцией — просто удобная запись для <code>slow_sum = timer(slow_sum)</code>.</p>
 <p>Декоратор с параметрами — ещё один уровень вложенности:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">retry</span>(times=<span class="t-num">3</span>, delay=<span class="t-num">0.0</span>):
@@ -395,6 +467,9 @@ calls = {<span class="t-str">&quot;count&quot;</span>: <span class="t-num">0</sp
     <span class="t-kw">return</span> {<span class="t-str">&quot;status&quot;</span>: <span class="t-str">&quot;ok&quot;</span>}
 
 <span class="t-fn">print</span>(unstable_api())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Попытка 1 не удалась: сервер не отвечает
+Попытка 2 не удалась: сервер не отвечает
+{&#x27;status&#x27;: &#x27;ok&#x27;}</code></pre></div>
 <p>Именно так оборачивают запросы к API и базам данных, которые иногда падают.</p>
 <p>Готовый декоратор из стандартной библиотеки, который полезно знать, — кэш результатов:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-def">@functools.lru_cache</span>(maxsize=<span class="t-num">None</span>)
@@ -402,6 +477,7 @@ calls = {<span class="t-str">&quot;count&quot;</span>: <span class="t-num">0</sp
     <span class="t-kw">return</span> n <span class="t-kw">if</span> n &lt; <span class="t-num">2</span> <span class="t-kw">else</span> fib(n - <span class="t-num">1</span>) + fib(n - <span class="t-num">2</span>)
 
 <span class="t-fn">print</span>(fib(<span class="t-num">80</span>))       <span class="t-com"># мгновенно; без кэша считалось бы годами</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>23416728348467685</code></pre></div>
 <h2 id="2а7-менеджеры-контекста">2А.7. Менеджеры контекста</h2>
 <p>Конструкция <code>with</code> гарантирует, что ресурс будет освобождён — даже если внутри случилась ошибка. Ты уже видел её с файлами; так же работают соединения с базой.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> sqlite3
@@ -410,6 +486,7 @@ calls = {<span class="t-str">&quot;count&quot;</span>: <span class="t-num">0</sp
     conn.execute(<span class="t-str">&quot;CREATE TABLE t (x INTEGER)&quot;</span>)
     conn.execute(<span class="t-str">&quot;INSERT INTO t VALUES (1), (2), (3)&quot;</span>)
     <span class="t-fn">print</span>(conn.execute(<span class="t-str">&quot;SELECT SUM(x) FROM t&quot;</span>).fetchone()[<span class="t-num">0</span>])    <span class="t-com"># 6</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>6</code></pre></div>
 <p>Свой менеджер контекста проще всего сделать из генератора: всё до <code>yield</code> выполняется на входе, всё после — на выходе.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> contextlib <span class="t-kw">import</span> contextmanager
 
@@ -424,6 +501,7 @@ calls = {<span class="t-str">&quot;count&quot;</span>: <span class="t-num">0</sp
 
 <span class="t-kw">with</span> stopwatch(<span class="t-str">&quot;Подсчёт&quot;</span>):
     total = <span class="t-fn">sum</span>(<span class="t-fn">range</span>(<span class="t-num">1_000_000</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Подсчёт: 0.0076 с</code></pre></div>
 <p>Удобно замерять в ноутбуке, сколько занял каждый шаг анализа.</p>
 <h2 id="2а8-исключения-всерьёз">2А.8. Исключения всерьёз</h2>
 <h3 id="полная-форма">Полная форма</h3>
@@ -440,6 +518,9 @@ calls = {<span class="t-str">&quot;count&quot;</span>: <span class="t-num">0</sp
 
 <span class="t-fn">print</span>(parse_amount(<span class="t-str">&quot;1 200,50&quot;</span>))    <span class="t-com"># 1200.5</span>
 <span class="t-fn">print</span>(parse_amount(<span class="t-str">&quot;н/д&quot;</span>))         <span class="t-com"># None</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>1200.5
+Не число: &#x27;н/д&#x27;
+None</code></pre></div>
 <h3 id="правила-работы-с-исключениями">Правила работы с исключениями</h3>
 <ol>
 <li><strong>Лови конкретные исключения.</strong> <code>except ValueError</code>, а не голый <code>except:</code> — тот поймает всё подряд, включая опечатки в твоём же коде, и ты никогда не узнаешь об ошибке.</li>
@@ -460,6 +541,7 @@ calls = {<span class="t-str">&quot;count&quot;</span>: <span class="t-num">0</sp
     conversion(<span class="t-num">50</span>, <span class="t-num">10</span>)
 <span class="t-kw">except</span> <span class="t-fn">ValueError</span> <span class="t-kw">as</span> error:
     <span class="t-fn">print</span>(<span class="t-str">&quot;Ошибка:&quot;</span>, error)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Ошибка: заказов (50) больше, чем визитов (10)</code></pre></div>
 <h3 id="свои-классы-исключений">Свои классы исключений</h3>
 <p>Позволяют отличать «наши» ошибки от всех прочих:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">class</span> <span class="t-def">DataQualityError</span>(<span class="t-fn">Exception</span>):
@@ -476,6 +558,7 @@ calls = {<span class="t-str">&quot;count&quot;</span>: <span class="t-num">0</sp
     check_orders([{<span class="t-str">&quot;id&quot;</span>: <span class="t-num">1</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">100</span>}, {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">2</span>, <span class="t-str">&quot;amount&quot;</span>: -<span class="t-num">5</span>}])
 <span class="t-kw">except</span> DataQualityError <span class="t-kw">as</span> error:
     <span class="t-fn">print</span>(<span class="t-str">&quot;Проверка не пройдена:&quot;</span>, error)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Проверка не пройдена: Отрицательная сумма в заказе 2</code></pre></div>
 <h3 id="два-стиля-спросить-разрешения-или-попросить-прощения">Два стиля: спросить разрешения или попросить прощения</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>order = {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">1</span>, <span class="t-str">&quot;amount&quot;</span>: <span class="t-num">1200</span>}
 
@@ -494,6 +577,7 @@ calls = {<span class="t-str">&quot;count&quot;</span>: <span class="t-num">0</sp
 <span class="t-com"># А для словарей есть готовый способ</span>
 promo = order.get(<span class="t-str">&quot;promo&quot;</span>)
 <span class="t-fn">print</span>(promo)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>None</code></pre></div>
 <p>В Python чаще принят второй стиль, но выбирай тот, который в данном месте читается проще.</p>
 <h2 id="2а9-аннотации-типов">2А.9. Аннотации типов</h2>
 <p>Аннотации — подсказки о том, какого типа аргументы и результат. Python их <strong>не проверяет</strong> при запуске, но их читают люди, редактор (подсказки и подчёркивание ошибок) и специальные программы-проверяльщики.</p>
@@ -510,6 +594,7 @@ promo = order.get(<span class="t-str">&quot;promo&quot;</span>)
     <span class="t-kw">return</span> <span class="t-num">None</span>
 
 <span class="t-fn">print</span>(top_cities({<span class="t-str">&quot;Москва&quot;</span>: <span class="t-num">12200</span>, <span class="t-str">&quot;Казань&quot;</span>: <span class="t-num">15400</span>, <span class="t-str">&quot;Уфа&quot;</span>: <span class="t-num">700</span>}, n=<span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[&#x27;Казань&#x27;, &#x27;Москва&#x27;]</code></pre></div>
 <div class="table"><table><thead><tr><th>Запись</th><th>Что означает</th></tr></thead><tbody><tr><td><code>int</code>, <code>float</code>, <code>str</code>, <code>bool</code></td><td>Простые типы</td></tr><tr><td><code>list[int]</code></td><td>Список целых чисел</td></tr><tr><td><code>dict[str, float]</code></td><td>Словарь: ключи-строки, значения-числа</td></tr><tr><td><code>tuple[str, int]</code></td><td>Кортеж из строки и числа</td></tr><tr><td><code>str \| None</code></td><td>Строка или <code>None</code></td></tr><tr><td><code>-&gt; None</code></td><td>Функция ничего не возвращает</td></tr><tr><td><code>pd.DataFrame</code></td><td>Таблица pandas</td></tr></tbody></table></div>
 <p>Пиши аннотации хотя бы у функций, которые используешь больше одного раза: через месяц ты сам не вспомнишь, что принимает <code>prepare(data, cfg)</code>.</p>
 <h2 id="2а10-стандартная-библиотека-что-нужно-знать">2А.10. Стандартная библиотека: что нужно знать</h2>
@@ -530,6 +615,10 @@ path = data_dir / <span class="t-str">&quot;orders_2026-01.csv&quot;</span>     
 
 <span class="t-kw">for</span> file <span class="t-kw">in</span> <span class="t-fn">sorted</span>(data_dir.glob(<span class="t-str">&quot;orders_*.csv&quot;</span>)): <span class="t-com"># найти файлы по шаблону</span>
     <span class="t-fn">print</span>(file.name, <span class="t-fn">len</span>(file.read_text(encoding=<span class="t-str">&quot;utf-8&quot;</span>).splitlines()))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>orders_2026-01.csv orders_2026-01 .csv
+True data
+orders_2026-01.csv 2
+orders_2026-02.csv 2</code></pre></div>
 <p>Перебор файлов через <code>glob</code> — стандартный способ собрать выгрузки за много месяцев в одну таблицу.</p>
 <h3 id="collections--удобные-коллекции">collections — удобные коллекции</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> collections <span class="t-kw">import</span> Counter, defaultdict, namedtuple
@@ -548,6 +637,9 @@ by_city = defaultdict(<span class="t-fn">list</span>)                        <sp
 Order = namedtuple(<span class="t-str">&quot;Order&quot;</span>, [<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;amount&quot;</span>])    <span class="t-com"># кортеж с именованными полями</span>
 order = Order(<span class="t-str">&quot;Москва&quot;</span>, <span class="t-num">1200</span>)
 <span class="t-fn">print</span>(order.city, order.amount, order[<span class="t-num">0</span>])</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[(&#x27;Москва&#x27;, 3), (&#x27;Казань&#x27;, 1)]
+{&#x27;Москва&#x27;: [1200, 8900], &#x27;Казань&#x27;: [15400]}
+Москва 1200 Москва</code></pre></div>
 <p>Сравни <code>defaultdict</code> с тем, как мы считали выручку по городам в главе 2 через <code>revenue.get(city, 0)</code>.</p>
 <h3 id="itertools-и-functools">itertools и functools</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> itertools <span class="t-kw">import</span> groupby, combinations, accumulate, islice, chain
@@ -560,6 +652,12 @@ order = Order(<span class="t-str">&quot;Москва&quot;</span>, <span class="
 rows = <span class="t-fn">sorted</span>(orders)                                  <span class="t-com"># groupby требует сортировки по ключу!</span>
 <span class="t-kw">for</span> city, group <span class="t-kw">in</span> groupby(rows, key=<span class="t-kw">lambda</span> row: row[<span class="t-num">0</span>]):
     <span class="t-fn">print</span>(city, <span class="t-fn">sum</span>(amount <span class="t-kw">for</span> _, amount <span class="t-kw">in</span> group))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[100, 300, 600]
+[(&#x27;A&#x27;, &#x27;B&#x27;), (&#x27;A&#x27;, &#x27;C&#x27;), (&#x27;B&#x27;, &#x27;C&#x27;)]
+[100, 99, 98]
+[1, 2, 3, 4, 5]
+Казань 15400
+Москва 10100</code></pre></div>
 <h3 id="datetime--даты-и-время">datetime — даты и время</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> datetime <span class="t-kw">import</span> datetime, date, timedelta
 
@@ -570,6 +668,10 @@ start = date(<span class="t-num">2026</span>, <span class="t-num">1</span>, <spa
 <span class="t-fn">print</span>((date(<span class="t-num">2026</span>, <span class="t-num">3</span>, <span class="t-num">15</span>) - start).days)                <span class="t-com"># 73 — разница в днях</span>
 <span class="t-fn">print</span>(start + timedelta(weeks=<span class="t-num">2</span>))                      <span class="t-com"># 2026-01-15</span>
 <span class="t-fn">print</span>(date(<span class="t-num">2026</span>, <span class="t-num">3</span>, <span class="t-num">15</span>).isocalendar().week)            <span class="t-com"># номер недели в году</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2026-03-15 Sunday
+73
+2026-01-15
+11</code></pre></div>
 <div class="table"><table><thead><tr><th>Код</th><th>Значение</th><th>Код</th><th>Значение</th></tr></thead><tbody><tr><td><code>%Y</code></td><td>Год, 4 цифры</td><td><code>%H</code></td><td>Часы (24)</td></tr><tr><td><code>%m</code></td><td>Месяц</td><td><code>%M</code></td><td>Минуты</td></tr><tr><td><code>%d</code></td><td>День</td><td><code>%S</code></td><td>Секунды</td></tr></tbody></table></div>
 <h3 id="json-и-csv">json и csv</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> json
@@ -585,6 +687,8 @@ loaded = json.loads(Path(<span class="t-str">&quot;config.json&quot;</span>).rea
     reader = csv.DictReader(f)                         <span class="t-com"># каждая строка — словарь</span>
     first = <span class="t-fn">next</span>(reader)
 <span class="t-fn">print</span>(first)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[&#x27;Москва&#x27;, &#x27;Казань&#x27;]
+{&#x27;city&#x27;: &#x27;Казань&#x27;, &#x27;amount&#x27;: &#x27;0&#x27;}</code></pre></div>
 <p><code>ensure_ascii=False</code> нужен, чтобы русские буквы записались буквами, а не кодами вида <code>М</code>.</p>
 <h3 id="logging--вместо-print">logging — вместо print</h3>
 <p><code>print</code> годится для ноутбука. В скрипте, который работает сам по расписанию, нужен журнал: с временем, уровнем важности и возможностью писать в файл.</p>
@@ -596,6 +700,9 @@ log = logging.getLogger(<span class="t-str">&quot;report&quot;</span>)
 log.info(<span class="t-str">&quot;Загружено строк: %s&quot;</span>, <span class="t-num">500</span>)
 log.warning(<span class="t-str">&quot;Найдено дубликатов: %s&quot;</span>, <span class="t-num">10</span>)
 log.error(<span class="t-str">&quot;Файл не найден&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2026-10-12 20:39:58,983 INFO Загружено строк: 500
+2026-10-12 20:39:58,983 WARNING Найдено дубликатов: 10
+2026-10-12 20:39:58,983 ERROR Файл не найден</code></pre></div>
 <p>Уровни по возрастанию важности: <code>DEBUG</code> → <code>INFO</code> → <code>WARNING</code> → <code>ERROR</code> → <code>CRITICAL</code>.</p>
 <h2 id="2а11-модули-и-пакеты">2А.11. Модули и пакеты</h2>
 <p><strong>Модуль</strong> — любой файл <code>.py</code>. <strong>Пакет</strong> — папка с модулями. Вынося функции в модули, ты перестаёшь копировать их из ноутбука в ноутбук.</p>
@@ -629,6 +736,8 @@ sys.path.insert(<span class="t-num">0</span>, <span class="t-str">&quot;.&quot;<
 
 <span class="t-fn">print</span>(metrics.conversion(<span class="t-num">30</span>, <span class="t-num">1200</span>))
 <span class="t-fn">print</span>(average_check(<span class="t-num">56600</span>, <span class="t-num">10</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.025
+5660.0</code></pre></div>
 <p>Конструкция <code>if __name__ == &quot;__main__&quot;:</code> встречается почти в каждом скрипте. Она отделяет «код для запуска» от «кода для импорта»: файл можно и запустить как программу, и подключить как библиотеку.</p>
 <p>Способы импорта:</p>
 <div class="table"><table><thead><tr><th>Запись</th><th>Когда использовать</th></tr></thead><tbody><tr><td><code>import metrics</code></td><td>Основной способ: видно, откуда функция — <code>metrics.conversion</code></td></tr><tr><td><code>from metrics import conversion</code></td><td>Когда функция используется часто</td></tr><tr><td><code>import pandas as pd</code></td><td>Общепринятые сокращения</td></tr><tr><td><code>from metrics import *</code></td><td>Никогда: непонятно, какие имена появились и откуда</td></tr></tbody></table></div>
@@ -679,6 +788,8 @@ discounted = with_discount(prices, <span class="t-num">10</span>)
 
 <span class="t-fn">print</span>(discounted)     <span class="t-com"># [[90.0, 180.0], [270.0, 360.0]]</span>
 <span class="t-fn">print</span>(prices)         <span class="t-com"># [[100, 200], [300, 400]] — не изменился</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[[90.0, 180.0], [270.0, 360.0]]
+[[100, 200], [300, 400]]</code></pre></div>
 <p>Вложенное включение строит новые списки на обоих уровнях, поэтому оригинал в безопасности. Вариант с <code>prices.copy()</code> и изменением на месте испортил бы исходные данные: поверхностная копия делит вложенные списки с оригиналом.</p></details>
 <details class="sol"><summary>Задание 2. Распаковка</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>lines = [<span class="t-str">&quot;2026-03-15;Москва;1200&quot;</span>, <span class="t-str">&quot;2026-03-16;Казань;15400&quot;</span>]
 
@@ -687,6 +798,7 @@ orders = [
     <span class="t-kw">for</span> date_, city, amount <span class="t-kw">in</span> (line.split(<span class="t-str">&quot;;&quot;</span>) <span class="t-kw">for</span> line <span class="t-kw">in</span> lines)
 ]
 <span class="t-fn">print</span>(orders)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[{&#x27;date&#x27;: &#x27;2026-03-15&#x27;, &#x27;city&#x27;: &#x27;Москва&#x27;, &#x27;amount&#x27;: 1200}, {&#x27;date&#x27;: &#x27;2026-03-16&#x27;, &#x27;city&#x27;: &#x27;Казань&#x27;, &#x27;amount&#x27;: 15400}]</code></pre></div>
 <p>Внутреннее генераторное выражение разбивает строки, внешнее включение распаковывает каждую тройку в три имени. Имя <code>date_</code> с подчёркиванием — чтобы не перекрыть модуль <code>date</code>.</p></details>
 <details class="sol"><summary>Задание 3. <code>*args</code> и <code>**kwargs</code></summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">describe</span>(*values, **options):
     <span class="t-kw">if</span> <span class="t-kw">not</span> values:
@@ -698,12 +810,15 @@ orders = [
 
 <span class="t-fn">print</span>(describe(<span class="t-num">12</span>, <span class="t-num">15</span>, <span class="t-num">11</span>, <span class="t-num">19</span>))
 <span class="t-fn">print</span>(describe(<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">2</span>, digits=<span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>{&#x27;min&#x27;: 11, &#x27;max&#x27;: 19, &#x27;mean&#x27;: 14.25}
+{&#x27;min&#x27;: 1, &#x27;max&#x27;: 2, &#x27;mean&#x27;: 1.67}</code></pre></div>
 <p>В реальном коде лучше объявить параметр явно: <code>def describe(*values, digits=None)</code>. Тогда опечатка в имени (<code>digit=2</code>) вызовет ошибку, а не будет молча проигнорирована. <code>**kwargs</code> оправдан, когда аргументы передаются дальше в другую функцию.</p></details>
 <details class="sol"><summary>Задание 4. Генератор</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">batches</span>(items, size):
     <span class="t-kw">for</span> start <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">0</span>, <span class="t-fn">len</span>(items), size):
         <span class="t-kw">yield</span> items[start:start + size]
 
 <span class="t-fn">print</span>(<span class="t-fn">list</span>(batches([<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">3</span>, <span class="t-num">4</span>, <span class="t-num">5</span>], <span class="t-num">2</span>)))     <span class="t-com"># [[1, 2], [3, 4], [5]]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[[1, 2], [3, 4], [5]]</code></pre></div>
 <p><code>range</code> с шагом <code>size</code> даёт начала пачек, срез сам корректно обрежется на последней. Так отправляют данные в API или базу порциями.</p></details>
 <details class="sol"><summary>Задание 5. Декоратор</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> functools
 
@@ -721,6 +836,7 @@ orders = [
     <span class="t-kw">return</span> orders / visits
 
 conversion(<span class="t-num">30</span>, visits=<span class="t-num">1200</span>)      <span class="t-com"># conversion(30, visits=1200) -&gt; 0.025</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>conversion(30, visits=1200) -&gt; 0.025</code></pre></div>
 <p><code>repr</code> и <code>!r</code> показывают значение «как в коде»: строки будут в кавычках, и <code>&quot;5&quot;</code> не спутается с <code>5</code>.</p></details>
 <details class="sol"><summary>Задание 6. Менеджер контекста</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> os
 <span class="t-kw">from</span> contextlib <span class="t-kw">import</span> contextmanager
@@ -740,6 +856,9 @@ Path(<span class="t-str">&quot;tmp_dir&quot;</span>).mkdir(exist_ok=<span class=
 <span class="t-kw">with</span> working_directory(<span class="t-str">&quot;tmp_dir&quot;</span>):
     <span class="t-fn">print</span>(Path.cwd().name)        <span class="t-com"># tmp_dir</span>
 <span class="t-fn">print</span>(Path.cwd().name)            <span class="t-com"># снова исходная папка</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>work
+tmp_dir
+work</code></pre></div>
 <p>Ключевое — <code>try / finally</code>: без него ошибка внутри блока оставила бы программу в чужой папке.</p></details>
 <details class="sol"><summary>Задание 7. Исключения</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">safe_divide</span>(a, b, default=<span class="t-num">None</span>):
     <span class="t-kw">for</span> value <span class="t-kw">in</span> (a, b):
@@ -758,6 +877,10 @@ Path(<span class="t-str">&quot;tmp_dir&quot;</span>).mkdir(exist_ok=<span class=
     safe_divide(<span class="t-str">&quot;10&quot;</span>, <span class="t-num">2</span>)
 <span class="t-kw">except</span> <span class="t-fn">TypeError</span> <span class="t-kw">as</span> error:
     <span class="t-fn">print</span>(error)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2.5
+None
+0.0
+ожидалось число, получено &#x27;10&#x27; (str)</code></pre></div>
 <p><code>bool</code> проверяется отдельно, потому что в Python <code>True</code> — это тоже <code>int</code>, и <code>safe_divide(True, 2)</code> без этой проверки спокойно вернул бы <code>0.5</code>.</p></details>
 <details class="sol"><summary>Задание 8. Стандартная библиотека</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> collections <span class="t-kw">import</span> Counter, defaultdict
 
@@ -770,6 +893,8 @@ by_user = defaultdict(<span class="t-fn">list</span>)
 
 most_common_event, count = Counter(event <span class="t-kw">for</span> _, event <span class="t-kw">in</span> events).most_common(<span class="t-num">1</span>)[<span class="t-num">0</span>]
 <span class="t-fn">print</span>(most_common_event, count)       <span class="t-com"># view 3</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>{&#x27;u1&#x27;: [&#x27;view&#x27;, &#x27;buy&#x27;], &#x27;u2&#x27;: [&#x27;view&#x27;, &#x27;cart&#x27;], &#x27;u3&#x27;: [&#x27;view&#x27;]}
+view 3</code></pre></div>
 <p>Подчёркивание <code>_</code> — общепринятое имя для значения, которое нам не нужно.</p></details>
 <details class="sol"><summary>Задание 9. Модуль</summary><p>Файл <code>tools.py</code>:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">describe</span>(*values, digits=<span class="t-num">None</span>):
@@ -789,6 +914,8 @@ most_common_event, count = Counter(event <span class="t-kw">for</span> _, event 
 <span class="t-kw">if</span> __name__ == <span class="t-str">&quot;__main__&quot;</span>:
     <span class="t-fn">print</span>(describe(<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">2</span>, digits=<span class="t-num">2</span>))
     <span class="t-fn">print</span>(safe_divide(<span class="t-num">1</span>, <span class="t-num">0</span>, default=<span class="t-num">0</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>{&#x27;min&#x27;: 1, &#x27;max&#x27;: 2, &#x27;mean&#x27;: 1.67}
+0</code></pre></div>
 <p>Файл <code>main.py</code> в той же папке:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> tools
 

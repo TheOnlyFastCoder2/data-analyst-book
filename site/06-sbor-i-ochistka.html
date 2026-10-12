@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -168,6 +181,37 @@ df.info()
 <span class="t-fn">print</span>(df.duplicated().<span class="t-fn">sum</span>())            <span class="t-com"># полные дубликаты строк</span>
 <span class="t-fn">print</span>(df[<span class="t-str">&quot;city&quot;</span>].value_counts(dropna=<span class="t-num">False</span>))   <span class="t-com"># варианты написания</span>
 <span class="t-fn">print</span>(df[<span class="t-str">&quot;amount&quot;</span>].describe())          <span class="t-com"># min и max выдают ошибки</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>&lt;class &#x27;pandas.DataFrame&#x27;&gt;
+RangeIndex: 510 entries, 0 to 509
+Data columns (total 6 columns):
+ #   Column    Non-Null Count  Dtype  
+---  ------    --------------  -----  
+ 0   order_id  510 non-null    int64  
+ 1   date      510 non-null    str    
+ 2   user_id   510 non-null    int64  
+ 3   city      499 non-null    str    
+ 4   category  510 non-null    str    
+ 5   amount    485 non-null    float64
+dtypes: float64(1), int64(2), str(3)
+memory usage: 40.6 KB
+order_id     0
+date         0
+user_id      0
+city        11
+category     0
+amount      25
+dtype: int64
+10
+city
+Москва     224
+Самара      78
+Казань      74
+Уфа         62
+москва      31
+МОСКВА      30
+NaN         11
+Name: count, dtype: int64
+… (ещё 9 строк)</code></pre></div>
 <p>Чек-лист вопросов к любому датасету:</p>
 <ol>
 <li>Правильные ли типы столбцов?</li>
@@ -189,9 +233,20 @@ clean = (
        .<span class="t-fn">str</span>.replace(<span class="t-str">&quot;,&quot;</span>, <span class="t-str">&quot;.&quot;</span>, regex=<span class="t-num">False</span>)
 )
 <span class="t-fn">print</span>(pd.to_numeric(clean, errors=<span class="t-str">&quot;coerce&quot;</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0    1200.5
+1     980.0
+2       NaN
+dtype: float64</code></pre></div>
 <h2 id="65-текстовые-категории">6.5. Текстовые категории</h2>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df[<span class="t-str">&quot;city&quot;</span>] = df[<span class="t-str">&quot;city&quot;</span>].<span class="t-fn">str</span>.strip().<span class="t-fn">str</span>.lower().<span class="t-fn">str</span>.capitalize()
 <span class="t-fn">print</span>(df[<span class="t-str">&quot;city&quot;</span>].value_counts(dropna=<span class="t-num">False</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>city
+Москва    285
+Самара     78
+Казань     74
+Уфа        62
+NaN        11
+Name: count, dtype: int64</code></pre></div>
 <p>Для более сложных случаев (опечатки, синонимы) составляют словарь замен:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>mapping = {<span class="t-str">&quot;Мск&quot;</span>: <span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Спб&quot;</span>: <span class="t-str">&quot;Санкт-Петербург&quot;</span>}
 df[<span class="t-str">&quot;city&quot;</span>] = df[<span class="t-str">&quot;city&quot;</span>].replace(mapping)</code></pre></div>
@@ -203,6 +258,9 @@ df = df.drop_duplicates()
 <span class="t-com"># Дубликаты по ключу: один order_id должен встречаться один раз</span>
 <span class="t-fn">print</span>(df[<span class="t-str">&quot;order_id&quot;</span>].duplicated().<span class="t-fn">sum</span>())
 df = df.drop_duplicates(subset=<span class="t-str">&quot;order_id&quot;</span>, keep=<span class="t-str">&quot;first&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>510
+500
+0</code></pre></div>
 <p>Прежде чем удалять, спроси себя: это точно ошибка? Два одинаковых заказа одного человека в один день могут быть настоящими.</p>
 <h2 id="67-пропуски">6.7. Пропуски</h2>
 <p>Сначала выясни <strong>причину</strong> пропуска — от неё зависит решение.</p>
@@ -231,6 +289,13 @@ lower, upper = q1 - <span class="t-num">1.5</span> * iqr, q3 + <span class="t-nu
 outliers = df[(df[<span class="t-str">&quot;amount&quot;</span>] &lt; lower) | (df[<span class="t-str">&quot;amount&quot;</span>] &gt; upper)]
 <span class="t-fn">print</span>(<span class="t-fn">len</span>(outliers))
 <span class="t-fn">print</span>(outliers.sort_values(<span class="t-str">&quot;amount&quot;</span>, ascending=<span class="t-num">False</span>).head())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>23
+     order_id       date  user_id    city category    amount
+15         16 2026-03-12       13  Москва    Книги  990000.0
+61         62 2026-03-09        6  Москва  Техника  990000.0
+452       453 2026-02-14       74  Москва    Книги  990000.0
+411       412 2026-01-21       23  Самара    Книги   13120.0
+273       274 2026-03-28       87     Уфа  Техника   12842.0</code></pre></div>
 <p>Что делать с найденным:</p>
 <ul>
 <li>посмотреть глазами — часто причина очевидна;</li>
@@ -247,6 +312,7 @@ df.to_csv(<span class="t-str">&quot;orders_clean.csv&quot;</span>, index=<span c
 <span class="t-kw">assert</span> df[<span class="t-str">&quot;amount&quot;</span>].gt(<span class="t-num">0</span>).<span class="t-fn">all</span>()
 <span class="t-kw">assert</span> df[<span class="t-str">&quot;amount&quot;</span>].notna().<span class="t-fn">all</span>()
 <span class="t-fn">print</span>(<span class="t-str">&quot;Проверки пройдены, строк:&quot;</span>, <span class="t-fn">len</span>(df))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Проверки пройдены, строк: 470</code></pre></div>
 <p>И запиши итог: было 510 строк — стало столько-то, удалено дубликатов, пропусков, ошибок. Эти строки пойдут в отчёт.</p>
 <h2 id="610-принципы-очистки">6.10. Принципы очистки</h2>
 <ol>
@@ -323,6 +389,19 @@ clean = clean_orders(raw)
 <span class="t-kw">assert</span> clean[<span class="t-str">&quot;order_id&quot;</span>].is_unique
 <span class="t-kw">assert</span> clean[<span class="t-str">&quot;amount&quot;</span>].between(<span class="t-num">0</span>, MAX_REAL_AMOUNT, inclusive=<span class="t-str">&quot;neither&quot;</span>).<span class="t-fn">all</span>()
 <span class="t-fn">print</span>(clean[<span class="t-str">&quot;city&quot;</span>].value_counts())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>исходно                                    510
+после удаления полных дубликатов           500
+после удаления дубликатов по order_id      500
+после удаления пропусков в amount          475
+после удаления неположительных сумм        473
+после удаления аномально больших сумм      470
+city
+Москва       262
+Самара        70
+Казань        70
+Уфа           57
+Не указан     11
+Name: count, dtype: int64</code></pre></div>
 <p>Порядок шагов выбран не случайно: сначала дубликаты (чтобы не чистить одно и то же дважды), потом типы, потом текст, потом пропуски и выбросы.</p>
 <p>Число строк в конце зависит от случайных пересечений: например, строка с пропуском в <code>amount</code> могла попасть и в дубликаты. Важно не точное число, а то, что ты можешь объяснить каждый шаг журнала.</p></details>
 <details class="sol"><summary>Задание 2. Среднее и медиана до и после</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>before = pd.to_numeric(raw[<span class="t-str">&quot;amount&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>)
@@ -335,6 +414,9 @@ comparison = pd.DataFrame({
 
 comparison[<span class="t-str">&quot;изменение, %&quot;</span>] = ((comparison[<span class="t-str">&quot;после очистки&quot;</span>] / comparison[<span class="t-str">&quot;до очистки&quot;</span>] - <span class="t-num">1</span>) * <span class="t-num">100</span>).<span class="t-fn">round</span>(<span class="t-num">1</span>)
 <span class="t-fn">print</span>(comparison)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>         до очистки  после очистки  изменение, %
+среднее      9066.0         2978.0         -67.2
+медиана      2552.0         2537.0          -0.6</code></pre></div>
 <p>Среднее изменится в разы: три значения по 990 000 на 500 строк добавляют к нему почти 6000. Медиана сдвинется на считаные проценты. Это наглядная причина, по которой для «грязных» и денежных данных смотрят на медиану.</p></details>
 <details class="sol"><summary>Задание 3. Заполнение медианой по категории</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = pd.read_csv(<span class="t-str">&quot;orders_dirty.csv&quot;</span>)
 df[<span class="t-str">&quot;amount&quot;</span>] = pd.to_numeric(df[<span class="t-str">&quot;amount&quot;</span>], errors=<span class="t-str">&quot;coerce&quot;</span>)
@@ -347,6 +429,12 @@ df[<span class="t-str">&quot;amount_was_missing&quot;</span>] = df[<span class="
 
 <span class="t-fn">print</span>(<span class="t-str">&quot;Заполнено пропусков:&quot;</span>, missing_before)
 <span class="t-fn">print</span>(df.groupby(<span class="t-str">&quot;category&quot;</span>)[[<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;amount_filled&quot;</span>]].median())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Заполнено пропусков: 25
+          amount  amount_filled
+category                       
+Книги     2499.0         2499.0
+Одежда    2485.0         2485.0
+Техника   2616.0         2616.0</code></pre></div>
 <p>Три важные детали:</p>
 <ul>
 <li><strong>выбросы убираются до расчёта медианы</strong>, иначе заполнять будем искажённым значением;</li>
@@ -398,6 +486,10 @@ tables = pd.read_html(url)                 <span class="t-com"># нужна би
     <span class="t-kw">return</span> pd.to_numeric(cleaned, errors=<span class="t-str">&quot;coerce&quot;</span>)
 
 <span class="t-fn">print</span>(to_number(pd.Series([<span class="t-str">&quot;1 234 567[3]&quot;</span>, <span class="t-str">&quot;980 000&quot;</span>, <span class="t-str">&quot;н/д&quot;</span>])))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0    1234567.0
+1     980000.0
+2          NaN
+dtype: float64</code></pre></div>
 <ol start="4">
 <li>Проверь, сколько значений стало <code>NaN</code>, и посмотри на них глазами.</li>
 </ol>

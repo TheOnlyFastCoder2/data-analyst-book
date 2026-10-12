@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -106,6 +119,8 @@ population = rng.gamma(<span class="t-num">2.0</span>, <span class="t-num">1500<
 
 sample_means = [rng.choice(population, <span class="t-num">200</span>).mean() <span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">2000</span>)]
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(np.mean(sample_means)), <span class="t-fn">round</span>(np.std(sample_means)))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>3002
+3001 156</code></pre></div>
 <p>Средние двух тысяч выборок по 200 заказов разбросаны вокруг истинного значения с отклонением около 150 рублей. Этот разброс называют <strong>стандартной ошибкой</strong>. Она уменьшается с ростом выборки пропорционально корню из её размера: чтобы стать вдвое точнее, нужно вчетверо больше данных.</p>
 <p><strong>Центральная предельная теорема</strong> говорит: распределение выборочных средних близко к нормальному, даже если сами данные сильно скошены — лишь бы выборка была достаточно большой. Благодаря ей работает большинство статистических тестов.</p>
 <h2 id="92-доверительный-интервал">9.2. Доверительный интервал</h2>
@@ -116,12 +131,14 @@ mean = sample.mean()
 se = sample.std(ddof=<span class="t-num">1</span>) / np.sqrt(<span class="t-fn">len</span>(sample))      <span class="t-com"># стандартная ошибка</span>
 low, high = mean - <span class="t-num">1.96</span> * se, mean + <span class="t-num">1.96</span> * se
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(mean), <span class="t-fn">round</span>(low), <span class="t-fn">round</span>(high))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2896 2597 3194</code></pre></div>
 <p>Число 1,96 — граница, внутри которой лежит 95 % нормального распределения.</p>
 <p>Как понимать: если повторить процедуру много раз, примерно в 95 % случаев построенный интервал накроет истинное значение. Чем шире интервал, тем меньше мы знаем.</p>
 <h3 id="бутстрап-интервал-для-чего-угодно">Бутстрап: интервал для чего угодно</h3>
 <p>Для медианы или перцентиля простой формулы нет. Бутстрап решает задачу перебором: много раз берём из выборки новую выборку <strong>с возвращением</strong> и считаем метрику.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>boot = [np.median(rng.choice(sample, <span class="t-fn">len</span>(sample), replace=<span class="t-num">True</span>)) <span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">5000</span>)]
 <span class="t-fn">print</span>(np.percentile(boot, [<span class="t-num">2.5</span>, <span class="t-num">97.5</span>]).<span class="t-fn">round</span>())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[1978. 2558.]</code></pre></div>
 <p>Метод универсален и интуитивен — его стоит уметь объяснить на собеседовании.</p>
 <h2 id="93-логика-проверки-гипотез">9.3. Логика проверки гипотез</h2>
 <p>Проверка гипотез похожа на суд с презумпцией невиновности.</p>
@@ -157,6 +174,8 @@ t_stat, p_value = stats.ttest_ind(group_a, group_b, equal_var=<span class="t-num
 
 u_stat, p_mw = stats.mannwhitneyu(group_a, group_b)
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(p_mw, <span class="t-num">4</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2964 3289 0.0009
+0.0005</code></pre></div>
 <p>Всегда ставь <code>equal_var=False</code> — это тест Уэлча, он не требует равенства дисперсий в группах.</p>
 <h3 id="сравнение-конверсий">Сравнение конверсий</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>visitors_a, orders_a = <span class="t-num">10000</span>, <span class="t-num">500</span>      <span class="t-com"># 5.0 %</span>
@@ -168,6 +187,7 @@ table = [
 ]
 chi2, p_value, dof, expected = stats.chi2_contingency(table, correction=<span class="t-num">False</span>)
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(p_value, <span class="t-num">4</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.0583</code></pre></div>
 <p>То же самое вручную, чтобы понять механику z-теста:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>p_a, p_b = orders_a / visitors_a, orders_b / visitors_b
 p_pool = (orders_a + orders_b) / (visitors_a + visitors_b)
@@ -180,6 +200,8 @@ p_value = <span class="t-num">2</span> * (<span class="t-num">1</span> - stats.n
 se_diff = np.sqrt(p_a * (<span class="t-num">1</span> - p_a) / visitors_a + p_b * (<span class="t-num">1</span> - p_b) / visitors_b)
 diff = p_b - p_a
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(diff - <span class="t-num">1.96</span> * se_diff, <span class="t-num">4</span>), <span class="t-fn">round</span>(diff + <span class="t-num">1.96</span> * se_diff, <span class="t-num">4</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>1.89 0.0583
+-0.0002 0.0122</code></pre></div>
 <p>Оба способа дают p-value около 0,058. Формально при α = 0,05 результат <strong>не</strong> значим, хотя разница в 0,6 процентного пункта выглядела убедительно. Доверительный интервал для разницы — примерно от −0,02 до +1,22 п. п. — включает ноль. Вывод честного аналитика: «данных недостаточно, чтобы утверждать, что B лучше».</p>
 <p>Готовая функция для этого же расчёта есть в библиотеке statsmodels: <code>proportions_ztest</code>.</p>
 <h2 id="95-ab-тест-от-начала-до-конца">9.5. A/B-тест от начала до конца</h2>
@@ -207,6 +229,8 @@ diff = p_b - p_a
 
 <span class="t-fn">print</span>(sample_size(<span class="t-num">0.05</span>, <span class="t-num">0.055</span>))    <span class="t-com"># около 31 000 на группу</span>
 <span class="t-fn">print</span>(sample_size(<span class="t-num">0.05</span>, <span class="t-num">0.06</span>))     <span class="t-com"># около 8 200 на группу</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>31231
+8155</code></pre></div>
 <p>Главная закономерность: чтобы поймать вдвое меньший эффект, нужно примерно вчетверо больше пользователей. Отсюда и длительность теста: размер выборки делим на дневной трафик.</p>
 <h3 id="шаг-3-запуск">Шаг 3. Запуск</h3>
 <ul>
@@ -222,6 +246,7 @@ diff = p_b - p_a
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>observed = [<span class="t-num">10000</span>, <span class="t-num">10600</span>]
 chi2, p = stats.chisquare(observed)
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(p, <span class="t-num">6</span>))      <span class="t-com"># очень маленькое p-value — с разделением что-то не так</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2.9e-05</code></pre></div>
 <h3 id="шаг-5-анализ-и-решение">Шаг 5. Анализ и решение</h3>
 <p>Считаем тест, который выбрали заранее, и смотрим не только на p-value, но и на доверительный интервал эффекта. Затем проверяем контрольные метрики.</p>
 <p>Итог оформляется так:</p>
@@ -243,6 +268,8 @@ post_b = rng.beta(<span class="t-num">1</span> + orders_b, <span class="t-num">1
 
 <span class="t-fn">print</span>(<span class="t-fn">round</span>((post_b &gt; post_a).mean(), <span class="t-num">3</span>))                    <span class="t-com"># вероятность, что B лучше A</span>
 <span class="t-fn">print</span>(np.percentile(post_b - post_a, [<span class="t-num">2.5</span>, <span class="t-num">97.5</span>]).<span class="t-fn">round</span>(<span class="t-num">4</span>))  <span class="t-com"># интервал для разницы</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.971
+[-0.0002  0.0122]</code></pre></div>
 <p>Результат — около 0,97: «B лучше A с вероятностью 97 %». Такую фразу менеджеру понять гораздо проще, чем «p = 0,058». Данные при этом те же — отличается вопрос, на который мы отвечаем.</p>
 <h2 id="что-дальше">Что дальше</h2>
 <p>Когда освоишься с материалом этой главы, переходи к углублённой: <a href="09a-statistika-ab.html">Глава 9А. Статистика и A/B-тесты: глубже</a>.</p>
@@ -288,6 +315,7 @@ p_values = []
 
 p_values = np.array(p_values)
 <span class="t-fn">print</span>((p_values &lt; <span class="t-num">0.05</span>).mean())               <span class="t-com"># около 0.05</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.054</code></pre></div>
 <p>Группы взяты из одного распределения, то есть нулевая гипотеза <strong>верна</strong>. Тем не менее примерно в 5 % случаев тест показывает «значимую» разницу. Это и есть ошибка I рода, и её вероятность равна α по построению. Вывод: при пороге 0,05 каждый двадцатый тест без всякого эффекта окажется «успешным».</p>
 <p>Дополнительно построй гистограмму <code>p_values</code>: она будет ровной. При верной нулевой гипотезе p-value распределено равномерно от 0 до 1.</p></details>
 <details class="sol"><summary>Задание 2. Вред подглядывания</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>rng = np.random.default_rng(<span class="t-num">42</span>)
@@ -302,6 +330,7 @@ false_positives = <span class="t-num">0</span>
             <span class="t-kw">break</span>                             <span class="t-com"># «нашли эффект» и остановили тест</span>
 
 <span class="t-fn">print</span>(false_positives / <span class="t-num">1000</span>)                 <span class="t-com"># около 0.25</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.254</code></pre></div>
 <p>Эффекта по-прежнему нет, но тест «находит» его уже в каждом четвёртом случае вместо каждого двадцатого. Причина: мы даём случайности 20 попыток пересечь порог и останавливаемся на первой удачной.</p>
 <p>Поэтому размер выборки фиксируют заранее и смотрят на результат один раз. Если подглядывать необходимо, используют специальные методы последовательного тестирования с более строгими порогами.</p></details>
 <details class="sol"><summary>Задание 3. Размер выборки и длительность</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">sample_size</span>(p1, p2, alpha=<span class="t-num">0.05</span>, power=<span class="t-num">0.8</span>):
@@ -315,6 +344,8 @@ days = np.ceil(<span class="t-num">2</span> * n / <span class="t-num">2000</span
 
 <span class="t-fn">print</span>(n)                                      <span class="t-com"># 53208 на группу</span>
 <span class="t-fn">print</span>(days, np.ceil(days / <span class="t-num">7</span>) * <span class="t-num">7</span>)            <span class="t-com"># 54 дня → округляем до 56 (8 недель)</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>53208
+54.0 56.0</code></pre></div>
 <p>Нужно около 53 тысяч пользователей в каждой группе, то есть примерно 106 тысяч всего. При 2000 посетителей в день это 54 дня; округляем вверх до целых недель — 8 недель.</p>
 <p>Два месяца — долго. Варианты, которые стоит предложить заказчику:</p>
 <ul>
@@ -343,6 +374,10 @@ low, high = diff - <span class="t-num">1.96</span> * se_diff, diff + <span class
 
 <span class="t-com"># Проверка на SRM: размеры групп должны соответствовать разбиению 50/50</span>
 <span class="t-fn">print</span>(<span class="t-str">&quot;SRM p-value:&quot;</span>, <span class="t-fn">round</span>(stats.chisquare([visitors_a, visitors_b]).pvalue, <span class="t-num">3</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>A: 2.80%, B: 3.24%, относительный рост: 15.7%
+z = 2.22, p-value = 0.026
+95 % ДИ разницы: от 0.05% до 0.82%
+SRM p-value: 0.564</code></pre></div>
 <p>Результат: конверсия 2,80 % против 3,24 %, <code>p = 0,026</code>, доверительный интервал разницы — от 0,05 до 0,82 процентного пункта. Проверка SRM даёт <code>p ≈ 0,56</code> — размеры групп в порядке.</p>
 <p>Вывод для менеджера:</p>
 <blockquote><p>Вариант B увеличил конверсию с 2,80 % до 3,24 % (+16 % относительно), результат статистически значим (p = 0,026). Истинный эффект с 95 %-й уверенностью лежит между +0,05 и +0,82 п. п.: он точно положительный, но может оказаться заметно меньше наблюдаемого. Рекомендую внедрять, предварительно проверив, что средний чек и доля возвратов в группе B не ухудшились.</p></blockquote>
@@ -355,6 +390,9 @@ post_b = rng.beta(<span class="t-num">1</span> + orders_b, <span class="t-num">1
 <span class="t-fn">print</span>(<span class="t-str">&quot;P(B лучше A):&quot;</span>, <span class="t-fn">round</span>((post_b &gt; post_a).mean(), <span class="t-num">3</span>))                          <span class="t-com"># около 0.986</span>
 <span class="t-fn">print</span>(<span class="t-str">&quot;P(B лучше A более чем на 5 %):&quot;</span>, <span class="t-fn">round</span>((post_b / post_a - <span class="t-num">1</span> &gt; <span class="t-num">0.05</span>).mean(), <span class="t-num">3</span>))   <span class="t-com"># около 0.93</span>
 <span class="t-fn">print</span>(<span class="t-str">&quot;95 % интервал разницы:&quot;</span>, np.percentile(post_b - post_a, [<span class="t-num">2.5</span>, <span class="t-num">97.5</span>]).<span class="t-fn">round</span>(<span class="t-num">4</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>P(B лучше A): 0.986
+P(B лучше A более чем на 5 %): 0.929
+95 % интервал разницы: [0.0005 0.0083]</code></pre></div>
 <p>B лучше A с вероятностью около 98,6 %. Вторая строка отвечает на вопрос, который частотный подход напрямую не решает: «с какой вероятностью эффект не просто есть, а достаточно велик, чтобы окупить внедрение?» — около 93 %.</p>
 <p>Интервал почти совпал с интервалом из задания 4. При большом объёме данных и нейтральном априорном распределении <code>Beta(1, 1)</code> оба подхода дают близкие числа и различаются в основном формулировкой вывода.</p></details>
 <details class="sol"><summary>Задание 6. Бутстрап для медианы</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
@@ -369,6 +407,7 @@ medians = np.array([
 
 low, high = np.percentile(medians, [<span class="t-num">2.5</span>, <span class="t-num">97.5</span>])
 <span class="t-fn">print</span>(<span class="t-str">f&quot;Медиана: {np.median(amount):.0f}, 95 % ДИ: от {low:.0f} до {high:.0f}&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Медиана: 2537, 95 % ДИ: от 2320 до 2688</code></pre></div>
 <p>Три обязательных условия бутстрапа: выборка берётся <strong>с возвращением</strong> (<code>replace=True</code>), её размер равен размеру исходных данных, повторов достаточно много — от тысячи.</p>
 <p>Тем же способом можно сравнить медианы двух групп: в каждом повторе пересобирай обе группы, считай разницу медиан и смотри, попадает ли ноль в интервал.</p></details><nav class="nav "><a class="prev" href="08-statistika.html" id=prev><small>← Назад</small><b>Глава 8. Описательная статистика и EDA</b></a><a class="next" href="09a-statistika-ab.html" id=next><small>Вперёд →</small><b>Глава 9А. Статистика и A/B-тесты: глубже</b></a></nav>
 </main>

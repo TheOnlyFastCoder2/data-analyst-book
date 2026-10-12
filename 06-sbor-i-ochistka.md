@@ -122,6 +122,46 @@ print(df["city"].value_counts(dropna=False))   # варианты написан
 print(df["amount"].describe())          # min и max выдают ошибки
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+<class 'pandas.DataFrame'>
+RangeIndex: 510 entries, 0 to 509
+Data columns (total 6 columns):
+ #   Column    Non-Null Count  Dtype  
+---  ------    --------------  -----  
+ 0   order_id  510 non-null    int64  
+ 1   date      510 non-null    str    
+ 2   user_id   510 non-null    int64  
+ 3   city      499 non-null    str    
+ 4   category  510 non-null    str    
+ 5   amount    485 non-null    float64
+dtypes: float64(1), int64(2), str(3)
+memory usage: 40.6 KB
+order_id     0
+date         0
+user_id      0
+city        11
+category     0
+amount      25
+dtype: int64
+10
+city
+Москва     224
+Самара      78
+Казань      74
+Уфа         62
+москва      31
+МОСКВА      30
+NaN         11
+Name: count, dtype: int64
+… (ещё 9 строк)
+```
+<!-- /result -->
+
+
+
 Чек-лист вопросов к любому датасету:
 
 1. Правильные ли типы столбцов?
@@ -152,12 +192,41 @@ clean = (
 print(pd.to_numeric(clean, errors="coerce"))
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+0    1200.5
+1     980.0
+2       NaN
+dtype: float64
+```
+<!-- /result -->
+
+
+
 ## 6.5. Текстовые категории
 
 ```python
 df["city"] = df["city"].str.strip().str.lower().str.capitalize()
 print(df["city"].value_counts(dropna=False))
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+city
+Москва    285
+Самара     78
+Казань     74
+Уфа        62
+NaN        11
+Name: count, dtype: int64
+```
+<!-- /result -->
+
+
 
 Для более сложных случаев (опечатки, синонимы) составляют словарь замен:
 
@@ -177,6 +246,18 @@ print(len(df))
 print(df["order_id"].duplicated().sum())
 df = df.drop_duplicates(subset="order_id", keep="first")
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+510
+500
+0
+```
+<!-- /result -->
+
+
 
 Прежде чем удалять, спроси себя: это точно ошибка? Два одинаковых заказа одного человека в один день могут быть настоящими.
 
@@ -228,6 +309,22 @@ print(len(outliers))
 print(outliers.sort_values("amount", ascending=False).head())
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+23
+     order_id       date  user_id    city category    amount
+15         16 2026-03-12       13  Москва    Книги  990000.0
+61         62 2026-03-09        6  Москва  Техника  990000.0
+452       453 2026-02-14       74  Москва    Книги  990000.0
+411       412 2026-01-21       23  Самара    Книги   13120.0
+273       274 2026-03-28       87     Уфа  Техника   12842.0
+```
+<!-- /result -->
+
+
+
 Что делать с найденным:
 
 - посмотреть глазами — часто причина очевидна;
@@ -252,6 +349,16 @@ assert df["amount"].gt(0).all()
 assert df["amount"].notna().all()
 print("Проверки пройдены, строк:", len(df))
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+Проверки пройдены, строк: 470
+```
+<!-- /result -->
+
+
 
 И запиши итог: было 510 строк — стало столько-то, удалено дубликатов, пропусков, ошибок. Эти строки пойдут в отчёт.
 
@@ -336,6 +443,28 @@ assert clean["amount"].between(0, MAX_REAL_AMOUNT, inclusive="neither").all()
 print(clean["city"].value_counts())
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+исходно                                    510
+после удаления полных дубликатов           500
+после удаления дубликатов по order_id      500
+после удаления пропусков в amount          475
+после удаления неположительных сумм        473
+после удаления аномально больших сумм      470
+city
+Москва       262
+Самара        70
+Казань        70
+Уфа           57
+Не указан     11
+Name: count, dtype: int64
+```
+<!-- /result -->
+
+
+
 Порядок шагов выбран не случайно: сначала дубликаты (чтобы не чистить одно и то же дважды), потом типы, потом текст, потом пропуски и выбросы.
 
 Число строк в конце зависит от случайных пересечений: например, строка с пропуском в `amount` могла попасть и в дубликаты. Важно не точное число, а то, что ты можешь объяснить каждый шаг журнала.
@@ -355,6 +484,18 @@ comparison["изменение, %"] = ((comparison["после очистки"] 
 print(comparison)
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+         до очистки  после очистки  изменение, %
+среднее      9066.0         2978.0         -67.2
+медиана      2552.0         2537.0          -0.6
+```
+<!-- /result -->
+
+
+
 Среднее изменится в разы: три значения по 990 000 на 500 строк добавляют к нему почти 6000. Медиана сдвинется на считаные проценты. Это наглядная причина, по которой для «грязных» и денежных данных смотрят на медиану.
 
 ### Задание 3. Заполнение медианой по категории
@@ -372,6 +513,21 @@ df["amount_was_missing"] = df["amount"].isna()
 print("Заполнено пропусков:", missing_before)
 print(df.groupby("category")[["amount", "amount_filled"]].median())
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+Заполнено пропусков: 25
+          amount  amount_filled
+category                       
+Книги     2499.0         2499.0
+Одежда    2485.0         2485.0
+Техника   2616.0         2616.0
+```
+<!-- /result -->
+
+
 
 Три важные детали:
 
@@ -437,6 +593,19 @@ def to_number(series: pd.Series) -> pd.Series:
 
 print(to_number(pd.Series(["1 234 567[3]", "980 000", "н/д"])))
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+0    1234567.0
+1     980000.0
+2          NaN
+dtype: float64
+```
+<!-- /result -->
+
+
 
 4. Проверь, сколько значений стало `NaN`, и посмотри на них глазами.
 

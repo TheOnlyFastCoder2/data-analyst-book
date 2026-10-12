@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -126,6 +139,13 @@ events = events.merge(users, on=<span class="t-str">&quot;user_id&quot;</span>, 
 events.to_csv(<span class="t-str">&quot;events.csv&quot;</span>, index=<span class="t-num">False</span>)
 <span class="t-fn">print</span>(events.shape)
 <span class="t-fn">print</span>(events.head())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>(12738, 6)
+   user_id       date      event  amount first_date  source
+0        1 2026-01-09      visit     NaN 2026-01-09   поиск
+1        1 2026-01-09  view_item     NaN 2026-01-09   поиск
+2        1 2026-01-26      visit     NaN 2026-01-09   поиск
+3        1 2026-01-26  view_item     NaN 2026-01-09   поиск
+4        2 2026-02-17      visit     NaN 2026-02-17  друзья</code></pre></div>
 <p>Здесь цикл по пользователям уместен: мы не анализируем данные, а генерируем их.</p>
 <h2 id="102-метрики">10.2. Метрики</h2>
 <p>Метрика — число, которое показывает, как дела у продукта.</p>
@@ -141,6 +161,17 @@ mau = events.groupby(events[<span class="t-str">&quot;date&quot;</span>].dt.to_p
 <span class="t-fn">print</span>(dau.tail(<span class="t-num">3</span>))
 <span class="t-fn">print</span>(mau)
 <span class="t-fn">print</span>(<span class="t-str">&quot;Sticky factor:&quot;</span>, <span class="t-fn">round</span>(dau.mean() / mau.mean(), <span class="t-num">3</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>date
+2026-03-27    33
+2026-03-28    35
+2026-03-29    32
+Name: user_id, dtype: int64
+date
+2026-01    1461
+2026-02    2358
+2026-03    1268
+Freq: M, Name: user_id, dtype: int64
+Sticky factor: 0.049</code></pre></div>
 <p>Важно: MAU — это не сумма DAU. Один и тот же человек в сумме посчитается много раз. Уникальных пользователей всегда считают через <code>nunique()</code> / <code>COUNT(DISTINCT ...)</code> за нужный период.</p>
 <h3 id="деньги">Деньги</h3>
 <div class="table"><table><thead><tr><th>Метрика</th><th>Формула</th><th>Смысл</th></tr></thead><tbody><tr><td>Выручка (Revenue)</td><td>сумма покупок</td><td>—</td></tr><tr><td>Средний чек (AOV)</td><td>выручка / число заказов</td><td>Сколько тратят за раз</td></tr><tr><td>ARPU</td><td>выручка / число всех пользователей</td><td>Сколько приносит один пользователь</td></tr><tr><td>ARPPU</td><td>выручка / число платящих</td><td>Сколько приносит один платящий</td></tr><tr><td>Конверсия (CR)</td><td>число купивших / число пришедших</td><td>Какая доля покупает</td></tr></tbody></table></div>
@@ -156,6 +187,11 @@ paying_users = purchases[<span class="t-str">&quot;user_id&quot;</span>].nunique
 <span class="t-fn">print</span>(<span class="t-str">&quot;ARPU:&quot;</span>, <span class="t-fn">round</span>(revenue / all_users))
 <span class="t-fn">print</span>(<span class="t-str">&quot;ARPPU:&quot;</span>, <span class="t-fn">round</span>(revenue / paying_users))
 <span class="t-fn">print</span>(<span class="t-str">&quot;Конверсия в покупку:&quot;</span>, <span class="t-fn">round</span>(paying_users / all_users, <span class="t-num">3</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Выручка: 1767014
+Средний чек: 2975
+ARPU: 589
+ARPPU: 3161
+Конверсия в покупку: 0.186</code></pre></div>
 <p>Метрики связаны: <code>ARPU = конверсия × ARPPU</code>. Такое разложение — главный приём диагностики: если упал ARPU, смотрим, какой из множителей просел.</p>
 <h3 id="хорошая-метрика">Хорошая метрика</h3>
 <ul>
@@ -174,6 +210,12 @@ paying_users = purchases[<span class="t-str">&quot;user_id&quot;</span>].nunique
 funnel[<span class="t-str">&quot;from_first&quot;</span>] = funnel[<span class="t-str">&quot;users&quot;</span>] / funnel[<span class="t-str">&quot;users&quot;</span>].iloc[<span class="t-num">0</span>]
 funnel[<span class="t-str">&quot;from_prev&quot;</span>] = funnel[<span class="t-str">&quot;users&quot;</span>] / funnel[<span class="t-str">&quot;users&quot;</span>].shift(<span class="t-num">1</span>)
 <span class="t-fn">print</span>(funnel.<span class="t-fn">round</span>(<span class="t-num">3</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>             users  from_first  from_prev
+event                                    
+visit         3000       1.000        NaN
+view_item     2382       0.794      0.794
+add_to_cart   1155       0.385      0.485
+purchase       559       0.186      0.484</code></pre></div>
 <ul>
 <li><code>from_first</code> — конверсия от первого шага: какая доля всех пришедших дошла сюда;</li>
 <li><code>from_prev</code> — конверсия от предыдущего шага: она показывает <strong>самое узкое место</strong>.</li>
@@ -184,14 +226,18 @@ funnel[<span class="t-str">&quot;from_prev&quot;</span>] = funnel[<span class="t
 )
 by_source[<span class="t-str">&quot;cr_to_purchase&quot;</span>] = by_source[<span class="t-str">&quot;purchase&quot;</span>] / by_source[<span class="t-str">&quot;visit&quot;</span>]
 <span class="t-fn">print</span>(by_source.<span class="t-fn">round</span>(<span class="t-num">3</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>event    visit  view_item  add_to_cart  purchase  cr_to_purchase
+source                                                          
+друзья     595        473          239       103           0.173
+поиск      893        708          332       170           0.190
+реклама   1512       1201          584       286           0.189</code></pre></div>
 <p>Тонкость: мы считаем уникальных пользователей, которые совершили событие хотя бы раз за период. Строгая воронка требует ещё и правильного порядка событий во времени — в реальных данных пользователь может попасть на страницу оплаты, минуя корзину.</p>
 <h2 id="104-когортный-анализ-и-удержание">10.4. Когортный анализ и удержание</h2>
 <p><strong>Когорта</strong> — группа пользователей, объединённых общим событием в один период. Чаще всего — неделей или месяцем первого визита.</p>
 <p><strong>Удержание (retention)</strong> — доля пользователей когорты, которые вернулись через N периодов.</p>
 <p>Зачем нужны когорты: общая метрика смешивает новых и старых пользователей. Если реклама привела много новичков, DAU растёт — даже если продукт стал хуже и все быстро уходят. Когорты показывают, что происходит на самом деле.</p>
-<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>events[<span class="t-str">&quot;cohort_week&quot;</span>] = events[<span class="t-str">&quot;first_date&quot;</span>].dt.to_period(<span class="t-str">&quot;W&quot;</span>).dt.start_time
-events[<span class="t-str">&quot;event_week&quot;</span>] = events[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;W&quot;</span>).dt.start_time
-events[<span class="t-str">&quot;week_number&quot;</span>] = (events[<span class="t-str">&quot;event_week&quot;</span>] - events[<span class="t-str">&quot;cohort_week&quot;</span>]).dt.days // <span class="t-num">7</span>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>events[<span class="t-str">&quot;cohort_week&quot;</span>] = events[<span class="t-str">&quot;first_date&quot;</span>].dt.to_period(<span class="t-str">&quot;W&quot;</span>).dt.start_time       <span class="t-com"># когорта: неделя прихода</span>
+events[<span class="t-str">&quot;week_number&quot;</span>] = (events[<span class="t-str">&quot;date&quot;</span>] - events[<span class="t-str">&quot;first_date&quot;</span>]).dt.days // <span class="t-num">7</span>       <span class="t-com"># неделя жизни пользователя</span>
 
 cohorts = events.pivot_table(
     index=<span class="t-str">&quot;cohort_week&quot;</span>,
@@ -199,9 +245,31 @@ cohorts = events.pivot_table(
     values=<span class="t-str">&quot;user_id&quot;</span>,
     aggfunc=<span class="t-str">&quot;nunique&quot;</span>,
 )
-
 retention = cohorts.div(cohorts[<span class="t-num">0</span>], axis=<span class="t-num">0</span>)
+
+<span class="t-com"># Недели, которые когорта ещё не прожила целиком, показывать нельзя: там неполные данные</span>
+last_date = events[<span class="t-str">&quot;date&quot;</span>].<span class="t-fn">max</span>()
+<span class="t-kw">for</span> week <span class="t-kw">in</span> retention.columns:
+    week_end = retention.index + pd.Timedelta(days=<span class="t-num">7</span> * (week + <span class="t-num">1</span>) + <span class="t-num">5</span>)    <span class="t-com"># конец недели у самых поздних в когорте</span>
+    retention.loc[week_end &gt; last_date, week] = np.nan
+
 <span class="t-fn">print</span>(retention.<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>week_number    0     1     2     3     4     5     6     7
+cohort_week                                               
+2026-01-05   1.0  0.35  0.27  0.24  0.19  0.12  0.11  0.12
+2026-01-12   1.0  0.37  0.28  0.23  0.17  0.15  0.12  0.09
+2026-01-19   1.0  0.36  0.28  0.21  0.19  0.12  0.11  0.09
+2026-01-26   1.0  0.36  0.32  0.24  0.18  0.15  0.14  0.12
+2026-02-02   1.0  0.33  0.33  0.26  0.20  0.13  0.11   NaN
+2026-02-09   1.0  0.36  0.34  0.22  0.18  0.14   NaN   NaN
+2026-02-16   1.0  0.37  0.27  0.20  0.16   NaN   NaN   NaN
+2026-02-23   1.0  0.36  0.25  0.22   NaN   NaN   NaN   NaN</code></pre></div>
+<p>Два столбца — две разные вещи:</p>
+<ul>
+<li><code>cohort_week</code> — календарная неделя, в которую пользователь пришёл. По ней пользователи объединяются в когорты.</li>
+<li><code>week_number</code> — номер недели <strong>жизни</strong> пользователя, отсчитанный от его собственного первого дня: дни 0–6 — нулевая неделя, дни 7–13 — первая и так далее. Так все пользователи когорты сравниваются в одинаковом «возрасте».</li>
+</ul>
+<p>Последний шаг — маскирование неполных недель — пропускают чаще всего. Без него в правой нижней части таблицы стояли бы заниженные числа: когорта ещё не успела прожить эту неделю целиком, и «низкое удержание» было бы просто нехваткой данных.</p>
 <p>Как читать таблицу:</p>
 <ul>
 <li><strong>строка</strong> — одна когорта; движение вправо — её «жизнь» по неделям;</li>
@@ -220,6 +288,7 @@ ax.set_title(<span class="t-str">&quot;Удержание по недельны�
 ax.set_xlabel(<span class="t-str">&quot;Неделя жизни&quot;</span>)
 ax.set_ylabel(<span class="t-str">&quot;Когорта (неделя первого визита)&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/10-01.png" alt="Результат" loading="lazy"></p></div>
 <p><strong>Отток (churn)</strong> — обратная сторона удержания: доля ушедших. <code>churn = 1 − retention</code>.</p>
 <p>Форма кривой удержания важнее отдельных чисел. Если кривая со временем выходит на плато — у продукта есть ядро постоянных пользователей. Если падает к нулю — продукт «дырявое ведро», и привлечение новых пользователей его не спасёт.</p>
 <h2 id="105-ltv-и-юнит-экономика">10.5. LTV и юнит-экономика</h2>
@@ -239,6 +308,16 @@ revenue_by_week = purchases.pivot_table(
 
 ltv = revenue_by_week.cumsum(axis=<span class="t-num">1</span>).div(cohort_size, axis=<span class="t-num">0</span>)
 <span class="t-fn">print</span>(ltv.<span class="t-fn">round</span>(<span class="t-num">0</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>week_number      0      1      2      3      4      5      6      7
+cohort_week                                                        
+2026-01-05   254.0  402.0  457.0  485.0  496.0  533.0  552.0  585.0
+2026-01-12   252.0  323.0  344.0  364.0  389.0  416.0  436.0  441.0
+2026-01-19   318.0  417.0  492.0  508.0  600.0  616.0  650.0  685.0
+2026-01-26   205.0  370.0  482.0  530.0  548.0  590.0  639.0  668.0
+2026-02-02   239.0  336.0  383.0  463.0  511.0  548.0  577.0  592.0
+2026-02-09   326.0  403.0  470.0  521.0  581.0  618.0  635.0    NaN
+2026-02-16   206.0  323.0  402.0  439.0  473.0  484.0    NaN    NaN
+2026-02-23   300.0  386.0  505.0  609.0  629.0    NaN    NaN    NaN</code></pre></div>
 <p>Сравнение каналов привлечения:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>cac = pd.Series({<span class="t-str">&quot;реклама&quot;</span>: <span class="t-num">900</span>, <span class="t-str">&quot;поиск&quot;</span>: <span class="t-num">400</span>, <span class="t-str">&quot;друзья&quot;</span>: <span class="t-num">150</span>})    <span class="t-com"># условные расходы на пользователя</span>
 
@@ -248,6 +327,11 @@ by_source[<span class="t-str">&quot;ltv&quot;</span>] = by_source[<span class="t
 by_source[<span class="t-str">&quot;cac&quot;</span>] = cac
 by_source[<span class="t-str">&quot;ltv_to_cac&quot;</span>] = by_source[<span class="t-str">&quot;ltv&quot;</span>] / by_source[<span class="t-str">&quot;cac&quot;</span>]
 <span class="t-fn">print</span>(by_source.<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>         users   revenue     ltv  cac  ltv_to_cac
+source                                           
+друзья     595  307429.0  516.69  150        3.44
+поиск      893  548073.0  613.74  400        1.53
+реклама   1512  911512.0  602.85  900        0.67</code></pre></div>
 <h2 id="106-rfm-сегментация">10.6. RFM-сегментация</h2>
 <p>Простой способ разделить клиентов на группы по трём признакам:</p>
 <ul>
@@ -269,6 +353,13 @@ rfm[<span class="t-str">&quot;m&quot;</span>] = pd.qcut(rfm[<span class="t-str">
 rfm[<span class="t-str">&quot;segment&quot;</span>] = rfm[<span class="t-str">&quot;r&quot;</span>].astype(<span class="t-fn">str</span>) + rfm[<span class="t-str">&quot;f&quot;</span>].astype(<span class="t-fn">str</span>) + rfm[<span class="t-str">&quot;m&quot;</span>].astype(<span class="t-fn">str</span>)
 
 <span class="t-fn">print</span>(rfm[<span class="t-str">&quot;segment&quot;</span>].value_counts().head())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>segment
+311    67
+112    63
+111    63
+212    62
+113    57
+Name: count, dtype: int64</code></pre></div>
 <p>Сегмент <code>333</code> — лучшие клиенты: покупали недавно, часто и много. Сегмент <code>133</code> — покупали часто и много, но давно: их нужно возвращать в первую очередь.</p>
 <h2 id="107-как-искать-причину-изменения-метрики">10.7. Как искать причину изменения метрики</h2>
 <p>Самая частая задача на работе и на собеседовании: «Вчера упала выручка. Что будешь делать?»</p>
@@ -334,6 +425,12 @@ ax.plot(dau.index, dau.rolling(<span class="t-num">7</span>).mean(), color=<span
 ax.set_title(<span class="t-str">&quot;Активные пользователи по дням&quot;</span>)
 ax.legend()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>date
+2026-01    0.050
+2026-02    0.050
+2026-03    0.046
+Freq: M, Name: user_id, dtype: float64</code></pre>
+<p><img src="img/10-02.png" alt="Результат" loading="lazy"></p></div>
 <p>Sticky factor посчитан отдельно для каждого месяца: средний DAU месяца делится на MAU этого же месяца. Это точнее, чем делить общее среднее на общее среднее, как в разделе 10.2.</p>
 <p>На графике DAU сначала растёт, потом падает. Это не «проблема продукта», а свойство наших данных: новые пользователи приходили только первые восемь недель. Прежде чем объяснять динамику поведением, проверь, как менялся приток новых пользователей.</p></details>
 <details class="sol"><summary>Задание 2. Воронка по каналам</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>funnel = events.pivot_table(index=<span class="t-str">&quot;source&quot;</span>, columns=<span class="t-str">&quot;event&quot;</span>, values=<span class="t-str">&quot;user_id&quot;</span>, aggfunc=<span class="t-str">&quot;nunique&quot;</span>)[STEPS]
@@ -345,11 +442,26 @@ step_conversion[<span class="t-str">&quot;visit → purchase&quot;</span>] = fun
 <span class="t-fn">print</span>(step_conversion.<span class="t-fn">round</span>(<span class="t-num">3</span>))
 <span class="t-fn">print</span>(<span class="t-str">&quot;Узкое место по каналам:&quot;</span>)
 <span class="t-fn">print</span>(step_conversion[STEPS[<span class="t-num">1</span>:]].idxmin(axis=<span class="t-num">1</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>event    visit  view_item  add_to_cart  purchase
+source                                          
+друзья     595        473          239       103
+поиск      893        708          332       170
+реклама   1512       1201          584       286
+event    view_item  add_to_cart  purchase  visit → purchase
+source                                                     
+друзья       0.795        0.505     0.431             0.173
+поиск        0.793        0.469     0.512             0.190
+реклама      0.794        0.486     0.490             0.189
+Узкое место по каналам:
+source
+друзья        purchase
+поиск      add_to_cart
+реклама    add_to_cart
+dtype: str</code></pre></div>
 <p><code>funnel.shift(axis=1)</code> сдвигает столбцы вправо, поэтому деление даёт конверсию каждого шага от предыдущего.</p>
-<p>Самый слабый шаг, скорее всего, во всех каналах один — переход от просмотра товара к корзине. В наших данных каналы различаются только случайно: вероятности в генераторе одинаковы для всех. Если бы это были настоящие данные, для вывода «канал X хуже» потребовалась бы проверка значимости из главы 9.</p></details>
+<p>Переходы «товар → корзина» и «корзина → оплата» теряют примерно поровну — около половины пользователей каждый. Поэтому «узким местом» в одном канале оказывается один шаг, в другом — другой: разница между ними случайна, вероятности в генераторе одинаковы для всех каналов. Если бы это были настоящие данные, для вывода «канал X хуже» потребовалась бы проверка значимости из главы 9.</p></details>
 <details class="sol"><summary>Задание 3. Удержание по когортам и каналам</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>events[<span class="t-str">&quot;cohort_week&quot;</span>] = events[<span class="t-str">&quot;first_date&quot;</span>].dt.to_period(<span class="t-str">&quot;W&quot;</span>).dt.start_time
-events[<span class="t-str">&quot;event_week&quot;</span>] = events[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;W&quot;</span>).dt.start_time
-events[<span class="t-str">&quot;week_number&quot;</span>] = (events[<span class="t-str">&quot;event_week&quot;</span>] - events[<span class="t-str">&quot;cohort_week&quot;</span>]).dt.days // <span class="t-num">7</span>
+events[<span class="t-str">&quot;week_number&quot;</span>] = (events[<span class="t-str">&quot;date&quot;</span>] - events[<span class="t-str">&quot;first_date&quot;</span>]).dt.days // <span class="t-num">7</span>
 
 
 <span class="t-kw">def</span> <span class="t-def">retention_table</span>(data: pd.DataFrame, by: <span class="t-fn">str</span>) -&gt; pd.DataFrame:
@@ -359,6 +471,11 @@ events[<span class="t-str">&quot;week_number&quot;</span>] = (events[<span class
 
 
 by_cohort = retention_table(events, <span class="t-str">&quot;cohort_week&quot;</span>)
+
+last_date = events[<span class="t-str">&quot;date&quot;</span>].<span class="t-fn">max</span>()                     <span class="t-com"># скрыть недели, которые когорта ещё не прожила</span>
+<span class="t-kw">for</span> week <span class="t-kw">in</span> by_cohort.columns:
+    week_end = by_cohort.index + pd.Timedelta(days=<span class="t-num">7</span> * (week + <span class="t-num">1</span>) + <span class="t-num">5</span>)
+    by_cohort.loc[week_end &gt; last_date, week] = np.nan
 
 fig, ax = plt.subplots(figsize=(<span class="t-num">10</span>, <span class="t-num">5</span>))
 sns.heatmap(by_cohort.iloc[:, <span class="t-num">1</span>:], annot=<span class="t-num">True</span>, fmt=<span class="t-str">&quot;.0%&quot;</span>, cmap=<span class="t-str">&quot;Blues&quot;</span>, ax=ax)
@@ -372,6 +489,13 @@ by_source = retention_table(events, <span class="t-str">&quot;source&quot;</span
 by_source.iloc[:, :<span class="t-num">6</span>].T.plot(marker=<span class="t-str">&quot;o&quot;</span>, figsize=(<span class="t-num">8</span>, <span class="t-num">4</span>), title=<span class="t-str">&quot;Кривые удержания по каналам&quot;</span>)
 plt.ylabel(<span class="t-str">&quot;Доля вернувшихся&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>week_number    0      1      2      3      4      5
+source                                             
+друзья       1.0  0.365  0.314  0.220  0.166  0.114
+поиск        1.0  0.366  0.274  0.242  0.168  0.103
+реклама      1.0  0.350  0.297  0.226  0.181  0.122</code></pre>
+<p><img src="img/10-03.png" alt="Результат" loading="lazy"></p>
+<p><img src="img/10-04.png" alt="Результат" loading="lazy"></p></div>
 <p>Функция <code>retention_table</code> принимает столбец группировки параметром, поэтому одна и та же логика работает и для когорт, и для каналов — пример принципа DRY из главы 2В.</p>
 <p>Сравнивая каналы, бери только те недели жизни, которые успели прожить <strong>все</strong> пользователи (здесь — первые несколько). На поздних неделях данных мало, и последние когорты до них ещё не дожили.</p></details>
 <details class="sol"><summary>Задание 4. ARPU и ARPPU по месяцам</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>events[<span class="t-str">&quot;month&quot;</span>] = events[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;M&quot;</span>)
@@ -387,6 +511,11 @@ monthly[<span class="t-str">&quot;arppu&quot;</span>] = monthly[<span class="t-s
 monthly[<span class="t-str">&quot;paying_share&quot;</span>] = monthly[<span class="t-str">&quot;paying_users&quot;</span>] / monthly[<span class="t-str">&quot;active_users&quot;</span>]
 
 <span class="t-fn">print</span>(monthly.<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>         active_users  paying_users   revenue    arpu    arppu  paying_share
+month                                                                       
+2026-01          1461           167  490862.0  335.98  2939.29          0.11
+2026-02          2358           264  825097.0  349.91  3125.37          0.11
+2026-03          1268           144  451055.0  355.72  3132.33          0.11</code></pre></div>
 <p>Самопроверка: <code>arpu</code> должен равняться <code>arppu × paying_share</code>. Добавь <code>assert np.allclose(monthly[&quot;arpu&quot;], monthly[&quot;arppu&quot;] * monthly[&quot;paying_share&quot;])</code> — если разложение не сходится, в расчёте ошибка.</p></details>
 <details class="sol"><summary>Задание 5. LTV по каналам против CAC</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>CAC = pd.Series({<span class="t-str">&quot;реклама&quot;</span>: <span class="t-num">900</span>, <span class="t-str">&quot;поиск&quot;</span>: <span class="t-num">400</span>, <span class="t-str">&quot;друзья&quot;</span>: <span class="t-num">150</span>})    <span class="t-com"># условные расходы на пользователя</span>
 MAX_WEEK = <span class="t-num">4</span>          <span class="t-com"># сравниваем на горизонте, который прожили все когорты</span>
@@ -406,6 +535,15 @@ result = pd.DataFrame({
 result[<span class="t-str">&quot;LTV / CAC&quot;</span>] = result.iloc[:, <span class="t-num">0</span>] / result[<span class="t-str">&quot;CAC&quot;</span>]
 <span class="t-fn">print</span>(ltv.<span class="t-fn">round</span>(<span class="t-num">0</span>))
 <span class="t-fn">print</span>(result.<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>week_number      0      1      2      3      4
+source                                        
+друзья       258.0  351.0  394.0  437.0  448.0
+поиск        258.0  366.0  444.0  486.0  556.0
+реклама      265.0  379.0  459.0  512.0  542.0
+         LTV за 5 недель  CAC  LTV / CAC
+друзья            447.98  150       2.99
+поиск             555.66  400       1.39
+реклама           542.36  900       0.60</code></pre></div>
 <p>Перед этим расчётом нужно выполнить код задания 3: он добавляет столбец <code>week_number</code>.</p>
 <p>LTV у каналов близок (поведение пользователей в генераторе одинаковое), а стоимость привлечения различается в шесть раз. Поэтому самый выгодный канал — «друзья», а реклама окупается хуже всех. Типичный вывод из реальной практики: канал, дающий больше всего пользователей, не обязательно самый выгодный.</p>
 <p>Оговорка, которую стоит писать в отчёте: это LTV за пять недель, а не за всю жизнь пользователя. Настоящий LTV выше, поэтому отношение <code>LTV / CAC</code> здесь — оценка снизу.</p></details>
@@ -426,8 +564,19 @@ rfm[<span class="t-str">&quot;segment&quot;</span>] = rfm[<span class="t-str">&q
 
 top_20 = rfm[<span class="t-str">&quot;monetary&quot;</span>].nlargest(<span class="t-fn">int</span>(<span class="t-fn">len</span>(rfm) * <span class="t-num">0.2</span>)).<span class="t-fn">sum</span>()
 <span class="t-fn">print</span>(<span class="t-str">f&quot;Лучшие 20 % клиентов приносят {top_20 / rfm[&#x27;monetary&#x27;].sum():.1%} выручки&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>         users   revenue
+segment                 
+213         54  316447.0
+113         57  306879.0
+313         51  285925.0
+112         63  166947.0
+212         62  159720.0
+312         51  134529.0
+323         12   88883.0
+311         67   73471.0
+Лучшие 20 % клиентов приносят 43.6% выручки</code></pre></div>
 <p>Для <code>recency</code> метки идут в обратном порядке (<code>[3, 2, 1]</code>): чем меньше дней прошло, тем лучше. Для <code>frequency</code> использован <code>pd.cut</code> с явными границами, а не <code>qcut</code>: у большинства клиентов одна покупка, и разбить такой столбец на равные по размеру группы невозможно.</p>
-<p>Обычно лучшие 20 % клиентов дают 45–60 % выручки. Ровно «80 на 20» бывает редко — это ориентир, а не закон.</p></details>
+<p>В наших данных лучшие 20 % клиентов дают около 44 % выручки; в реальных продуктах — обычно 45–60 %. Ровно «80 на 20» бывает редко — это ориентир, а не закон.</p></details>
 <details class="sol"><summary>Задание 7. Конверсия упала на 15 %</summary><p>Образец ответа по алгоритму из раздела 10.7:</p>
 <ol>
 <li><strong>Проверяю данные.</strong> Не менялась ли разметка событий и способ расчёта? Полные ли данные за последние дни? Не выросло ли число визитов из-за ботов — тогда упала не конверсия, а «раздулся» знаменатель.</li>

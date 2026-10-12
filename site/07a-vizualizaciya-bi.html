@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -153,6 +166,7 @@ ax2.set_title(<span class="t-str">&quot;Конверсия&quot;</span>)
 
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-01.png" alt="Результат" loading="lazy"></p></div>
 <ul>
 <li><code>FuncFormatter</code> принимает функцию «число → строка»: так делают тысячи, миллионы, рубли.</li>
 <li><code>PercentFormatter(xmax=1)</code> превращает доли в проценты: <code>0.05</code> → <code>5.0%</code>.</li>
@@ -171,6 +185,7 @@ ax.xaxis.set_major_formatter(mdates.DateFormatter(<span class="t-str">&quot;%d.%
 ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=<span class="t-num">0</span>))  <span class="t-com"># мелкие деления по понедельникам</span>
 finish(ax, <span class="t-str">&quot;Заказы по дням&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-02.png" alt="Результат" loading="lazy"></p></div>
 <p><code>Locator</code> решает, <strong>где</strong> стоят деления, <code>Formatter</code> — <strong>как</strong> они подписаны.</p>
 <h3 id="логарифмическая-шкала">Логарифмическая шкала</h3>
 <p>Когда значения различаются на порядки, на обычной шкале маленькие сливаются в линию у нуля:</p>
@@ -183,6 +198,7 @@ ax.set_xscale(<span class="t-str">&quot;log&quot;</span>)
 ax.xaxis.set_major_formatter(FuncFormatter(<span class="t-kw">lambda</span> v, _: <span class="t-str">f&quot;{v:,.0f}&quot;</span>.replace(<span class="t-str">&quot;,&quot;</span>, <span class="t-str">&quot; &quot;</span>)))
 finish(ax, <span class="t-str">&quot;Пользователи по городам&quot;</span>, subtitle=<span class="t-str">&quot;Логарифмическая шкала: каждое деление — в 10 раз больше&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-03.png" alt="Результат" loading="lazy"></p></div>
 <p>Логарифмическую шкалу обязательно подписывай: читатель, не заметивший её, сделает неверный вывод о соотношении величин.</p>
 <h2 id="7а4-аннотации-и-выделение-главного">7А.4. Аннотации и выделение главного</h2>
 <p>Аналитический график отличается от иллюстрации тем, что <strong>показывает, куда смотреть</strong>.</p>
@@ -210,6 +226,7 @@ ax.set_xlabel(<span class="t-str">&quot;Неделя&quot;</span>)
 finish(ax, <span class="t-str">f&quot;После запуска новой корзины конверсия выросла с {before:.1%} до {after:.1%}&quot;</span>,
        subtitle=<span class="t-str">&quot;Конверсия в заказ по неделям&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-04.png" alt="Результат" loading="lazy"></p></div>
 <p>Инструменты выделения:</p>
 <div class="table"><table><thead><tr><th>Метод</th><th>Что рисует</th><th>Для чего</th></tr></thead><tbody><tr><td><code>ax.axvline(x)</code> / <code>ax.axhline(y)</code></td><td>Вертикальная / горизонтальная линия</td><td>Событие, цель, порог</td></tr><tr><td><code>ax.axvspan(x1, x2)</code></td><td>Закрашенная полоса</td><td>Период: акция, сбой, праздники</td></tr><tr><td><code>ax.annotate(text, xy, xytext)</code></td><td>Подпись со стрелкой</td><td>Объяснение конкретной точки</td></tr><tr><td><code>ax.text(x, y, text)</code></td><td>Текст</td><td>Значения, пояснения</td></tr><tr><td><code>ax.bar_label(bars)</code></td><td>Числа над столбцами</td><td>Когда важны точные значения</td></tr></tbody></table></div>
 <h3 id="подписи-вместо-легенды">Подписи вместо легенды</h3>
@@ -234,6 +251,7 @@ ax.set_xticks(x)
 ax.grid(<span class="t-num">False</span>)
 finish(ax, <span class="t-str">&quot;Москва растёт втрое быстрее остальных городов&quot;</span>, subtitle=<span class="t-str">&quot;Заказы в месяц, тыс.&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-05.png" alt="Результат" loading="lazy"></p></div>
 <p>Один город выделен цветом и толщиной, остальные серые — это приём «акцент на фоне контекста». Он решает проблему «спагетти» из десяти разноцветных линий.</p>
 <h2 id="7а5-цвет">7А.5. Цвет</h2>
 <p>Цвет должен что-то <strong>означать</strong>. Три типа палитр — три типа данных:</p>
@@ -266,6 +284,7 @@ ax.set_xlabel(<span class="t-str">&quot;День месяца&quot;</span>)
 ax.legend(loc=<span class="t-str">&quot;upper left&quot;</span>)
 finish(ax, <span class="t-str">&quot;Дневные колебания конверсии укладываются в интервал неопределённости&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-06.png" alt="Результат" loading="lazy"></p></div>
 <p>Без полосы интервала каждый зубец на графике хочется объяснить. С полосой видно, что большинство зубцов — шум.</p>
 <h3 id="малые-кратные-small-multiples">Малые кратные (small multiples)</h3>
 <p>Вместо одного перегруженного графика — сетка одинаковых маленьких:</p>
@@ -283,6 +302,7 @@ fig, axes = plt.subplots(<span class="t-num">2</span>, <span class="t-num">3</sp
 fig.suptitle(<span class="t-str">&quot;Динамика заказов по сегментам за год&quot;</span>, x=<span class="t-num">0.01</span>, ha=<span class="t-str">&quot;left&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>, fontsize=<span class="t-num">14</span>)
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-07.png" alt="Результат" loading="lazy"></p></div>
 <p><code>sharey=True</code> задаёт общую ось Y — без неё сравнивать панели между собой нельзя. Каждая панель подписана главным числом, цвет кодирует направление.</p>
 <h3 id="диаграмма-парето">Диаграмма Парето</h3>
 <p>Столбцы по убыванию плюс накопленная доля — «какие немногие причины дают основной эффект»:</p>
@@ -307,6 +327,7 @@ ax2.grid(<span class="t-num">False</span>)
 
 finish(ax, <span class="t-str">&quot;Три причины дают 80 % отмен заказов&quot;</span>, subtitle=<span class="t-str">&quot;Число отмен по причинам и накопленная доля&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-08.png" alt="Результат" loading="lazy"></p></div>
 <p>Это один из немногих случаев, где вторая ось Y оправданна: обе оси описывают одну и ту же величину — количество и его накопленную долю.</p>
 <h3 id="гантели-сравнение-до-и-после">«Гантели»: сравнение до и после</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>cities = np.array([<span class="t-str">&quot;Самара&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>, <span class="t-str">&quot;Пермь&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>, <span class="t-str">&quot;Москва&quot;</span>])
@@ -326,6 +347,7 @@ ax.grid(axis=<span class="t-str">&quot;x&quot;</span>, alpha=<span class="t-num"
 ax.legend(loc=<span class="t-str">&quot;upper left&quot;</span>, ncols=<span class="t-num">2</span>)
 finish(ax, <span class="t-str">&quot;Конверсия выросла во всех городах, кроме Уфы&quot;</span>, subtitle=<span class="t-str">&quot;Конверсия до и после редизайна&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-09.png" alt="Результат" loading="lazy"></p></div>
 <p>Длина отрезка показывает размер изменения, цвет — направление. Две группы столбцов рядом передали бы то же самое гораздо хуже.</p>
 <h3 id="каскадная-диаграмма-waterfall">Каскадная диаграмма (waterfall)</h3>
 <p>Показывает, <strong>из чего складывается</strong> изменение метрики:</p>
@@ -357,6 +379,7 @@ ax.grid(<span class="t-num">False</span>)
 finish(ax, <span class="t-str">&quot;Выручка выросла на 13 %: новые клиенты перекрыли отток&quot;</span>,
        subtitle=<span class="t-str">&quot;Факторы изменения выручки, тыс. руб.&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-10.png" alt="Результат" loading="lazy"></p></div>
 <p>Это график-объяснение: он отвечает на вопрос «почему изменилась метрика» и напрямую продолжает разложение из раздела 10.7.</p>
 <h3 id="доли-столбцы-до-100-">Доли: столбцы до 100 %</h3>
 <p>Когда важна <strong>структура</strong>, а не абсолютные значения:</p>
@@ -382,6 +405,7 @@ ax.grid(<span class="t-num">False</span>)
 ax.legend(loc=<span class="t-str">&quot;upper center&quot;</span>, bbox_to_anchor=(<span class="t-num">0.5</span>, -<span class="t-num">0.08</span>), ncols=<span class="t-num">4</span>)
 finish(ax, <span class="t-str">&quot;Доля рекомендаций в заказах за полгода выросла почти вдвое&quot;</span>, subtitle=<span class="t-str">&quot;Структура заказов по каналам&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-11.png" alt="Результат" loading="lazy"></p></div>
 <p>Легко сравнить можно только нижний и верхний слои — у них ровная опорная линия. Поэтому главную категорию ставят вниз или выделяют цветом и подписывают, как здесь.</p>
 <h3 id="точечный-график-с-линией-тренда">Точечный график с линией тренда</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>ad_spend = rng.uniform(<span class="t-num">50</span>, <span class="t-num">500</span>, <span class="t-num">60</span>)
@@ -401,6 +425,7 @@ ax.set_ylabel(<span class="t-str">&quot;Новые пользователи&quot
 ax.grid(<span class="t-num">True</span>, axis=<span class="t-str">&quot;both&quot;</span>, alpha=<span class="t-num">0.25</span>)
 finish(ax, <span class="t-str">&quot;Чем больше расходы на рекламу, тем больше новых пользователей&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-12.png" alt="Результат" loading="lazy"></p></div>
 <p><code>transform=ax.transAxes</code> размещает текст в долях области графика (от 0 до 1), а не в единицах данных: подпись остаётся в углу при любых значениях.</p>
 <h3 id="распределение-гистограмма-и-ecdf">Распределение: гистограмма и ECDF</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>checks = rng.lognormal(<span class="t-num">7.6</span>, <span class="t-num">0.8</span>, <span class="t-num">5000</span>)
@@ -429,6 +454,7 @@ ax2.set_xlabel(<span class="t-str">&quot;Сумма чека, руб.&quot;</spa
 
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-13.png" alt="Результат" loading="lazy"></p></div>
 <p>ECDF — эмпирическая функция распределения: для каждого значения показывает, какая доля наблюдений не превышает его. В отличие от гистограммы, она не зависит от выбора ширины столбцов и позволяет прямо с графика читать перцентили. Две ECDF на одних осях — лучший способ сравнить распределения двух групп A/B-теста.</p>
 <h3 id="когортная-тепловая-карта">Когортная тепловая карта</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>cohorts = [<span class="t-str">&quot;Янв&quot;</span>, <span class="t-str">&quot;Фев&quot;</span>, <span class="t-str">&quot;Мар&quot;</span>, <span class="t-str">&quot;Апр&quot;</span>, <span class="t-str">&quot;Май&quot;</span>, <span class="t-str">&quot;Июн&quot;</span>]
@@ -456,6 +482,7 @@ ax.spines[[<span class="t-str">&quot;left&quot;</span>, <span class="t-str">&quo
 ax.tick_params(length=<span class="t-num">0</span>)
 finish(ax, <span class="t-str">&quot;Каждая новая когорта удерживается лучше предыдущей&quot;</span>, subtitle=<span class="t-str">&quot;Доля вернувшихся по месяцам жизни когорты&quot;</span>)
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-14.png" alt="Результат" loading="lazy"></p></div>
 <p>Нулевой месяц (всегда 100 %) убран: он занимал бы самый тёмный цвет и «съедал» контраст остальных ячеек. Последняя когорта тоже не показана — у неё пока есть только нулевой месяц. Цвет текста переключается в зависимости от фона — иначе подписи на тёмных ячейках не прочитать.</p>
 <h2 id="7а7-чего-не-делать">7А.7. Чего не делать</h2>
 <div class="table"><table><thead><tr><th>Антипаттерн</th><th>Почему плохо</th><th>Что вместо</th></tr></thead><tbody><tr><td>Две оси Y с разными величинами</td><td>Подбором масштабов можно «доказать» любую связь</td><td>Два графика один под другим с общей осью X</td></tr><tr><td>Трёхмерные столбцы и круги</td><td>Перспектива искажает размеры</td><td>Обычный плоский график</td></tr><tr><td>Круговая диаграмма с 8 секторами</td><td>Углы плохо сравниваются</td><td>Отсортированные горизонтальные столбцы</td></tr><tr><td>Десять цветных линий</td><td>Невозможно проследить ни одну</td><td>Акцент на одной, малые кратные</td></tr><tr><td>Столбцы не с нуля</td><td>Разница в 2 % выглядит как двукратная</td><td>Ось от нуля или точечный график</td></tr><tr><td>Легенда из 12 пунктов</td><td>Глаз мечется между графиком и легендой</td><td>Прямые подписи, объединение в «Прочие»</td></tr><tr><td>Накопительный итог вместо значений</td><td>Растёт всегда, скрывает замедление</td><td>Значения по периодам</td></tr><tr><td>Сортировка по алфавиту</td><td>Не видно лидеров и отстающих</td><td>Сортировка по значению</td></tr><tr><td>Неполный последний период</td><td>Выглядит как обвал</td><td>Отбросить или показать пунктиром</td></tr><tr><td>Заголовок «График 3»</td><td>Не сообщает ничего</td><td>Заголовок-вывод</td></tr></tbody></table></div>
@@ -789,6 +816,7 @@ uplift = revenue[in_promo].mean() / revenue[~in_promo].mean() - <span class="t-n
 ax.set_title(<span class="t-str">f&quot;Во время акции дневная выручка была на {uplift:.0%} выше обычной&quot;</span>, loc=<span class="t-str">&quot;left&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>)
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-15.png" alt="Результат" loading="lazy"></p></div>
 <p>Число в заголовке вычисляется из данных, а не вписано руками: при обновлении данных заголовок останется верным.</p></details>
 <details class="sol"><summary>Задание 3. Один график или малые кратные</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>categories = [<span class="t-str">&quot;Книги&quot;</span>, <span class="t-str">&quot;Техника&quot;</span>, <span class="t-str">&quot;Одежда&quot;</span>, <span class="t-str">&quot;Обувь&quot;</span>, <span class="t-str">&quot;Игрушки&quot;</span>, <span class="t-str">&quot;Спорт&quot;</span>, <span class="t-str">&quot;Дом&quot;</span>, <span class="t-str">&quot;Красота&quot;</span>]
 x = np.arange(<span class="t-num">1</span>, <span class="t-num">13</span>)
@@ -815,6 +843,8 @@ fig, axes = plt.subplots(<span class="t-num">2</span>, <span class="t-num">4</sp
     ax.set_title(<span class="t-str">f&quot;{name}: {growth[name]:+.0%}&quot;</span>, fontsize=<span class="t-num">10.5</span>)
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-16.png" alt="Результат" loading="lazy"></p>
+<p><img src="img/07a-17.png" alt="Результат" loading="lazy"></p></div>
 <p>Первый способ отвечает на вопрос «кто лидер»: одна мысль, один акцент. Второй — на вопрос «как ведёт себя каждая»: панели отсортированы по росту, у всех общая шкала.</p>
 <p>Выбор зависит от того, что нужно сказать. Попытка ответить на оба вопроса одним графиком с восемью цветными линиями не отвечает ни на один.</p></details>
 <details class="sol"><summary>Задание 4. Каскадная диаграмма</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">waterfall</span>(ax, start_label, start_value, changes, end_label):
@@ -846,6 +876,7 @@ ax.set_ylim(<span class="t-num">0</span>, <span class="t-num">14_500</span>)
 ax.set_title(<span class="t-str">f&quot;Аудитория выросла до {end:,.0f}: приток перекрыл отток&quot;</span>.replace(<span class="t-str">&quot;,&quot;</span>, <span class="t-str">&quot; &quot;</span>), loc=<span class="t-str">&quot;left&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>)
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-18.png" alt="Результат" loading="lazy"></p></div>
 <p>Логика вынесена в функцию — её можно использовать для любой метрики. Проверка расчёта: 10 000 + 2 400 + 600 − 1 900 = 11 100.</p></details>
 <details class="sol"><summary>Задание 5. Две ECDF</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>group_a = rng.lognormal(<span class="t-num">7.6</span>, <span class="t-num">0.8</span>, <span class="t-num">4000</span>)
 group_b = rng.lognormal(<span class="t-num">7.6</span>, <span class="t-num">0.8</span>, <span class="t-num">4000</span>)
@@ -868,6 +899,7 @@ ax.legend(loc=<span class="t-str">&quot;lower right&quot;</span>)
 ax.set_title(<span class="t-str">&quot;Группы различаются только в верхних 10 % чеков&quot;</span>, loc=<span class="t-str">&quot;left&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>)
 fig.tight_layout()
 plt.show()</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><p><img src="img/07a-19.png" alt="Результат" loading="lazy"></p></div>
 <p>Среднее в группе B заметно выше, медианы почти равны. Средние говорят «B лучше», но не говорят как. По ECDF видно: до 90-го перцентиля кривые совпадают, а расходятся только в верхней части. Значит, изменение не повлияло на обычных покупателей — эффект дали крупные чеки небольшой группы. Это меняет и вывод, и то, как проверять результат: с такой метрикой нужен тест, устойчивый к хвосту (глава 9А).</p></details>
 <details class="sol"><summary>Задание 6. Формулы показателей</summary><p>В нотации DataLens и Tableau они записываются почти одинаково:</p>
 <div class="code"><button class="copy" type="button">Копировать</button><pre><code>Конверсия визит → заказ    COUNTD([order_id]) / COUNTD([visit_id])

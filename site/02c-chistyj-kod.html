@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -190,6 +203,7 @@ Path(<span class="t-str">&quot;sample.csv&quot;</span>).write_text(<span class="
 
 orders = clean_orders(read_orders(<span class="t-str">&quot;sample.csv&quot;</span>))
 <span class="t-fn">print</span>(revenue_by_city(orders))       <span class="t-com"># {&#x27;Москва&#x27;: 1500.0}</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>{&#x27;Москва&#x27;: 1500.0}</code></pre></div>
 <p>Теперь основной код читается как оглавление: прочитать → очистить → посчитать.</p>
 <h3 id="чистые-функции">Чистые функции</h3>
 <p><strong>Чистая функция</strong> зависит только от своих аргументов и ничего не меняет снаружи: не трогает глобальные переменные, не изменяет переданные объекты, не печатает и не пишет в файлы.</p>
@@ -208,6 +222,8 @@ threshold = <span class="t-num">5000</span>
 source = [{<span class="t-str">&quot;amount&quot;</span>: <span class="t-num">1200</span>}, {<span class="t-str">&quot;amount&quot;</span>: <span class="t-num">9000</span>}]
 <span class="t-fn">print</span>(with_big_flag(source, threshold=<span class="t-num">5000</span>))
 <span class="t-fn">print</span>(source)                         <span class="t-com"># исходные данные не тронуты</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[{&#x27;amount&#x27;: 1200, &#x27;big&#x27;: False}, {&#x27;amount&#x27;: 9000, &#x27;big&#x27;: True}]
+[{&#x27;amount&#x27;: 1200}, {&#x27;amount&#x27;: 9000}]</code></pre></div>
 <p>Чистые функции легко проверять и безопасно использовать повторно. Старайся, чтобы расчётная часть кода состояла из них, а ввод-вывод (чтение файлов, печать, графики) был собран отдельно.</p>
 <h3 id="ранний-возврат-вместо-вложенности">Ранний возврат вместо вложенности</h3>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com"># Плохо: «лесенка», главное действие спрятано в глубине</span>
@@ -234,6 +250,7 @@ source = [{<span class="t-str">&quot;amount&quot;</span>: <span class="t-num">12
     <span class="t-kw">return</span> order[<span class="t-str">&quot;amount&quot;</span>] * <span class="t-num">0.1</span>
 
 <span class="t-fn">print</span>(discount({<span class="t-str">&quot;amount&quot;</span>: <span class="t-num">1000</span>, <span class="t-str">&quot;is_member&quot;</span>: <span class="t-num">True</span>}))     <span class="t-com"># 100.0</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>100.0</code></pre></div>
 <p>Такие проверки в начале функции называют <strong>охранными условиями</strong> (guard clauses).</p>
 <h3 id="мало-аргументов">Мало аргументов</h3>
 <p>Если у функции больше 3–4 аргументов, ими неудобно пользоваться и легко перепутать порядок. Решения:</p>
@@ -276,6 +293,7 @@ ACTIVE_WINDOW_DAYS = <span class="t-num">30</span>
 
 SETTINGS = Settings()
 <span class="t-fn">print</span>(SETTINGS.big_order_threshold)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>10000</code></pre></div>
 <h2 id="2в6-комментарии-и-документация">2В.6. Комментарии и документация</h2>
 <p>Комментарий должен объяснять <strong>почему</strong>, а не <strong>что</strong>. «Что» видно из кода.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>orders = [{<span class="t-str">&quot;amount&quot;</span>: <span class="t-num">1200</span>, <span class="t-str">&quot;status&quot;</span>: <span class="t-str">&quot;paid&quot;</span>}, {<span class="t-str">&quot;amount&quot;</span>: <span class="t-num">990000</span>, <span class="t-str">&quot;status&quot;</span>: <span class="t-str">&quot;test&quot;</span>}]
@@ -289,6 +307,7 @@ filtered = [o <span class="t-kw">for</span> o <span class="t-kw">in</span> order
 <span class="t-com"># Заказы дороже 500 тыс. — тестовые транзакции отдела QA (см. обсуждение от 12.03)</span>
 real_orders = [o <span class="t-kw">for</span> o <span class="t-kw">in</span> orders <span class="t-kw">if</span> o[<span class="t-str">&quot;amount&quot;</span>] &lt; MAX_REAL_AMOUNT]
 <span class="t-fn">print</span>(<span class="t-fn">len</span>(real_orders))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>1</code></pre></div>
 <p>В аналитике такие комментарии особенно важны: каждое решение об исключении данных должно быть объяснено.</p>
 <p>Если хочется написать комментарий «что делает этот кусок» — обычно лучше вынести кусок в функцию с понятным именем.</p>
 <h3 id="docstring">Docstring</h3>
@@ -311,6 +330,7 @@ real_orders = [o <span class="t-kw">for</span> o <span class="t-kw">in</span> or
     <span class="t-kw">return</span> returned / cohort_size
 
 <span class="t-fn">print</span>(retention_rate(<span class="t-num">120</span>, <span class="t-num">400</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.3</code></pre></div>
 <p>Для простых функций достаточно одной строки. Но определение метрики стоит записывать всегда: «активный пользователь» в разных командах означает разное.</p>
 <h2 id="2в7-питонические-приёмы">2В.7. Питонические приёмы</h2>
 <p>«Питонический» код использует возможности языка, а не переносит привычки из других языков.</p>
@@ -323,6 +343,10 @@ order = {<span class="t-str">&quot;id&quot;</span>: <span class="t-num">1</span>
 
 best_city, best_value = <span class="t-fn">max</span>(<span class="t-fn">zip</span>(cities, revenue), key=<span class="t-kw">lambda</span> pair: pair[<span class="t-num">1</span>])
 <span class="t-fn">print</span>(best_city, <span class="t-str">&quot;, &quot;</span>.join(cities), order.get(<span class="t-str">&quot;promo&quot;</span>, <span class="t-str">&quot;нет&quot;</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>1. Москва: 12,200
+2. Казань: 15,400
+3. Уфа: 700
+Казань Москва, Казань, Уфа нет</code></pre></div>
 <h2 id="2в8-рефакторинг-пример-от-начала-до-конца">2В.8. Рефакторинг: пример от начала до конца</h2>
 <p><strong>Рефакторинг</strong> — улучшение структуры кода без изменения результата. Посмотрим на типичный «первый скрипт» и приведём его в порядок.</p>
 <h3 id="до">До</h3>
@@ -350,6 +374,9 @@ res = {}
                 res[(m, c)] = <span class="t-fn">float</span>(x[<span class="t-num">2</span>])
 <span class="t-kw">for</span> k <span class="t-kw">in</span> res:
     <span class="t-fn">print</span>(k[<span class="t-num">0</span>], k[<span class="t-num">1</span>], res[k])</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2026-01 Москва 1200.0
+2026-01 Казань 15400.0
+2026-02 Казань 700.0</code></pre></div>
 <p>Код работает. Но попробуй ответить: что такое <code>x[3]</code>? Что будет, если в файле поменяют порядок столбцов? Как проверить, что города нормализуются правильно? Как посчитать то же самое по неделям?</p>
 <p>Проблемы:</p>
 <ul>
@@ -409,6 +436,9 @@ PAID_STATUS = <span class="t-str">&quot;paid&quot;</span>
 
 sales = read_paid_sales(<span class="t-str">&quot;sales.csv&quot;</span>)
 print_report(revenue_by_month_and_city(sales))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2026-01  Казань         15,400
+2026-01  Москва          1,200
+2026-02  Казань            700</code></pre></div>
 <p>Что изменилось:</p>
 <ul>
 <li><code>csv.DictReader</code> — обращение по именам столбцов, порядок больше не важен;</li>
@@ -433,6 +463,7 @@ print_report(revenue_by_month_and_city(sales))</code></pre></div>
     (<span class="t-str">&quot;2026-01&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>): <span class="t-num">150</span>
 }
 <span class="t-fn">print</span>(<span class="t-str">&quot;Все проверки пройдены&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Все проверки пройдены</code></pre></div>
 <h3 id="pytest">pytest</h3>
 <p>Для проектов используют <code>pytest</code>. Тесты кладут в папку <code>tests</code>, в файлы с именами <code>test_*.py</code>; каждая проверка — функция с именем <code>test_...</code>.</p>
 <div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> install pytest</code></pre></div>
@@ -509,6 +540,9 @@ data = [<span class="t-num">10</span>, <span class="t-num">None</span>, <span cl
 <span class="t-fn">print</span>(prepare(data, fill_with_zero))        <span class="t-com"># [10, 0, 30, 0]</span>
 <span class="t-fn">print</span>(prepare(data, fill_with_mean))        <span class="t-com"># [10, 20.0, 30, 20.0]</span>
 <span class="t-fn">print</span>(prepare(data, fill_with_previous))    <span class="t-com"># [10, 10, 30, 30]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[10, 0, 30, 0]
+[10, 20.0, 30, 20.0]
+[10, 10, 30, 30]</code></pre></div>
 <p>Ты уже пользуешься стратегиями: параметр <code>key</code> в <code>sorted</code> и название функции в <code>df.agg(&quot;mean&quot;)</code> — это они и есть.</p>
 <h3 id="реестр-и-фабрика-registry-factory">Реестр и фабрика (Registry, Factory)</h3>
 <p><strong>Задача:</strong> выбрать нужную функцию или класс по названию — например, из настроек или аргумента командной строки — без длинной цепочки <code>if / elif</code>.</p>
@@ -527,6 +561,7 @@ data = [<span class="t-num">10</span>, <span class="t-num">None</span>, <span cl
 
 config = {<span class="t-str">&quot;fill&quot;</span>: <span class="t-str">&quot;mean&quot;</span>}                          <span class="t-com"># например, прочитано из config.json</span>
 <span class="t-fn">print</span>(prepare(data, get_fill_strategy(config[<span class="t-str">&quot;fill&quot;</span>])))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[10, 20.0, 30, 20.0]</code></pre></div>
 <p>Добавить новый вариант — значит добавить одну строку в словарь.</p>
 <p>Реестр можно наполнять декоратором — тогда новая функция «регистрирует себя сама»:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>METRICS = {}
@@ -556,6 +591,9 @@ config = {<span class="t-str">&quot;fill&quot;</span>: <span class="t-str">&quot
 amounts = [<span class="t-num">1200</span>, <span class="t-num">15400</span>, <span class="t-num">8900</span>, <span class="t-num">700</span>]
 <span class="t-kw">for</span> name, func <span class="t-kw">in</span> METRICS.items():
     <span class="t-fn">print</span>(<span class="t-str">f&quot;{name}: {func(amounts):,.0f}&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>выручка: 26,200
+средний чек: 6,550
+медиана: 5,050</code></pre></div>
 <p><strong>Фабрика</strong> — та же идея для создания объектов: функция, которая по параметрам решает, объект какого класса вернуть.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> json
 
@@ -580,6 +618,8 @@ READERS = {<span class="t-str">&quot;.csv&quot;</span>: CsvReader, <span class="
 
 <span class="t-fn">print</span>(make_reader(<span class="t-str">&quot;orders.csv&quot;</span>).read(<span class="t-str">&quot;id,amount\n1,100&quot;</span>))
 <span class="t-fn">print</span>(make_reader(<span class="t-str">&quot;orders.json&quot;</span>).read(<span class="t-str">&#x27;[{&quot;id&quot;: 1, &quot;amount&quot;: 100}]&#x27;</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[{&#x27;id&#x27;: &#x27;1&#x27;, &#x27;amount&#x27;: &#x27;100&#x27;}]
+[{&#x27;id&#x27;: 1, &#x27;amount&#x27;: 100}]</code></pre></div>
 <p>Точно так же устроено семейство <code>pd.read_csv</code>, <code>pd.read_json</code>, <code>pd.read_excel</code>.</p>
 <h3 id="конвейер-pipeline">Конвейер (Pipeline)</h3>
 <p><strong>Задача:</strong> данные проходят последовательность шагов, и каждый шаг — отдельная функция. Главный паттерн обработки данных.</p>
@@ -614,6 +654,11 @@ raw = [
 
 clean = run_pipeline(raw, [strip_names, drop_missing_amount, drop_negative, add_size], verbose=<span class="t-num">True</span>)
 <span class="t-fn">print</span>(clean)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>strip_names            4 → 4 строк
+drop_missing_amount    4 → 3 строк
+drop_negative          3 → 2 строк
+add_size               2 → 2 строк
+[{&#x27;city&#x27;: &#x27;Москва&#x27;, &#x27;amount&#x27;: 1200, &#x27;size&#x27;: &#x27;обычный&#x27;}, {&#x27;city&#x27;: &#x27;Самара&#x27;, &#x27;amount&#x27;: 9000, &#x27;size&#x27;: &#x27;крупный&#x27;}]</code></pre></div>
 <p>Достоинства:</p>
 <ul>
 <li>порядок шагов виден в одном месте и читается как список;</li>
@@ -644,6 +689,8 @@ clean = run_pipeline(raw, [strip_names, drop_missing_amount, drop_negative, add_
     safe_mean([])
 <span class="t-kw">except</span> <span class="t-fn">ValueError</span> <span class="t-kw">as</span> error:
     <span class="t-fn">print</span>(error)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>2.0
+safe_mean: получен пустой список</code></pre></div>
 <h3 id="адаптер-adapter">Адаптер (Adapter)</h3>
 <p><strong>Задача:</strong> есть данные или объект с «неудобным» интерфейсом, а остальной код ждёт другого. Адаптер — тонкая прослойка, которая переводит одно в другое.</p>
 <p>У аналитика это происходит постоянно: в каждом источнике столбцы называются по-своему.</p>
@@ -661,6 +708,7 @@ app_rows = [{<span class="t-str">&quot;id&quot;</span>: <span class="t-num">202<
 
 orders = [from_shop_export(r) <span class="t-kw">for</span> r <span class="t-kw">in</span> shop_rows] + [from_app_api(r) <span class="t-kw">for</span> r <span class="t-kw">in</span> app_rows]
 <span class="t-fn">print</span>(orders)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[{&#x27;order_id&#x27;: 101, &#x27;amount&#x27;: 1200.5, &#x27;source&#x27;: &#x27;shop&#x27;}, {&#x27;order_id&#x27;: 202, &#x27;amount&#x27;: 9900.0, &#x27;source&#x27;: &#x27;app&#x27;}]</code></pre></div>
 <p>Правило: <strong>приводи данные к единому виду на входе</strong>, сразу после загрузки. Весь остальной код работает только с единым форматом и не знает, откуда что пришло.</p>
 <h3 id="шаблонный-метод-template-method">Шаблонный метод (Template Method)</h3>
 <p><strong>Задача:</strong> общий порядок действий одинаков, а отдельные шаги отличаются. Родительский класс задаёт «скелет», наследники заполняют шаги.</p>
@@ -702,6 +750,8 @@ orders = [from_shop_export(r) <span class="t-kw">for</span> r <span class="t-kw"
 
 <span class="t-kw">for</span> report <span class="t-kw">in</span> (RevenueReport(), AverageCheckReport()):
     <span class="t-fn">print</span>(report.run())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>RevenueReport: 10800
+AverageCheckReport: 3600.0</code></pre></div>
 <h3 id="репозиторий-repository">Репозиторий (Repository)</h3>
 <p><strong>Задача:</strong> отделить «откуда берутся данные» от «что с ними делают». Весь код доступа к данным живёт в одном классе, а остальная программа вызывает понятные методы и не знает ни про SQL, ни про файлы.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> sqlite3
@@ -732,6 +782,8 @@ repo = OrderRepository(connection)
 
 <span class="t-fn">print</span>(repo.revenue_by_city())
 <span class="t-fn">print</span>(repo.big_orders(<span class="t-num">5000</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>{&#x27;Казань&#x27;: 15400.0, &#x27;Москва&#x27;: 10100.0}
+[(&#x27;Казань&#x27;, 15400.0), (&#x27;Москва&#x27;, 8900.0)]</code></pre></div>
 <p>Обрати внимание на знаки <code>?</code> в запросах. Значения передаются отдельно от текста запроса — <strong>никогда не вставляй их в SQL через f-строку</strong>: это открывает дорогу SQL-инъекциям и ломается на первой же кавычке в данных.</p>
 <p>Выгода репозитория: запросы собраны в одном месте, а для тестов можно подставить объект с такими же методами, который возвращает заранее заготовленные данные.</p>
 <h3 id="одиночка-singleton">Одиночка (Singleton)</h3>
@@ -877,6 +929,7 @@ clean = (
 
 users = [(<span class="t-str">&quot;Анна&quot;</span>, <span class="t-num">25</span>, <span class="t-num">1</span>), (<span class="t-str">&quot;Борис&quot;</span>, <span class="t-num">17</span>, <span class="t-num">1</span>), (<span class="t-str">&quot;Вера&quot;</span>, <span class="t-num">40</span>, <span class="t-num">0</span>)]
 <span class="t-fn">print</span>(active_adults(users))      <span class="t-com"># [(&#x27;Анна&#x27;, 25, 1)]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[(&#x27;Анна&#x27;, 25, 1)]</code></pre></div>
 <p>Распаковка кортежа в цикле заменила <code>x[1]</code> и <code>x[2]</code> на имена. Сравнение <code>== 1</code> убрано: признак активности и так читается как условие.</p></details>
 <details class="sol"><summary>Задание 2. Ранний возврат</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>VIP_SPENDING_THRESHOLD = <span class="t-num">100_000</span>
 
@@ -890,6 +943,9 @@ users = [(<span class="t-str">&quot;Анна&quot;</span>, <span class="t-num">2
 <span class="t-fn">print</span>(user_segment({<span class="t-str">&quot;is_active&quot;</span>: <span class="t-num">True</span>, <span class="t-str">&quot;is_blocked&quot;</span>: <span class="t-num">False</span>, <span class="t-str">&quot;total_spent&quot;</span>: <span class="t-num">150_000</span>}))   <span class="t-com"># vip</span>
 <span class="t-fn">print</span>(user_segment({<span class="t-str">&quot;is_active&quot;</span>: <span class="t-num">True</span>, <span class="t-str">&quot;is_blocked&quot;</span>: <span class="t-num">False</span>, <span class="t-str">&quot;total_spent&quot;</span>: <span class="t-num">500</span>}))       <span class="t-com"># regular</span>
 <span class="t-fn">print</span>(user_segment({<span class="t-str">&quot;is_active&quot;</span>: <span class="t-num">True</span>, <span class="t-str">&quot;is_blocked&quot;</span>: <span class="t-num">True</span>, <span class="t-str">&quot;total_spent&quot;</span>: <span class="t-num">150_000</span>}))    <span class="t-com"># inactive</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>vip
+regular
+inactive</code></pre></div>
 <p>Сначала отсекается общий для двух веток отрицательный случай, после него условия «активен и не заблокирован» повторять уже не нужно.</p></details>
 <details class="sol"><summary>Задание 3. Чистая функция</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">normalize</span>(rows):
     <span class="t-kw">return</span> [{**row, <span class="t-str">&quot;city&quot;</span>: row[<span class="t-str">&quot;city&quot;</span>].lower()} <span class="t-kw">for</span> row <span class="t-kw">in</span> rows]
@@ -901,6 +957,7 @@ result = normalize(source)
 <span class="t-kw">assert</span> result[<span class="t-num">0</span>][<span class="t-str">&quot;city&quot;</span>] == <span class="t-str">&quot;москва&quot;</span>
 <span class="t-kw">assert</span> result[<span class="t-num">0</span>] <span class="t-kw">is</span> <span class="t-kw">not</span> source[<span class="t-num">0</span>]             <span class="t-com"># это разные объекты</span>
 <span class="t-fn">print</span>(result)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[{&#x27;city&#x27;: &#x27;москва&#x27;, &#x27;amount&#x27;: 1}, {&#x27;city&#x27;: &#x27;казань&#x27;, &#x27;amount&#x27;: 2}]</code></pre></div>
 <p><code>{**row, &quot;city&quot;: ...}</code> создаёт новый словарь: копирует все ключи и заменяет один.</p></details>
 <details class="sol"><summary>Задание 4. Рефакторинг</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>COMMISSION_RATE = <span class="t-num">0.2</span>
 
@@ -921,6 +978,7 @@ result = normalize(source)
 
 operations = [{<span class="t-str">&quot;t&quot;</span>: <span class="t-str">&quot;buy&quot;</span>, <span class="t-str">&quot;a&quot;</span>: <span class="t-num">1000</span>}, {<span class="t-str">&quot;t&quot;</span>: <span class="t-str">&quot;refund&quot;</span>, <span class="t-str">&quot;a&quot;</span>: <span class="t-num">200</span>}, {<span class="t-str">&quot;t&quot;</span>: <span class="t-str">&quot;view&quot;</span>, <span class="t-str">&quot;a&quot;</span>: <span class="t-num">0</span>}]
 <span class="t-fn">print</span>(net_income(operations))        <span class="t-com"># 600.0</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>600.0</code></pre></div>
 <p>Что сделано: имена по смыслу, комиссия вынесена в константу и записана как комиссия (20 %), а не как непонятное <code>0.8</code>; перебор по индексам заменён прямым перебором; два цикла — на <code>sum</code> с генератором; правило для одной операции вынесено в отдельную функцию, которую легко проверить.</p>
 <p>Если бы ключи <code>t</code> и <code>a</code> были под нашим контролем, их тоже стоило бы переименовать в <code>type</code> и <code>amount</code> — на входе, адаптером.</p></details>
 <details class="sol"><summary>Задание 5. Тесты</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">median</span>(values):
@@ -952,6 +1010,7 @@ median(data)
     <span class="t-kw">raise</span> AssertionError(<span class="t-str">&quot;ожидалась ошибка на пустом списке&quot;</span>)
 
 <span class="t-fn">print</span>(<span class="t-str">&quot;Все тесты пройдены&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>Все тесты пройдены</code></pre></div>
 <p>Проверка «функция не меняет вход» поймала бы реализацию через <code>values.sort()</code> — частую ошибку.</p></details>
 <details class="sol"><summary>Задание 6. Стратегия и реестр</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>AGGREGATIONS = {
     <span class="t-str">&quot;sum&quot;</span>: <span class="t-fn">sum</span>,
@@ -973,6 +1032,11 @@ data = [<span class="t-num">12</span>, <span class="t-num">15</span>, <span clas
     aggregate(data, <span class="t-str">&quot;avg&quot;</span>)
 <span class="t-kw">except</span> <span class="t-fn">ValueError</span> <span class="t-kw">as</span> error:
     <span class="t-fn">print</span>(error)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>sum 57
+mean 14.25
+max 19
+range 8
+неизвестная агрегация &#x27;avg&#x27;; доступны: max, mean, range, sum</code></pre></div>
 <p>Сообщение об ошибке перечисляет допустимые варианты — пользователю функции не придётся лезть в исходный код.</p></details>
 <details class="sol"><summary>Задание 7. Конвейер</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">drop_empty</span>(values):
     <span class="t-kw">return</span> [v <span class="t-kw">for</span> v <span class="t-kw">in</span> values <span class="t-kw">if</span> v.strip()]
@@ -1003,6 +1067,11 @@ data = [<span class="t-num">12</span>, <span class="t-num">15</span>, <span clas
 raw = [<span class="t-str">&quot;1 200&quot;</span>, <span class="t-str">&quot;3,5&quot;</span>, <span class="t-str">&quot;&quot;</span>, <span class="t-str">&quot;abc&quot;</span>, <span class="t-str">&quot;-40&quot;</span>, <span class="t-str">&quot;990&quot;</span>]
 <span class="t-fn">print</span>(run_steps(raw, [drop_empty, normalize_format, to_numbers, drop_negative_numbers]))
 <span class="t-com"># [1200.0, 3.5, 990.0]</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>drop_empty               осталось: 5
+normalize_format         осталось: 5
+to_numbers               осталось: 4
+drop_negative_numbers    осталось: 3
+[1200.0, 3.5, 990.0]</code></pre></div>
 <p>Здесь <code>except ValueError: continue</code> — допустимое «проглатывание» ошибки: мы делаем это осознанно, а потеря значений видна в журнале шагов.</p></details>
 <details class="sol"><summary>Задание 8. Адаптер</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">from_dict_source</span>(row):
     <span class="t-kw">return</span> {<span class="t-str">&quot;user_id&quot;</span>: row[<span class="t-str">&quot;user&quot;</span>], <span class="t-str">&quot;amount&quot;</span>: <span class="t-fn">float</span>(row[<span class="t-str">&quot;sum&quot;</span>])}
@@ -1018,6 +1087,8 @@ source_b = [(<span class="t-str">&quot;u2&quot;</span>, <span class="t-num">250.
 payments = [from_dict_source(r) <span class="t-kw">for</span> r <span class="t-kw">in</span> source_a] + [from_tuple_source(r) <span class="t-kw">for</span> r <span class="t-kw">in</span> source_b]
 <span class="t-fn">print</span>(payments)
 <span class="t-fn">print</span>(<span class="t-fn">sum</span>(p[<span class="t-str">&quot;amount&quot;</span>] <span class="t-kw">for</span> p <span class="t-kw">in</span> payments))      <span class="t-com"># 350.0</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>[{&#x27;user_id&#x27;: &#x27;u1&#x27;, &#x27;amount&#x27;: 100.0}, {&#x27;user_id&#x27;: &#x27;u2&#x27;, &#x27;amount&#x27;: 250.0}]
+350.0</code></pre></div>
 <p>После адаптеров код подсчёта не знает и не должен знать, что источников было два.</p></details><nav class="nav "><a class="prev" href="02b-oop.html" id=prev><small>← Назад</small><b>Глава 2Б. Объектно-ориентированное программирование</b></a><a class="next" href="03-sql.html" id=next><small>Вперёд →</small><b>Глава 3. SQL</b></a></nav>
 </main>
 <footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>

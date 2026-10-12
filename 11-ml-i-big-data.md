@@ -68,6 +68,16 @@ pred = model.predict(X_test)                  # класс: 0 или 1
 proba = model.predict_proba(X_test)[:, 1]     # вероятность ухода
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+0.1705
+```
+<!-- /result -->
+
+
+
 В библиотеке scikit-learn у всех моделей одинаковый интерфейс: `fit` — обучить, `predict` — предсказать. Поменять алгоритм — это поменять одну строку.
 
 ## 11.3. Как оценивать модель
@@ -83,6 +93,21 @@ print("precision:", round(precision_score(y_test, pred), 3))
 print("recall:", round(recall_score(y_test, pred), 3))
 print("ROC AUC:", round(roc_auc_score(y_test, proba), 3))
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+[[403  12]
+ [ 73  12]]
+accuracy: 0.83
+precision: 0.5
+recall: 0.141
+ROC AUC: 0.775
+```
+<!-- /result -->
+
+
 
 | Метрика | Вопрос, на который отвечает |
 |---------|-----------------------------|
@@ -121,6 +146,18 @@ for depth in [2, 5, None]:
     print(depth, round(train_auc, 3), round(test_auc, 3))
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+2 0.698 0.643
+5 0.79 0.713
+None 1.0 0.611
+```
+<!-- /result -->
+
+
+
 Дерево без ограничения глубины показывает идеальный результат на обучении и заметно худший на тесте — оно заучило данные.
 
 Более надёжная оценка — **кросс-валидация**: данные делят на несколько частей, по очереди каждая служит тестовой, результат усредняют. В scikit-learn это функция `cross_val_score`.
@@ -147,6 +184,20 @@ coefs = pd.Series(model.coef_[0], index=X.columns).sort_values()
 print(coefs.round(3))
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+orders_last_90d   -0.339
+months_with_us    -0.039
+avg_check         -0.000
+support_tickets    0.743
+dtype: float64
+```
+<!-- /result -->
+
+
+
 Знак коэффициента показывает направление связи: отрицательный у `orders_last_90d` — чем больше заказов, тем ниже вероятность ухода. Сравнивать величины коэффициентов между собой можно только после приведения признаков к одному масштабу (`StandardScaler`).
 
 ### Кластеризация
@@ -164,6 +215,25 @@ data["cluster"] = kmeans.fit_predict(scaled)
 print(data.groupby("cluster")[features.columns.tolist()].mean().round(1))
 print(data["cluster"].value_counts())
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+         months_with_us  orders_last_90d  avg_check
+cluster                                            
+0                  36.3              2.7     2244.2
+1                  23.4              3.2     6581.3
+2                  12.2              3.1     2175.1
+cluster
+2    835
+0    816
+1    349
+Name: count, dtype: int64
+```
+<!-- /result -->
+
+
 
 Масштабирование обязательно: K-means работает с расстояниями, и без него признак с большими числами (средний чек в тысячах) полностью подавит остальные.
 
@@ -246,6 +316,39 @@ print("ROC AUC, дерево глубины 3:", round(roc_auc_score(y_test, tre
 print(export_text(tree, feature_names=list(X.columns)))
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+ROC AUC, логистическая регрессия: 0.775
+ROC AUC, дерево глубины 3: 0.674
+|--- support_tickets <= 1.50
+|   |--- months_with_us <= 14.50
+|   |   |--- orders_last_90d <= 1.50
+|   |   |   |--- class: 0
+|   |   |--- orders_last_90d >  1.50
+|   |   |   |--- class: 0
+|   |--- months_with_us >  14.50
+|   |   |--- orders_last_90d <= 3.50
+|   |   |   |--- class: 0
+|   |   |--- orders_last_90d >  3.50
+|   |   |   |--- class: 0
+|--- support_tickets >  1.50
+|   |--- months_with_us <= 19.50
+|   |   |--- orders_last_90d <= 3.50
+|   |   |   |--- class: 1
+|   |   |--- orders_last_90d >  3.50
+|   |   |   |--- class: 0
+|   |--- months_with_us >  19.50
+|   |   |--- support_tickets <= 3.50
+|   |   |   |--- class: 0
+|   |   |--- support_tickets >  3.50
+|   |   |   |--- class: 1
+```
+<!-- /result -->
+
+
+
 Логистическая регрессия здесь, скорее всего, окажется лучше. Это ожидаемо: данные мы сами сгенерировали по логистической формуле, и линейная модель описывает их идеально. Дерево глубины 3 делит пространство всего на восемь областей и приближает плавную зависимость «ступеньками».
 
 `export_text` печатает правила дерева — главное достоинство этого алгоритма: его можно прочитать и объяснить менеджеру.
@@ -265,6 +368,19 @@ print("Accuracy модели:", round(accuracy_score(y_test, pred), 3))
 print("Recall бейзлайна:", recall_score(y_test, baseline.predict(X_test)))      # 0.0
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+Доля ушедших: 0.17
+Accuracy бейзлайна: 0.83
+Accuracy модели: 0.83
+Recall бейзлайна: 0.0
+```
+<!-- /result -->
+
+
+
 Accuracy бейзлайна равна `1 − доля ушедших`. Модель, которая никого не находит (recall = 0), получает высокую accuracy просто потому, что ушедших мало. Если accuracy нашей модели лишь немного выше — это не значит, что модель плохая: это значит, что accuracy здесь ни о чём не говорит. Смотрим на recall, precision и ROC AUC.
 
 ### Задание 3. Порог вероятности
@@ -283,6 +399,19 @@ for threshold in (0.2, 0.3, 0.5):
 print(pd.DataFrame(rows))
 ```
 
+<!-- result -->
+*Результат:*
+
+```output
+   порог  помечено уходящими  precision  recall
+0    0.2                 153      0.346   0.624
+1    0.3                  88      0.489   0.506
+2    0.5                  24      0.500   0.141
+```
+<!-- /result -->
+
+
+
 Чем ниже порог, тем больше клиентов модель помечает как уходящих: recall растёт (находим больше настоящих уходящих), precision падает (больше ложных тревог). Улучшить обе метрики одновременно сдвигом порога нельзя.
 
 Какой порог выбрать — решает экономика. Если удержание — это дешёвое письмо, выгоден низкий порог: лучше написать лишним, чем пропустить уходящего. Если удержание — дорогая скидка или звонок менеджера, порог поднимают.
@@ -299,6 +428,17 @@ scores = cross_val_score(LogisticRegression(max_iter=1000), X, y, cv=5, scoring=
 print(scores.round(3))
 print(f"ROC AUC: {scores.mean():.3f} ± {scores.std():.3f}")
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+[0.759 0.762 0.78  0.792 0.737]
+ROC AUC: 0.766 ± 0.019
+```
+<!-- /result -->
+
+
 
 Получаем пять оценок вместо одной. Среднее — более надёжная оценка качества, а разброс показывает, насколько результат зависит от того, какие объекты попали в тест. Если бы оценка на одном разбиении сильно отличалась от среднего по пяти, мы бы знали, что нам просто повезло или не повезло с разбиением.
 
@@ -333,6 +473,21 @@ profile = rfm.groupby("cluster").agg(
 )
 print(profile.round(2))
 ```
+
+<!-- result -->
+*Результат:*
+
+```output
+         users  recency  frequency  monetary  revenue_share
+cluster                                                    
+0          212    28.60       1.00   3991.30           0.48
+1          136    41.45       1.00    911.06           0.07
+2          177    66.15       1.00   3379.81           0.34
+3           34    29.74       2.03   5844.94           0.11
+```
+<!-- /result -->
+
+
 
 Два шага подготовки обязательны: логарифм для суммы покупок (иначе несколько крупных клиентов образуют отдельный кластер) и стандартизация (иначе рубли в тысячах задавят частоту в единицах).
 
@@ -386,7 +541,7 @@ df = pd.read_csv("data/dataset.csv")
 
 X, y = df.drop(columns=TARGET), df[TARGET]
 numeric = X.select_dtypes("number").columns.tolist()
-categorical = X.select_dtypes("object").columns.tolist()
+categorical = X.select_dtypes(exclude="number").columns.tolist()
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42, stratify=y)
 

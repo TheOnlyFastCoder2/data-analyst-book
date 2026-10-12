@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -100,6 +113,9 @@ salaries = pd.Series([<span class="t-num">60</span>, <span class="t-num">65</spa
 <span class="t-fn">print</span>(salaries.mean())      <span class="t-com"># 110.56 — среднее</span>
 <span class="t-fn">print</span>(salaries.median())    <span class="t-com"># 75.0  — медиана</span>
 <span class="t-fn">print</span>(salaries.mode()[<span class="t-num">0</span>])   <span class="t-com"># 70    — мода</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>110.55555555555556
+75.0
+70</code></pre></div>
 <ul>
 <li><strong>Среднее (mean)</strong> — сумма, делённая на количество. Чувствительно к выбросам.</li>
 <li><strong>Медиана (median)</strong> — значение посередине отсортированного ряда: половина данных меньше, половина больше. К выбросам устойчива.</li>
@@ -116,6 +132,14 @@ salaries = pd.Series([<span class="t-num">60</span>, <span class="t-num">65</spa
 <span class="t-fn">print</span>(x.std())                 <span class="t-com"># стандартное отклонение (standard deviation)</span>
 <span class="t-fn">print</span>(x.quantile([<span class="t-num">0.25</span>, <span class="t-num">0.5</span>, <span class="t-num">0.75</span>]))          <span class="t-com"># квартили</span>
 <span class="t-fn">print</span>(x.quantile(<span class="t-num">0.75</span>) - x.quantile(<span class="t-num">0.25</span>))    <span class="t-com"># межквартильный размах (IQR)</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>11
+13.642857142857142
+3.693623849670827
+0.25    12.75
+0.50    14.50
+0.75    16.75
+dtype: float64
+4.0</code></pre></div>
 <ul>
 <li><strong>Размах</strong> — максимум минус минимум. Зависит от двух крайних точек, поэтому ненадёжен.</li>
 <li><strong>Дисперсия</strong> — средний квадрат отклонения от среднего. Измеряется в «квадратных» единицах, поэтому сама по себе неудобна.</li>
@@ -125,6 +149,7 @@ salaries = pd.Series([<span class="t-num">60</span>, <span class="t-num">65</spa
 </ul>
 <p><strong>Коэффициент вариации</strong> — стандартное отклонение, делённое на среднее. Позволяет сравнивать разброс у величин в разных единицах:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(x.std() / x.mean())</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.2422048426013657</code></pre></div>
 <h2 id="83-форма-распределения">8.3. Форма распределения</h2>
 <p>Распределение — это ответ на вопрос «какие значения встречаются и как часто». Его лучший портрет — гистограмма.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>rng = np.random.default_rng(<span class="t-num">1</span>)
@@ -137,6 +162,8 @@ skewed = pd.Series(rng.gamma(<span class="t-num">2.0</span>, <span class="t-num"
           <span class="t-str">&quot;| медиана:&quot;</span>, <span class="t-fn">round</span>(s.median(), <span class="t-num">1</span>),
           <span class="t-str">&quot;| асимметрия:&quot;</span>, <span class="t-fn">round</span>(s.skew(), <span class="t-num">2</span>),
           <span class="t-str">&quot;| эксцесс:&quot;</span>, <span class="t-fn">round</span>(s.kurt(), <span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>симметричное | среднее: 99.8 | медиана: 99.6 | асимметрия: 0.06 | эксцесс: 0.09
+скошенное | среднее: 2974.0 | медиана: 2503.2 | асимметрия: 1.44 | эксцесс: 3.17</code></pre></div>
 <ul>
 <li><strong>Асимметрия (skewness)</strong> — насколько распределение скошено. Около 0 — симметричное. Больше 0 — длинный хвост справа (доходы, суммы заказов, время на сайте). Меньше 0 — хвост слева.</li>
 <li><strong>Эксцесс (kurtosis)</strong> — насколько тяжёлые хвосты, то есть как часто встречаются экстремальные значения. У нормального распределения он равен 0 (в том определении, которое использует pandas).</li>
@@ -150,16 +177,42 @@ skewed = pd.Series(rng.gamma(<span class="t-num">2.0</span>, <span class="t-num"
 </ul>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>within_2 = ((symmetric &gt; <span class="t-num">100</span> - <span class="t-num">30</span>) &amp; (symmetric &lt; <span class="t-num">100</span> + <span class="t-num">30</span>)).mean()
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(within_2, <span class="t-num">3</span>))    <span class="t-com"># около 0.95</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.956</code></pre></div>
 <p>Важно: большинство бизнес-данных <strong>не</strong> нормальны. Суммы заказов, число покупок, длительность сессий скошены вправо. Правило трёх сигм к ним неприменимо.</p>
 <h3 id="логарифм-для-скошенных-данных">Логарифм для скошенных данных</h3>
 <p>Логарифмирование сжимает длинный хвост и часто делает распределение почти симметричным:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(<span class="t-fn">round</span>(skewed.skew(), <span class="t-num">2</span>), <span class="t-fn">round</span>(np.log(skewed).skew(), <span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>1.44 -0.87</code></pre></div>
 <h2 id="84-вся-статистика-одной-командой">8.4. Вся статистика одной командой</h2>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = pd.read_csv(<span class="t-str">&quot;orders_clean.csv&quot;</span>, parse_dates=[<span class="t-str">&quot;date&quot;</span>])
 
 <span class="t-fn">print</span>(df[<span class="t-str">&quot;amount&quot;</span>].describe(percentiles=[<span class="t-num">0.05</span>, <span class="t-num">0.25</span>, <span class="t-num">0.5</span>, <span class="t-num">0.75</span>, <span class="t-num">0.95</span>, <span class="t-num">0.99</span>]))
 <span class="t-fn">print</span>(df.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].describe())
-<span class="t-fn">print</span>(df.describe(include=<span class="t-str">&quot;object&quot;</span>))    <span class="t-com"># для категорий: число уникальных, самое частое</span></code></pre></div>
+<span class="t-fn">print</span>(df.select_dtypes(exclude=[<span class="t-str">&quot;number&quot;</span>, <span class="t-str">&quot;datetime&quot;</span>]).describe())    <span class="t-com"># для категорий: число уникальных, самое частое</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>count      470.000000
+mean      2978.053191
+std       2165.061910
+min         78.000000
+5%         511.900000
+25%       1436.750000
+50%       2537.000000
+75%       3897.500000
+95%       7271.200000
+99%      10271.130000
+max      13120.000000
+Name: amount, dtype: float64
+           count         mean          std    min      25%     50%      75%      max
+city                                                                                
+Казань      70.0  2766.257143  1800.295674  284.0  1401.75  2425.5  3629.00   9571.0
+Москва     262.0  3011.564885  1991.114650   88.0  1566.50  2684.0  4057.25  10494.0
+Не указан   11.0  2820.272727  2846.421511  417.0   942.00  2367.0  3347.50  10556.0
+Самара      70.0  3362.928571  2827.991659  377.0  1370.75  2405.5  4824.50  13120.0
+Уфа         57.0  2641.912281  2262.614222   78.0  1130.00  2116.0  3572.00  12842.0
+          city category
+count      470      470
+unique       5        3
+top     Москва    Книги
+freq       262      160</code></pre></div>
 <h2 id="85-связь-между-показателями">8.5. Связь между показателями</h2>
 <h3 id="корреляция">Корреляция</h3>
 <p>Коэффициент корреляции показывает, насколько согласованно меняются две величины. Он лежит от −1 до +1:</p>
@@ -178,6 +231,15 @@ skewed = pd.Series(rng.gamma(<span class="t-num">2.0</span>, <span class="t-num"
 
 r, p_value = stats.pearsonr(users[<span class="t-str">&quot;orders&quot;</span>], users[<span class="t-str">&quot;revenue&quot;</span>])
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(r, <span class="t-num">3</span>), p_value)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>             orders   revenue  avg_check
+orders     1.000000  0.826892  -0.071086
+revenue    0.826892  1.000000   0.380899
+avg_check -0.071086  0.380899   1.000000
+             orders   revenue  avg_check
+orders     1.000000  0.832683   0.075384
+revenue    0.832683  1.000000   0.578904
+avg_check  0.075384  0.578904   1.000000
+0.827 2.851703341300992e-30</code></pre></div>
 <ul>
 <li><strong>Пирсон</strong> измеряет линейную связь и чувствителен к выбросам.</li>
 <li><strong>Спирмен</strong> работает с рангами: ловит любую монотонную связь и устойчив к выбросам. Для скошенных данных он надёжнее.</li>
@@ -195,6 +257,9 @@ r, p_value = stats.pearsonr(users[<span class="t-str">&quot;orders&quot;</span>]
 <span class="t-fn">print</span>(<span class="t-str">&quot;наклон:&quot;</span>, <span class="t-fn">round</span>(result.slope, <span class="t-num">1</span>))
 <span class="t-fn">print</span>(<span class="t-str">&quot;свободный член:&quot;</span>, <span class="t-fn">round</span>(result.intercept, <span class="t-num">1</span>))
 <span class="t-fn">print</span>(<span class="t-str">&quot;R²:&quot;</span>, <span class="t-fn">round</span>(result.rvalue ** <span class="t-num">2</span>, <span class="t-num">3</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>наклон: 3065.8
+свободный член: -355.4
+R²: 0.684</code></pre></div>
 <ul>
 <li><strong>Наклон</strong> — на сколько в среднем меняется <code>y</code> при росте <code>x</code> на единицу. Здесь: сколько выручки приносит каждый дополнительный заказ.</li>
 <li><strong>R²</strong> — доля разброса <code>y</code>, которую объясняет модель: от 0 до 1.</li>
@@ -213,6 +278,15 @@ data[<span class="t-str">&quot;cr&quot;</span>] = data[<span class="t-str">&quot
 total = data.groupby(<span class="t-str">&quot;variant&quot;</span>)[[<span class="t-str">&quot;visitors&quot;</span>, <span class="t-str">&quot;purchases&quot;</span>]].<span class="t-fn">sum</span>()
 total[<span class="t-str">&quot;cr&quot;</span>] = total[<span class="t-str">&quot;purchases&quot;</span>] / total[<span class="t-str">&quot;visitors&quot;</span>]
 <span class="t-fn">print</span>(total)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>  variant platform  visitors  purchases     cr
+0       A   mobile      8000        240  0.030
+1       A  desktop      2000        200  0.100
+2       B   mobile      2000         50  0.025
+3       B  desktop      8000        720  0.090
+         visitors  purchases     cr
+variant                            
+A           10000        440  0.044
+B           10000        770  0.077</code></pre></div>
 <p>На каждой платформе по отдельности вариант A лучше: 3,0 % против 2,5 % на мобильных и 10 % против 9 % на десктопе. Но по общей конверсии с большим отрывом побеждает B — 7,7 % против 4,4 %. Причина не в варианте, а в составе групп: у B в основном десктопные посетители, которые в принципе покупают чаще.</p>
 <p>Вывод: <strong>всегда смотри на метрику в разрезах</strong> — по платформам, странам, новым и старым пользователям. Общая цифра может врать.</p>
 <h2 id="87-план-разведочного-анализа">8.7. План разведочного анализа</h2>
@@ -278,8 +352,16 @@ summary = pd.Series({
     <span class="t-str">&quot;95-й перцентиль&quot;</span>: amount.quantile(<span class="t-num">0.95</span>),
 })
 <span class="t-fn">print</span>(summary.<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>среднее                   2978.05
+медиана                   2537.00
+стандартное отклонение    2165.06
+IQR                       2460.75
+асимметрия                   1.54
+5-й перцентиль             511.90
+95-й перцентиль           7271.20
+dtype: float64</code></pre></div>
 <p>Образец описания словами (подставь свои числа):</p>
-<blockquote><p>Типичный заказ — около 2500 рублей (медиана), половина заказов укладывается в диапазон от 1400 до 4000. Распределение скошено вправо (асимметрия около 1,4): среднее заметно выше медианы из-за небольшого числа крупных заказов, поэтому для описания «обычного» заказа лучше использовать медиану.</p></blockquote>
+<blockquote><p>Типичный заказ — около 2500 рублей (медиана), половина заказов укладывается в диапазон от 1400 до 4000. Распределение скошено вправо (асимметрия около 1,5): среднее заметно выше медианы из-за небольшого числа крупных заказов, поэтому для описания «обычного» заказа лучше использовать медиану.</p></blockquote>
 <p>Хорошее описание отвечает на три вопроса: где центр, каков разброс и какова форма.</p></details>
 <details class="sol"><summary>Задание 2. Правило трёх сигм</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
 
@@ -290,6 +372,9 @@ mean, std = x.mean(), x.std()
 <span class="t-kw">for</span> k <span class="t-kw">in</span> (<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">3</span>):
     share = ((x &gt; mean - k * std) &amp; (x &lt; mean + k * std)).mean()
     <span class="t-fn">print</span>(<span class="t-str">f&quot;в пределах ±{k} сигм: {share:.1%}&quot;</span>)</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>в пределах ±1 сигм: 68.2%
+в пределах ±2 сигм: 95.4%
+в пределах ±3 сигм: 99.8%</code></pre></div>
 <p>Получится около 68 %, 95 % и 99,7 %. Повтори то же для скошенных данных (<code>rng.gamma(2.0, 1500, 10_000)</code>) и убедись, что доли другие: правило работает только для нормального распределения.</p></details>
 <details class="sol"><summary>Задание 3. Корреляция без причинности</summary><p>Примеры ответов:</p>
 <div class="table"><table><thead><tr><th>Наблюдение</th><th>Конфаундер</th></tr></thead><tbody><tr><td>Чем больше пожарных на вызове, тем больше ущерб</td><td>Размер пожара: на крупный пожар приезжает больше машин, и ущерб от него больше</td></tr><tr><td>У детей с большим размером обуви лучше навык чтения</td><td>Возраст: старшие дети и крупнее, и читают лучше</td></tr><tr><td>Пользователи, которые пишут в поддержку, уходят чаще</td><td>Проблемы с продуктом: они вызывают и обращения, и уход. Закрыть поддержку — не решение</td></tr><tr><td>Клиенты с подпиской тратят больше</td><td>Лояльность: подписку оформляют те, кто и так много покупает</td></tr></tbody></table></div>
@@ -300,10 +385,12 @@ x = np.linspace(-<span class="t-num">3</span>, <span class="t-num">3</span>, <sp
 y = x ** <span class="t-num">2</span>
 
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(np.corrcoef(x, y)[<span class="t-num">0</span>, <span class="t-num">1</span>], <span class="t-num">6</span>))      <span class="t-com"># практически 0</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.0</code></pre></div>
 <p>Связь между <code>x</code> и <code>y</code> полная — <code>y</code> однозначно вычисляется из <code>x</code>. Но корреляция Пирсона равна нулю, потому что она измеряет только <strong>линейную</strong> связь: на левой половине <code>y</code> убывает с ростом <code>x</code>, на правой — возрастает, и два эффекта взаимно уничтожаются.</p>
 <p>Если взять только правую половину, корреляция станет высокой:</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>mask = x &gt; <span class="t-num">0</span>
 <span class="t-fn">print</span>(<span class="t-fn">round</span>(np.corrcoef(x[mask], y[mask])[<span class="t-num">0</span>, <span class="t-num">1</span>], <span class="t-num">3</span>))     <span class="t-com"># около 0.97</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><pre class="out"><code>0.968</code></pre></div>
 <p>Вывод: нулевая корреляция не означает отсутствия связи. Сначала точечный график — потом коэффициент.</p></details>
 <details class="sol"><summary>Задание 5. EDA-проект</summary><p>Это задание без единственного верного ответа. Ниже — каркас ноутбука, который нужно наполнить.</p>
 <div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
@@ -349,7 +436,7 @@ DATA_PATH = <span class="t-str">&quot;data/dataset.csv&quot;</span>
 <span class="t-kw">for</span> column <span class="t-kw">in</span> df.select_dtypes(<span class="t-str">&quot;number&quot;</span>).columns:
     plot_numeric(df, column)
 
-<span class="t-kw">for</span> column <span class="t-kw">in</span> df.select_dtypes(<span class="t-str">&quot;object&quot;</span>).columns:
+<span class="t-kw">for</span> column <span class="t-kw">in</span> df.select_dtypes(exclude=[<span class="t-str">&quot;number&quot;</span>, <span class="t-str">&quot;datetime&quot;</span>]).columns:
     plot_category(df, column)
 
 sns.heatmap(df.select_dtypes(<span class="t-str">&quot;number&quot;</span>).corr(method=<span class="t-str">&quot;spearman&quot;</span>), annot=<span class="t-num">True</span>, fmt=<span class="t-str">&quot;.2f&quot;</span>,

@@ -45,6 +45,19 @@ details.sol{border:1px solid var(--line);border-radius:10px;background:var(--pan
 details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
 details.sol[open]{padding-bottom:8px}
 details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.result{margin:-6px 0 1.4em;padding:10px 14px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);
+border-radius:0 8px 8px 0;background:var(--panel)}
+.result-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+color:var(--accent);margin-bottom:6px}
+.result pre.out{margin:0;overflow-x:auto;background:none;padding:0}
+.result pre.out code{background:none;padding:0;font-size:13.5px;line-height:1.45;white-space:pre;overflow-wrap:normal}
+.result .table{margin:0}
+.result table{font-size:.88em;width:auto;min-width:40%}
+.result p{margin:.5em 0 0;font-size:.9em;color:var(--muted)}
+.result p:has(img){margin:0}
+.result img,main img{max-width:100%;height:auto;border-radius:6px;display:block}
+.result img{background:#fff;margin-top:8px}
+.result img:first-child{margin-top:0}
 .table{overflow-x:auto;margin:1em 0}
 table{border-collapse:collapse;width:100%;font-size:.94em}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
@@ -193,6 +206,7 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
        <span class="t-fn">COUNT</span>(<span class="t-kw">DISTINCT</span> <span class="t-kw">CASE</span> <span class="t-kw">WHEN</span> status = <span class="t-str">&#x27;paid&#x27;</span> <span class="t-kw">THEN</span> user_id <span class="t-kw">END</span>) <span class="t-kw">AS</span> buyers,
        <span class="t-fn">ROUND</span>(<span class="t-fn">AVG</span>(<span class="t-kw">CASE</span> <span class="t-kw">WHEN</span> status = <span class="t-str">&#x27;paid&#x27;</span> <span class="t-kw">THEN</span> amount <span class="t-kw">END</span>), <span class="t-num">1</span>)   <span class="t-kw">AS</span> avg_paid_check
 <span class="t-kw">FROM</span> orders;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>orders_total</th><th>orders_paid</th><th>revenue</th><th>buyers</th><th>avg_paid_check</th></tr></thead><tbody><tr><td>12</td><td>10</td><td>16700</td><td>5</td><td>1670</td></tr></tbody></table></div></div>
 <p>Разбор:</p>
 <ul>
 <li><code>SUM(CASE WHEN ... THEN 1 ELSE 0 END)</code> — количество строк, подходящих под условие.</li>
@@ -203,11 +217,13 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
 <p>Доля считается как среднее от нулей и единиц:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-fn">ROUND</span>(<span class="t-fn">AVG</span>(<span class="t-kw">CASE</span> <span class="t-kw">WHEN</span> status = <span class="t-str">&#x27;paid&#x27;</span> <span class="t-kw">THEN</span> <span class="t-num">1.0</span> <span class="t-kw">ELSE</span> <span class="t-num">0</span> <span class="t-kw">END</span>), <span class="t-num">3</span>) <span class="t-kw">AS</span> paid_share
 <span class="t-kw">FROM</span> orders;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>paid_share</th></tr></thead><tbody><tr><td>0.833</td></tr></tbody></table></div></div>
 <p>В PostgreSQL и свежих версиях SQLite есть более читаемая запись — <code>FILTER</code>:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-fn">COUNT</span>(*)                                       <span class="t-kw">AS</span> orders_total,
        <span class="t-fn">COUNT</span>(*) FILTER (<span class="t-kw">WHERE</span> status = <span class="t-str">&#x27;paid&#x27;</span>)        <span class="t-kw">AS</span> orders_paid,
        <span class="t-fn">SUM</span>(amount) FILTER (<span class="t-kw">WHERE</span> status = <span class="t-str">&#x27;paid&#x27;</span>)     <span class="t-kw">AS</span> revenue
 <span class="t-kw">FROM</span> orders;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>orders_total</th><th>orders_paid</th><th>revenue</th></tr></thead><tbody><tr><td>12</td><td>10</td><td>16700</td></tr></tbody></table></div></div>
 <h3 id="разворот-таблицы-pivot">Разворот таблицы (pivot)</h3>
 <p>Условная агрегация превращает строки в столбцы — аналог сводной таблицы:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-fn">strftime</span>(<span class="t-str">&#x27;%Y-%m&#x27;</span>, order_date)                             <span class="t-kw">AS</span> month,
@@ -217,6 +233,7 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
 <span class="t-kw">FROM</span> orders
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> month
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> month;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>month</th><th>paid</th><th>cancelled</th><th>refunded</th></tr></thead><tbody><tr><td>2026-01</td><td>9500</td><td>300</td><td>0</td></tr><tr><td>2026-02</td><td>5100</td><td>0</td><td>900</td></tr><tr><td>2026-03</td><td>2100</td><td>0</td><td>0</td></tr></tbody></table></div></div>
 <h2 id="3а3-ловушки-null">3А.3. Ловушки NULL</h2>
 <p><code>NULL</code> означает «неизвестно», и любая операция с неизвестным даёт неизвестное. Отсюда несколько неочевидных следствий.</p>
 <h3 id="сравнение">Сравнение</h3>
@@ -224,6 +241,7 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
        <span class="t-fn">SUM</span>(<span class="t-kw">CASE</span> <span class="t-kw">WHEN</span> city = <span class="t-str">&#x27;Москва&#x27;</span>  <span class="t-kw">THEN</span> <span class="t-num">1</span> <span class="t-kw">ELSE</span> <span class="t-num">0</span> <span class="t-kw">END</span>) <span class="t-kw">AS</span> moscow,
        <span class="t-fn">SUM</span>(<span class="t-kw">CASE</span> <span class="t-kw">WHEN</span> city &lt;&gt; <span class="t-str">&#x27;Москва&#x27;</span> <span class="t-kw">THEN</span> <span class="t-num">1</span> <span class="t-kw">ELSE</span> <span class="t-num">0</span> <span class="t-kw">END</span>) <span class="t-kw">AS</span> not_moscow
 <span class="t-kw">FROM</span> users;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>all_users</th><th>moscow</th><th>not_moscow</th></tr></thead><tbody><tr><td>6</td><td>2</td><td>3</td></tr></tbody></table></div></div>
 <p>Пользователей шесть, а <code>moscow + not_moscow</code> даёт пять. Дарья с неизвестным городом не попала <strong>ни в одну</strong> группу: условие <code>NULL &lt;&gt; &#x27;Москва&#x27;</code> не истинно и не ложно — оно неизвестно.</p>
 <p>Правило: если в столбце возможны пропуски, условие «не равно» нужно дополнять: <code>city &lt;&gt; &#x27;Москва&#x27; OR city IS NULL</code>.</p>
 <h3 id="not-in-и-null--самая-опасная-ловушка">NOT IN и NULL — самая опасная ловушка</h3>
@@ -232,6 +250,8 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
 <span class="t-kw">SELECT</span> name
 <span class="t-kw">FROM</span> users
 <span class="t-kw">WHERE</span> user_id <span class="t-kw">NOT</span> <span class="t-kw">IN</span> (<span class="t-kw">SELECT</span> referrer_id <span class="t-kw">FROM</span> users);</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th></tr></thead><tbody></tbody></table></div>
+<p><em>Запрос вернул 0 строк.</em></p></div>
 <p>Подзапрос возвращает список <code>NULL, 1, 1, 2, NULL, 3</code>. Условие <code>x NOT IN (..., NULL)</code> никогда не бывает истинным: база не может утверждать, что <code>x</code> не равен неизвестному значению. Запрос молча вернёт ноль строк.</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- Правильно: NOT EXISTS не боится NULL</span>
 <span class="t-kw">SELECT</span> u.name
@@ -241,6 +261,7 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
     <span class="t-kw">FROM</span> users <span class="t-kw">AS</span> invited
     <span class="t-kw">WHERE</span> invited.referrer_id = u.user_id
 );</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th></tr></thead><tbody><tr><td>Глеб</td></tr><tr><td>Дарья</td></tr><tr><td>Егор</td></tr></tbody></table></div></div>
 <p>Привычка на всю жизнь: <strong>для «нет в списке» используй <code>NOT EXISTS</code> или <code>LEFT JOIN ... IS NULL</code>, а не <code>NOT IN</code></strong>.</p>
 <h3 id="полезные-функции">Полезные функции</h3>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> name,
@@ -248,8 +269,10 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
        NULLIF(city, <span class="t-str">&#x27;Уфа&#x27;</span>)                     <span class="t-kw">AS</span> city_no_ufa, <span class="t-com">-- NULL, если значения равны</span>
        <span class="t-fn">COALESCE</span>(referrer_id, <span class="t-num">0</span>)                <span class="t-kw">AS</span> referrer
 <span class="t-kw">FROM</span> users;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>city</th><th>city_no_ufa</th><th>referrer</th></tr></thead><tbody><tr><td>Анна</td><td>Москва</td><td>Москва</td><td>0</td></tr><tr><td>Борис</td><td>Казань</td><td>Казань</td><td>1</td></tr><tr><td>Вера</td><td>Москва</td><td>Москва</td><td>1</td></tr><tr><td>Глеб</td><td>Уфа</td><td>NULL</td><td>2</td></tr><tr><td>Дарья</td><td>не указан</td><td>NULL</td><td>0</td></tr><tr><td>Егор</td><td>Казань</td><td>Казань</td><td>3</td></tr></tbody></table></div></div>
 <p><code>NULLIF</code> — стандартная защита от деления на ноль:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-num">100.0</span> * <span class="t-num">5</span> / NULLIF(<span class="t-num">0</span>, <span class="t-num">0</span>) <span class="t-kw">AS</span> safe_ratio;      <span class="t-com">-- NULL вместо ошибки</span></code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>safe_ratio</th></tr></thead><tbody><tr><td>NULL</td></tr></tbody></table></div></div>
 <p>Запись <code>x / NULLIF(y, 0)</code> возвращает <code>NULL</code>, когда знаменатель равен нулю. Используй её в любой метрике-отношении.</p>
 <h3 id="null-в-агрегатах-и-сортировке">NULL в агрегатах и сортировке</h3>
 <ul>
@@ -268,15 +291,18 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
     <span class="t-kw">SELECT</span> <span class="t-num">1</span> <span class="t-kw">FROM</span> orders <span class="t-kw">AS</span> o
     <span class="t-kw">WHERE</span> o.user_id = u.user_id <span class="t-kw">AND</span> o.status = <span class="t-str">&#x27;paid&#x27;</span>
 );</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th></tr></thead><tbody><tr><td>Анна</td></tr><tr><td>Борис</td></tr><tr><td>Вера</td></tr><tr><td>Егор</td></tr></tbody></table></div></div>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- 2. IN: то же самое, читается проще</span>
 <span class="t-kw">SELECT</span> name
 <span class="t-kw">FROM</span> users
 <span class="t-kw">WHERE</span> user_id <span class="t-kw">IN</span> (<span class="t-kw">SELECT</span> user_id <span class="t-kw">FROM</span> orders <span class="t-kw">WHERE</span> status = <span class="t-str">&#x27;paid&#x27;</span>);</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th></tr></thead><tbody><tr><td>Анна</td></tr><tr><td>Борис</td></tr><tr><td>Вера</td></tr><tr><td>Егор</td></tr></tbody></table></div></div>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- 3. JOIN: нужен DISTINCT, иначе Анна появится четыре раза</span>
 <span class="t-kw">SELECT</span> <span class="t-kw">DISTINCT</span> u.name
 <span class="t-kw">FROM</span> users <span class="t-kw">AS</span> u
 <span class="t-kw">JOIN</span> orders <span class="t-kw">AS</span> o <span class="t-kw">ON</span> o.user_id = u.user_id
 <span class="t-kw">WHERE</span> o.status = <span class="t-str">&#x27;paid&#x27;</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th></tr></thead><tbody><tr><td>Анна</td></tr><tr><td>Борис</td></tr><tr><td>Вера</td></tr><tr><td>Егор</td></tr></tbody></table></div></div>
 <p>Обратная задача — «у кого оплаченных заказов нет»:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> u.name
 <span class="t-kw">FROM</span> users <span class="t-kw">AS</span> u
@@ -284,6 +310,7 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
        <span class="t-kw">ON</span> o.user_id = u.user_id
       <span class="t-kw">AND</span> o.status = <span class="t-str">&#x27;paid&#x27;</span>          <span class="t-com">-- условие на правую таблицу стоит в ON</span>
 <span class="t-kw">WHERE</span> o.order_id <span class="t-kw">IS</span> <span class="t-kw">NULL</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th></tr></thead><tbody><tr><td>Глеб</td></tr><tr><td>Дарья</td></tr></tbody></table></div></div>
 <h3 id="условие-в-on-или-в-where">Условие в ON или в WHERE</h3>
 <p>Это место, где ошибаются чаще всего. Сравни:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- Условие в WHERE: LEFT JOIN незаметно превращается в INNER JOIN</span>
@@ -292,6 +319,7 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> orders <span class="t-kw">AS</span> o <span class="t-kw">ON</span> o.user_id = u.user_id
 <span class="t-kw">WHERE</span> o.status = <span class="t-str">&#x27;paid&#x27;</span>
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> u.user_id, u.name;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>paid_orders</th></tr></thead><tbody><tr><td>Анна</td><td>4</td></tr><tr><td>Борис</td><td>2</td></tr><tr><td>Вера</td><td>2</td></tr><tr><td>Егор</td><td>1</td></tr></tbody></table></div></div>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- Условие в ON: все пользователи остаются, у кого нет оплат — ноль</span>
 <span class="t-kw">SELECT</span> u.name, <span class="t-fn">COUNT</span>(o.order_id) <span class="t-kw">AS</span> paid_orders
 <span class="t-kw">FROM</span> users <span class="t-kw">AS</span> u
@@ -299,6 +327,7 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
        <span class="t-kw">ON</span> o.user_id = u.user_id
       <span class="t-kw">AND</span> o.status = <span class="t-str">&#x27;paid&#x27;</span>
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> u.user_id, u.name;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>paid_orders</th></tr></thead><tbody><tr><td>Анна</td><td>4</td></tr><tr><td>Борис</td><td>2</td></tr><tr><td>Вера</td><td>2</td></tr><tr><td>Глеб</td><td>0</td></tr><tr><td>Дарья</td><td>0</td></tr><tr><td>Егор</td><td>1</td></tr></tbody></table></div></div>
 <p>В первом запросе у пользователей без заказов <code>o.status</code> равен <code>NULL</code>, условие <code>WHERE</code> их отбрасывает, и из шести пользователей остаются четыре. Во втором фильтр применяется к заказам <strong>до</strong> соединения, и в результате все шесть.</p>
 <p>Правило: при <code>LEFT JOIN</code> условия на <strong>правую</strong> таблицу пиши в <code>ON</code>, условия на <strong>левую</strong> — в <code>WHERE</code>.</p>
 <h2 id="3а5-дедупликация-и-последняя-запись">3А.5. Дедупликация и «последняя запись»</h2>
@@ -315,6 +344,7 @@ conn.executescript(Path(<span class="t-str">&quot;setup.sql&quot;</span>).read_t
 <span class="t-kw">FROM</span> ranked
 <span class="t-kw">WHERE</span> rn = <span class="t-num">1</span>
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> user_id;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>order_id</th><th>order_date</th><th>amount</th><th>status</th></tr></thead><tbody><tr><td>1</td><td>111</td><td>2026-03-02</td><td>2000</td><td>paid</td></tr><tr><td>2</td><td>106</td><td>2026-02-01</td><td>700</td><td>paid</td></tr><tr><td>3</td><td>109</td><td>2026-02-15</td><td>2500</td><td>paid</td></tr><tr><td>4</td><td>108</td><td>2026-02-09</td><td>900</td><td>refunded</td></tr><tr><td>6</td><td>110</td><td>2026-02-20</td><td>400</td><td>paid</td></tr><tr><td>9</td><td>112</td><td>2026-03-05</td><td>100</td><td>paid</td></tr></tbody></table></div></div>
 <p>Обрати внимание на <code>order_id DESC</code> в сортировке окна. Если у пользователя два заказа в один день, без второго ключа база выберет «первый» произвольно — и результат запроса будет меняться от запуска к запуску. <strong>Сортировка внутри окна должна быть однозначной.</strong></p>
 <p>Первая запись получается заменой <code>DESC</code> на <code>ASC</code>. Первая и последняя сразу — через <code>FIRST_VALUE</code>:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-kw">DISTINCT</span>
@@ -327,17 +357,20 @@ WINDOW w <span class="t-kw">AS</span> (
     <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> order_date, order_id
     <span class="t-kw">ROWS</span> <span class="t-kw">BETWEEN</span> UNBOUNDED <span class="t-kw">PRECEDING</span> <span class="t-kw">AND</span> UNBOUNDED <span class="t-kw">FOLLOWING</span>
 );</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>first_amount</th><th>last_amount</th></tr></thead><tbody><tr><td>1</td><td>1200</td><td>2000</td></tr><tr><td>2</td><td>5000</td><td>700</td></tr><tr><td>3</td><td>2500</td><td>2500</td></tr><tr><td>4</td><td>900</td><td>900</td></tr><tr><td>6</td><td>400</td><td>400</td></tr><tr><td>9</td><td>100</td><td>100</td></tr></tbody></table></div></div>
 <p>Рамка <code>ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING</code> обязательна для <code>LAST_VALUE</code>: по умолчанию окно заканчивается на текущей строке, и «последним значением» оказывается сама текущая строка. Конструкция <code>WINDOW w AS (...)</code> даёт окну имя, чтобы не повторять его описание.</p>
 <h3 id="поиск-дубликатов">Поиск дубликатов</h3>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> user_id, amount, <span class="t-fn">COUNT</span>(*) <span class="t-kw">AS</span> copies
 <span class="t-kw">FROM</span> orders
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> user_id, amount
 <span class="t-kw">HAVING</span> <span class="t-fn">COUNT</span>(*) &gt; <span class="t-num">1</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>amount</th><th>copies</th></tr></thead><tbody><tr><td>3</td><td>2500</td><td>2</td></tr></tbody></table></div></div>
 <h2 id="3а6-ранжирование-топ-n-и-второе-по-величине">3А.6. Ранжирование: топ-N и «второе по величине»</h2>
 <p>Классика собеседований — вторая по величине зарплата:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-fn">MAX</span>(salary) <span class="t-kw">AS</span> second_salary
 <span class="t-kw">FROM</span> employees
 <span class="t-kw">WHERE</span> salary &lt; (<span class="t-kw">SELECT</span> <span class="t-fn">MAX</span>(salary) <span class="t-kw">FROM</span> employees);</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>second_salary</th></tr></thead><tbody><tr><td>200</td></tr></tbody></table></div></div>
 <p>Универсальное решение для N-й по величине — <code>DENSE_RANK</code>:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> ranked <span class="t-kw">AS</span> (
     <span class="t-kw">SELECT</span> name, dept, salary,
@@ -347,6 +380,7 @@ WINDOW w <span class="t-kw">AS</span> (
 <span class="t-kw">SELECT</span> name, salary
 <span class="t-kw">FROM</span> ranked
 <span class="t-kw">WHERE</span> salary_rank = <span class="t-num">3</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>salary</th></tr></thead><tbody><tr><td>Рита</td><td>180</td></tr></tbody></table></div></div>
 <p>Здесь нужен именно <code>DENSE_RANK</code>. Зарплаты: 300, 200, 180, 150, 150… <code>ROW_NUMBER</code> пронумеровал бы двух сотрудников с зарплатой 150 как 4 и 5 и «потерял» бы одного из них; <code>RANK</code> при совпадениях пропускает номера.</p>
 <p>Топ-2 по зарплате в каждом отделе и сравнение со средним по отделу:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> ranked <span class="t-kw">AS</span> (
@@ -359,6 +393,7 @@ WINDOW w <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> ranked
 <span class="t-kw">WHERE</span> rn &lt;= <span class="t-num">2</span>
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> dept, rn;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>dept</th><th>name</th><th>salary</th><th>dept_avg</th><th>diff_from_avg</th></tr></thead><tbody><tr><td>Аналитика</td><td>Павел</td><td>200</td><td>150</td><td>50</td></tr><tr><td>Аналитика</td><td>Семён</td><td>150</td><td>150</td><td>0</td></tr><tr><td>Дирекция</td><td>Ольга</td><td>300</td><td>300</td><td>0</td></tr><tr><td>Продажи</td><td>Рита</td><td>180</td><td>150</td><td>30</td></tr><tr><td>Продажи</td><td>Ульяна</td><td>120</td><td>150</td><td>-30</td></tr></tbody></table></div></div>
 <h3 id="разбивка-на-группы-ntile">Разбивка на группы: NTILE</h3>
 <p><code>NTILE(n)</code> делит строки на <code>n</code> примерно равных групп — так получают квартили и децили:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> user_id,
@@ -367,6 +402,7 @@ WINDOW w <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> orders
 <span class="t-kw">WHERE</span> status = <span class="t-str">&#x27;paid&#x27;</span>
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> user_id;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>spent</th><th>tier</th></tr></thead><tbody><tr><td>2</td><td>5700</td><td>1</td></tr><tr><td>1</td><td>5500</td><td>1</td></tr><tr><td>3</td><td>5000</td><td>2</td></tr><tr><td>6</td><td>400</td><td>2</td></tr><tr><td>9</td><td>100</td><td>3</td></tr></tbody></table></div></div>
 <p>Оконная функция здесь применяется поверх агрегата: сначала выполняется <code>GROUP BY</code>, затем окно работает уже с результатом группировки.</p>
 <h2 id="3а7-доли-накопительные-итоги-и-скользящие-окна">3А.7. Доли, накопительные итоги и скользящие окна</h2>
 <p><code>OVER ()</code> с пустыми скобками — окно на всю таблицу. Так считают долю от итога без подзапроса:</p>
@@ -376,6 +412,7 @@ WINDOW w <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> users
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> city
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> users <span class="t-kw">DESC</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>city</th><th>users</th><th>share_percent</th></tr></thead><tbody><tr><td>Казань</td><td>2</td><td>33.3</td></tr><tr><td>Москва</td><td>2</td><td>33.3</td></tr><tr><td>NULL</td><td>1</td><td>16.7</td></tr><tr><td>Уфа</td><td>1</td><td>16.7</td></tr></tbody></table></div></div>
 <p>Накопительный итог и накопительная доля — основа ABC-анализа и правила Парето:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> user_revenue <span class="t-kw">AS</span> (
     <span class="t-kw">SELECT</span> user_id, <span class="t-fn">SUM</span>(amount) <span class="t-kw">AS</span> revenue
@@ -390,6 +427,7 @@ WINDOW w <span class="t-kw">AS</span> (
              / <span class="t-fn">SUM</span>(revenue) <span class="t-kw">OVER</span> (), <span class="t-num">1</span>)                                      <span class="t-kw">AS</span> cumulative_percent
 <span class="t-kw">FROM</span> user_revenue
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> revenue <span class="t-kw">DESC</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>revenue</th><th>running_total</th><th>cumulative_percent</th></tr></thead><tbody><tr><td>2</td><td>5700</td><td>5700</td><td>34.1</td></tr><tr><td>1</td><td>5500</td><td>11200</td><td>67.1</td></tr><tr><td>3</td><td>5000</td><td>16200</td><td>97</td></tr><tr><td>6</td><td>400</td><td>16600</td><td>99.4</td></tr><tr><td>9</td><td>100</td><td>16700</td><td>100</td></tr></tbody></table></div></div>
 <h3 id="рамка-окна">Рамка окна</h3>
 <p>По умолчанию окно с <code>ORDER BY</code> охватывает строки от начала до текущей. Рамку можно задать явно:</p>
 <div class="table"><table><thead><tr><th>Рамка</th><th>Что охватывает</th></tr></thead><tbody><tr><td><code>ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</code></td><td>От начала до текущей — накопительный итог</td></tr><tr><td><code>ROWS BETWEEN 2 PRECEDING AND CURRENT ROW</code></td><td>Текущая и две предыдущие — скользящее окно из трёх строк</td></tr><tr><td><code>ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING</code></td><td>Соседи с обеих сторон</td></tr><tr><td><code>ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING</code></td><td>Вся группа</td></tr></tbody></table></div>
@@ -401,6 +439,8 @@ WINDOW w <span class="t-kw">AS</span> (
        ), <span class="t-num">1</span>) <span class="t-kw">AS</span> moving_avg_3
 <span class="t-kw">FROM</span> orders
 <span class="t-kw">WHERE</span> status = <span class="t-str">&#x27;paid&#x27;</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>order_date</th><th>amount</th><th>moving_avg_3</th></tr></thead><tbody><tr><td>2026-01-03</td><td>1200</td><td>1200</td></tr><tr><td>2026-01-06</td><td>5000</td><td>3100</td></tr><tr><td>2026-01-10</td><td>800</td><td>2333.3</td></tr><tr><td>2026-01-14</td><td>2500</td><td>2766.7</td></tr><tr><td>2026-02-01</td><td>700</td><td>1333.3</td></tr><tr><td>2026-02-07</td><td>1500</td><td>1566.7</td></tr><tr><td>2026-02-15</td><td>2500</td><td>1566.7</td></tr><tr><td>2026-02-20</td><td>400</td><td>1466.7</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 10.</em></p></div>
 <p>Важная тонкость: <code>ROWS</code> считает <strong>строки</strong>, а не дни. Если в данных пропущен день, «среднее за 7 дней» через <code>ROWS BETWEEN 6 PRECEDING</code> захватит больше недели. Сначала нужно получить по строке на каждый день — об этом следующий раздел.</p>
 <h2 id="3а8-календарь-и-заполнение-пропусков-в-датах">3А.8. Календарь и заполнение пропусков в датах</h2>
 <p>Если в какой-то день не было заказов, <code>GROUP BY</code> этот день просто не покажет. На графике такая дыра выглядит как плавная линия, а в скользящем среднем создаёт ошибку.</p>
@@ -421,6 +461,8 @@ WINDOW w <span class="t-kw">AS</span> (
       <span class="t-kw">AND</span> o.status = <span class="t-str">&#x27;paid&#x27;</span>
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> c.day
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> c.day;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>day</th><th>orders</th><th>revenue</th></tr></thead><tbody><tr><td>2026-01-01</td><td>0</td><td>0</td></tr><tr><td>2026-01-02</td><td>0</td><td>0</td></tr><tr><td>2026-01-03</td><td>1</td><td>1200</td></tr><tr><td>2026-01-04</td><td>0</td><td>0</td></tr><tr><td>2026-01-05</td><td>0</td><td>0</td></tr><tr><td>2026-01-06</td><td>1</td><td>5000</td></tr><tr><td>2026-01-07</td><td>0</td><td>0</td></tr><tr><td>2026-01-08</td><td>0</td><td>0</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 10.</em></p></div>
 <p>Рекурсивный CTE состоит из трёх частей: начальная строка, шаг, который ссылается на сам CTE, и условие остановки. Без условия остановки запрос будет работать бесконечно.</p>
 <p>Здесь сошлись сразу три приёма главы: календарь, условие на правую таблицу в <code>ON</code> и <code>COALESCE</code> для нулей.</p>
 <p>В PostgreSQL календарь строится одной функцией: <code>generate_series(&#x27;2026-01-01&#x27;::date, &#x27;2026-01-10&#x27;, &#x27;1 day&#x27;)</code>. В больших компаниях обычно есть готовая таблица-календарь с признаками рабочих дней и праздников.</p>
@@ -446,6 +488,7 @@ numbered <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> numbered
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> user_id, island
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> user_id, streak_start;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>streak_start</th><th>streak_end</th><th>streak_days</th></tr></thead><tbody><tr><td>1</td><td>2026-03-01</td><td>2026-03-03</td><td>3</td></tr><tr><td>2</td><td>2026-03-01</td><td>2026-03-01</td><td>1</td></tr><tr><td>2</td><td>2026-03-03</td><td>2026-03-05</td><td>3</td></tr><tr><td>3</td><td>2026-03-02</td><td>2026-03-02</td><td>1</td></tr></tbody></table></div></div>
 <p>Первый CTE обязателен: в один день может быть несколько событий, а нам нужна одна строка на день.</p>
 <p>Самая длинная серия каждого пользователя получается ещё одним <code>MAX(streak_days) ... GROUP BY user_id</code> поверх этого запроса.</p>
 <h2 id="3а10-сессии">3А.10. Сессии</h2>
@@ -481,6 +524,8 @@ sessions <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> sessions
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> user_id, session_num
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> user_id, session_num;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>session_num</th><th>session_start</th><th>events</th><th>minutes</th><th>has_purchase</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>2026-03-01 10:00:00</td><td>3</td><td>7</td><td>0</td></tr><tr><td>1</td><td>2</td><td>2026-03-01 15:30:00</td><td>2</td><td>2</td><td>1</td></tr><tr><td>1</td><td>3</td><td>2026-03-02 09:00:00</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>4</td><td>2026-03-03 09:10:00</td><td>1</td><td>0</td><td>0</td></tr><tr><td>2</td><td>1</td><td>2026-03-01 11:00:00</td><td>2</td><td>2</td><td>0</td></tr><tr><td>2</td><td>2</td><td>2026-03-03 12:00:00</td><td>1</td><td>0</td><td>0</td></tr><tr><td>2</td><td>3</td><td>2026-03-04 12:00:00</td><td>1</td><td>0</td><td>0</td></tr><tr><td>2</td><td>4</td><td>2026-03-05 12:30:00</td><td>2</td><td>5</td><td>1</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 9.</em></p></div>
 <p>Связка <strong>«флаг начала + накопительная сумма флагов»</strong> — универсальный способ нумеровать группы подряд идущих строк. Тем же приёмом находят периоды с одинаковым статусом, непрерывные подписки и серии побед.</p>
 <h2 id="3а11-воронка-в-sql">3А.11. Воронка в SQL</h2>
 <p>Простая воронка — сколько пользователей совершили каждое событие:</p>
@@ -489,6 +534,7 @@ sessions <span class="t-kw">AS</span> (
        <span class="t-fn">COUNT</span>(<span class="t-kw">DISTINCT</span> <span class="t-kw">CASE</span> <span class="t-kw">WHEN</span> event = <span class="t-str">&#x27;cart&#x27;</span>     <span class="t-kw">THEN</span> user_id <span class="t-kw">END</span>) <span class="t-kw">AS</span> added_to_cart,
        <span class="t-fn">COUNT</span>(<span class="t-kw">DISTINCT</span> <span class="t-kw">CASE</span> <span class="t-kw">WHEN</span> event = <span class="t-str">&#x27;purchase&#x27;</span> <span class="t-kw">THEN</span> user_id <span class="t-kw">END</span>) <span class="t-kw">AS</span> purchased
 <span class="t-kw">FROM</span> events;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>visited</th><th>viewed</th><th>added_to_cart</th><th>purchased</th></tr></thead><tbody><tr><td>3</td><td>3</td><td>2</td><td>3</td></tr></tbody></table></div></div>
 <p>Строгая воронка учитывает порядок: шаг засчитывается, только если он случился <strong>после</strong> предыдущего. Для каждого пользователя находим время первого наступления каждого шага и сравниваем:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> first_times <span class="t-kw">AS</span> (
     <span class="t-kw">SELECT</span> user_id,
@@ -506,6 +552,7 @@ sessions <span class="t-kw">AS</span> (
                  <span class="t-kw">AND</span> t_purchase &gt; t_cart <span class="t-kw">THEN</span> <span class="t-num">1</span> <span class="t-kw">ELSE</span> <span class="t-num">0</span> <span class="t-kw">END</span>)                 <span class="t-kw">AS</span> step_4_purchase
 <span class="t-kw">FROM</span> first_times
 <span class="t-kw">WHERE</span> t_visit <span class="t-kw">IS</span> <span class="t-kw">NOT</span> <span class="t-kw">NULL</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>step_1_visit</th><th>step_2_view</th><th>step_3_cart</th><th>step_4_purchase</th></tr></thead><tbody><tr><td>3</td><td>3</td><td>2</td><td>2</td></tr></tbody></table></div></div>
 <p>В простой воронке покупателей трое, в строгой — двое. Борис купил, ни разу не добавив товар в корзину: например, через кнопку «Купить в один клик». Расхождение простой и строгой воронок — не ошибка, а находка: оно показывает, что часть пользователей идёт к покупке другим путём, и воронку стоит рисовать с учётом этого.</p>
 <h2 id="3а12-когорты-и-удержание-в-sql">3А.12. Когорты и удержание в SQL</h2>
 <p>Когорта — месяц первой оплаченной покупки. Для каждого заказа считаем, на какой по счёту месяц жизни пользователя он пришёлся.</p>
@@ -536,6 +583,7 @@ activity <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> activity
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> cohort
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> cohort;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>cohort</th><th>m0</th><th>m1</th><th>m2</th><th>retention_m1</th></tr></thead><tbody><tr><td>2026-01</td><td>3</td><td>3</td><td>1</td><td>100</td></tr><tr><td>2026-02</td><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-03</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div></div>
 <p>Структура одинакова для любого когортного расчёта: дата первого события → номер периода для каждого события → условная агрегация по номерам периодов.</p>
 <p>В PostgreSQL разность в месяцах пишется короче — через <code>DATE_TRUNC</code> и <code>AGE</code>.</p>
 <h2 id="3а13-соединение-таблицы-с-самой-собой-и-иерархии">3А.13. Соединение таблицы с самой собой и иерархии</h2>
@@ -545,23 +593,27 @@ activity <span class="t-kw">AS</span> (
        <span class="t-fn">COALESCE</span>(r.name, <span class="t-str">&#x27;— пришёл сам —&#x27;</span>)       <span class="t-kw">AS</span> invited_by
 <span class="t-kw">FROM</span> users <span class="t-kw">AS</span> u
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> users <span class="t-kw">AS</span> r <span class="t-kw">ON</span> r.user_id = u.referrer_id;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user</th><th>invited_by</th></tr></thead><tbody><tr><td>Анна</td><td>— пришёл сам —</td></tr><tr><td>Борис</td><td>Анна</td></tr><tr><td>Вера</td><td>Анна</td></tr><tr><td>Глеб</td><td>Борис</td></tr><tr><td>Дарья</td><td>— пришёл сам —</td></tr><tr><td>Егор</td><td>Вера</td></tr></tbody></table></div></div>
 <p>Сколько человек пригласил каждый:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> r.name, <span class="t-fn">COUNT</span>(u.user_id) <span class="t-kw">AS</span> invited
 <span class="t-kw">FROM</span> users <span class="t-kw">AS</span> r
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> users <span class="t-kw">AS</span> u <span class="t-kw">ON</span> u.referrer_id = r.user_id
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> r.user_id, r.name
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> invited <span class="t-kw">DESC</span>, r.name;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>invited</th></tr></thead><tbody><tr><td>Анна</td><td>2</td></tr><tr><td>Борис</td><td>1</td></tr><tr><td>Вера</td><td>1</td></tr><tr><td>Глеб</td><td>0</td></tr><tr><td>Дарья</td><td>0</td></tr><tr><td>Егор</td><td>0</td></tr></tbody></table></div></div>
 <p>Сотрудники, которые зарабатывают больше половины зарплаты своего руководителя:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> e.name, e.salary, m.name <span class="t-kw">AS</span> manager, m.salary <span class="t-kw">AS</span> manager_salary
 <span class="t-kw">FROM</span> employees <span class="t-kw">AS</span> e
 <span class="t-kw">JOIN</span> employees <span class="t-kw">AS</span> m <span class="t-kw">ON</span> m.emp_id = e.manager_id
 <span class="t-kw">WHERE</span> e.salary &gt; m.salary * <span class="t-num">0.5</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>salary</th><th>manager</th><th>manager_salary</th></tr></thead><tbody><tr><td>Павел</td><td>200</td><td>Ольга</td><td>300</td></tr><tr><td>Рита</td><td>180</td><td>Ольга</td><td>300</td></tr><tr><td>Семён</td><td>150</td><td>Павел</td><td>200</td></tr><tr><td>Таня</td><td>150</td><td>Павел</td><td>200</td></tr><tr><td>Ульяна</td><td>120</td><td>Рита</td><td>180</td></tr><tr><td>Фёдор</td><td>100</td><td>Семён</td><td>150</td></tr></tbody></table></div></div>
 <h3 id="все-пары">Все пары</h3>
 <p>Соединение с условием-неравенством даёт все пары без повторов — пригодится для попарных сравнений:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> a.name <span class="t-kw">AS</span> first, b.name <span class="t-kw">AS</span> second
 <span class="t-kw">FROM</span> employees <span class="t-kw">AS</span> a
 <span class="t-kw">JOIN</span> employees <span class="t-kw">AS</span> b <span class="t-kw">ON</span> a.emp_id &lt; b.emp_id
 <span class="t-kw">WHERE</span> a.dept = b.dept;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>first</th><th>second</th></tr></thead><tbody><tr><td>Павел</td><td>Семён</td></tr><tr><td>Павел</td><td>Таня</td></tr><tr><td>Павел</td><td>Фёдор</td></tr><tr><td>Рита</td><td>Ульяна</td></tr><tr><td>Семён</td><td>Таня</td></tr><tr><td>Семён</td><td>Фёдор</td></tr><tr><td>Таня</td><td>Фёдор</td></tr></tbody></table></div></div>
 <p>Условие <code>a.emp_id &lt; b.emp_id</code> убирает и пары «сам с собой», и зеркальные дубли (Семён–Таня и Таня–Семён).</p>
 <h3 id="иерархия-рекурсивный-обход">Иерархия: рекурсивный обход</h3>
 <p>Self-join показывает один уровень подчинения. Чтобы пройти всё дерево, нужен рекурсивный CTE:</p>
@@ -579,6 +631,7 @@ activity <span class="t-kw">AS</span> (
 <span class="t-kw">SELECT</span> level, name, path
 <span class="t-kw">FROM</span> tree
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> path;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>level</th><th>name</th><th>path</th></tr></thead><tbody><tr><td>1</td><td>Ольга</td><td>Ольга</td></tr><tr><td>2</td><td>Павел</td><td>Ольга → Павел</td></tr><tr><td>3</td><td>Семён</td><td>Ольга → Павел → Семён</td></tr><tr><td>4</td><td>Фёдор</td><td>Ольга → Павел → Семён → Фёдор</td></tr><tr><td>3</td><td>Таня</td><td>Ольга → Павел → Таня</td></tr><tr><td>2</td><td>Рита</td><td>Ольга → Рита</td></tr><tr><td>3</td><td>Ульяна</td><td>Ольга → Рита → Ульяна</td></tr></tbody></table></div></div>
 <p>Так же обходят категории товаров, структуру подразделений и цепочки рефералов.</p>
 <h2 id="3а14-медиана-перцентили-и-отличия-диалектов">3А.14. Медиана, перцентили и отличия диалектов</h2>
 <p>В стандартном SQL нет функции <code>MEDIAN</code>. В PostgreSQL медиану и перцентили считают так:</p>
@@ -596,6 +649,7 @@ FROM orders;</code></pre></div>
 <span class="t-kw">SELECT</span> <span class="t-fn">AVG</span>(amount) <span class="t-kw">AS</span> median
 <span class="t-kw">FROM</span> ordered
 <span class="t-kw">WHERE</span> rn <span class="t-kw">IN</span> ((total + <span class="t-num">1</span>) / <span class="t-num">2</span>, (total + <span class="t-num">2</span>) / <span class="t-num">2</span>);</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>median</th></tr></thead><tbody><tr><td>1350</td></tr></tbody></table></div></div>
 <p>При нечётном количестве оба выражения в <code>IN</code> дают один и тот же средний номер, при чётном — два соседних, и <code>AVG</code> усредняет их.</p>
 <h3 id="шпаргалка-по-диалектам">Шпаргалка по диалектам</h3>
 <p>Логика запросов везде одинаковая, отличаются в основном функции дат и строк.</p>
@@ -607,6 +661,7 @@ FROM orders;</code></pre></div>
        GROUP_CONCAT(order_id, <span class="t-str">&#x27;, &#x27;</span>) <span class="t-kw">AS</span> order_ids
 <span class="t-kw">FROM</span> orders
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> user_id;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>orders</th><th>order_ids</th></tr></thead><tbody><tr><td>1</td><td>5</td><td>101, 102, 104, 107, 111</td></tr><tr><td>2</td><td>2</td><td>103, 106</td></tr><tr><td>3</td><td>2</td><td>105, 109</td></tr><tr><td>4</td><td>1</td><td>108</td></tr><tr><td>6</td><td>1</td><td>110</td></tr><tr><td>9</td><td>1</td><td>112</td></tr></tbody></table></div></div>
 <h2 id="3а15-агрегируй-до-соединения">3А.15. Агрегируй до соединения</h2>
 <p>Вернёмся к ловушке размножения строк. Посчитаем для каждого пользователя число оплаченных заказов и число событий:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- Неправильно: заказы и события перемножаются</span>
@@ -617,6 +672,7 @@ FROM orders;</code></pre></div>
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> orders <span class="t-kw">AS</span> o <span class="t-kw">ON</span> o.user_id = u.user_id <span class="t-kw">AND</span> o.status = <span class="t-str">&#x27;paid&#x27;</span>
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> events <span class="t-kw">AS</span> e <span class="t-kw">ON</span> e.user_id = u.user_id
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> u.user_id, u.name;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>orders</th><th>events</th></tr></thead><tbody><tr><td>Анна</td><td>28</td><td>28</td></tr><tr><td>Борис</td><td>12</td><td>12</td></tr><tr><td>Вера</td><td>8</td><td>8</td></tr><tr><td>Глеб</td><td>0</td><td>0</td></tr><tr><td>Дарья</td><td>0</td><td>0</td></tr><tr><td>Егор</td><td>1</td><td>0</td></tr></tbody></table></div></div>
 <p>У Анны 4 оплаченных заказа и 7 событий. Запрос вернёт 28 и 28: каждая строка заказа соединилась с каждой строкой события.</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- Правильно: сначала свернуть каждую таблицу до одной строки на пользователя</span>
 <span class="t-kw">WITH</span> order_stats <span class="t-kw">AS</span> (
@@ -638,6 +694,7 @@ event_stats <span class="t-kw">AS</span> (
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> order_stats <span class="t-kw">AS</span> o <span class="t-kw">ON</span> o.user_id = u.user_id
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> event_stats <span class="t-kw">AS</span> e <span class="t-kw">ON</span> e.user_id = u.user_id
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> u.user_id;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>orders</th><th>revenue</th><th>events</th></tr></thead><tbody><tr><td>Анна</td><td>4</td><td>5500</td><td>7</td></tr><tr><td>Борис</td><td>2</td><td>5700</td><td>6</td></tr><tr><td>Вера</td><td>2</td><td>5000</td><td>4</td></tr><tr><td>Глеб</td><td>0</td><td>0</td><td>0</td></tr><tr><td>Дарья</td><td>0</td><td>0</td><td>0</td></tr><tr><td>Егор</td><td>1</td><td>400</td><td>0</td></tr></tbody></table></div></div>
 <p>Правило: <strong>если к одной таблице присоединяются две таблицы «один ко многим», каждую нужно сначала агрегировать до ключа соединения.</strong> Заодно такой запрос работает быстрее.</p>
 <p>Думай в терминах <strong>зерна таблицы</strong> — того, что означает одна строка. У <code>users</code> зерно — пользователь, у <code>orders</code> — заказ, у <code>events</code> — событие. Перед каждым <code>JOIN</code> спрашивай себя: какое зерно будет у результата?</p>
 <h2 id="3а16-производительность">3А.16. Производительность</h2>
@@ -654,10 +711,12 @@ event_stats <span class="t-kw">AS</span> (
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- Плохо: функция вычисляется для каждой строки, индекс по order_date не работает</span>
 <span class="t-kw">SELECT</span> <span class="t-fn">COUNT</span>(*) <span class="t-kw">FROM</span> orders
 <span class="t-kw">WHERE</span> <span class="t-fn">strftime</span>(<span class="t-str">&#x27;%Y-%m&#x27;</span>, order_date) = <span class="t-str">&#x27;2026-02&#x27;</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>COUNT(*)</th></tr></thead><tbody><tr><td>5</td></tr></tbody></table></div></div>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com">-- Хорошо: столбец сравнивается с константами, индекс работает</span>
 <span class="t-kw">SELECT</span> <span class="t-fn">COUNT</span>(*) <span class="t-kw">FROM</span> orders
 <span class="t-kw">WHERE</span> order_date &gt;= <span class="t-str">&#x27;2026-02-01&#x27;</span>
   <span class="t-kw">AND</span> order_date &lt;  <span class="t-str">&#x27;2026-03-01&#x27;</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>COUNT(*)</th></tr></thead><tbody><tr><td>5</td></tr></tbody></table></div></div>
 <p>Полуоткрытый интервал <code>&gt;= начало AND &lt; следующее начало</code> — самый надёжный способ фильтровать по периоду. Он не зависит от числа дней в месяце и правильно работает со временем. Запись <code>BETWEEN &#x27;2026-02-01&#x27; AND &#x27;2026-02-28&#x27;</code> потеряет заказы 28 февраля после полуночи, если в столбце хранится время.</p>
 <h3 id="индексы">Индексы</h3>
 <p>Индекс — вспомогательная структура, позволяющая находить строки без просмотра всей таблицы; как алфавитный указатель в книге.</p>
@@ -667,6 +726,7 @@ event_stats <span class="t-kw">AS</span> (
 <p>Команда <code>EXPLAIN</code> показывает, как база собирается выполнять запрос:</p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code>EXPLAIN QUERY PLAN
 <span class="t-kw">SELECT</span> * <span class="t-kw">FROM</span> orders <span class="t-kw">WHERE</span> user_id = <span class="t-num">1</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>id</th><th>parent</th><th>notused</th><th>detail</th></tr></thead><tbody><tr><td>3</td><td>0</td><td>61</td><td>SEARCH orders USING INDEX idx_orders_user (user_id=?)</td></tr></tbody></table></div></div>
 <p>В SQLite слово <code>SEARCH ... USING INDEX</code> означает поиск по индексу, <code>SCAN</code> — полный просмотр таблицы. В PostgreSQL используют <code>EXPLAIN ANALYZE</code> и ищут <code>Seq Scan</code> по большим таблицам.</p>
 <h3 id="прочее">Прочее</h3>
 <ul>
@@ -679,12 +739,15 @@ event_stats <span class="t-kw">AS</span> (
 <p><strong>1. Сверь число строк до и после соединения.</strong></p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> (<span class="t-kw">SELECT</span> <span class="t-fn">COUNT</span>(*) <span class="t-kw">FROM</span> orders)                                             <span class="t-kw">AS</span> before_join,
        (<span class="t-kw">SELECT</span> <span class="t-fn">COUNT</span>(*) <span class="t-kw">FROM</span> orders <span class="t-kw">AS</span> o <span class="t-kw">JOIN</span> users <span class="t-kw">AS</span> u <span class="t-kw">ON</span> u.user_id = o.user_id) <span class="t-kw">AS</span> after_join;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>before_join</th><th>after_join</th></tr></thead><tbody><tr><td>12</td><td>11</td></tr></tbody></table></div></div>
 <p>Было 12, стало 11: заказ 112 принадлежит несуществующему пользователю и пропал при <code>INNER JOIN</code>. Если бы стало больше — в <code>users</code> были бы дубликаты ключа.</p>
 <p><strong>2. Проверь уникальность ключа.</strong></p>
 <div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> user_id, <span class="t-fn">COUNT</span>(*) <span class="t-kw">AS</span> copies
 <span class="t-kw">FROM</span> users
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> user_id
 <span class="t-kw">HAVING</span> <span class="t-fn">COUNT</span>(*) &gt; <span class="t-num">1</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>copies</th></tr></thead><tbody></tbody></table></div>
+<p><em>Запрос вернул 0 строк.</em></p></div>
 <p>Пустой результат означает, что ключ уникален.</p>
 <p><strong>3. Сверь итог с известным числом.</strong> Сумма по группам должна равняться общей сумме, выручка в твоём запросе — совпадать с цифрой на дашборде.</p>
 <p><strong>4. Проверь на одном объекте вручную.</strong> Возьми одного пользователя, посмотри все его строки глазами и убедись, что запрос даёт для него правильный ответ.</p>
@@ -745,6 +808,7 @@ event_stats <span class="t-kw">AS</span> (
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> orders <span class="t-kw">AS</span> o <span class="t-kw">ON</span> o.user_id = u.user_id
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> u.user_id, u.name
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> u.user_id;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>orders_total</th><th>orders_paid</th><th>revenue</th><th>bad_share</th></tr></thead><tbody><tr><td>Анна</td><td>5</td><td>4</td><td>5500</td><td>0.2</td></tr><tr><td>Борис</td><td>2</td><td>2</td><td>5700</td><td>0</td></tr><tr><td>Вера</td><td>2</td><td>2</td><td>5000</td><td>0</td></tr><tr><td>Глеб</td><td>1</td><td>0</td><td>0</td><td>1</td></tr><tr><td>Дарья</td><td>0</td><td>0</td><td>0</td><td>NULL</td></tr><tr><td>Егор</td><td>1</td><td>1</td><td>400</td><td>0</td></tr></tbody></table></div></div>
 <p><code>LEFT JOIN</code> сохраняет пользователей без заказов. У Дарьи <code>orders_total</code> равно нулю, потому что считается <code>COUNT(o.order_id)</code>, а не <code>COUNT(*)</code>. Доля для неё — <code>NULL</code>: у человека без заказов доля отменённых не определена, и это честнее, чем ноль. Именно для этого во втором условии <code>CASE</code> стоит проверка <code>IS NOT NULL</code> вместо <code>ELSE 0</code>.</p></details>
 <details class="sol"><summary>Задание 2. Сироты с обеих сторон</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> <span class="t-str">&#x27;заказ без пользователя&#x27;</span> <span class="t-kw">AS</span> problem, o.order_id <span class="t-kw">AS</span> id
 <span class="t-kw">FROM</span> orders <span class="t-kw">AS</span> o
@@ -757,6 +821,7 @@ event_stats <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> users <span class="t-kw">AS</span> u
 <span class="t-kw">LEFT</span> <span class="t-kw">JOIN</span> orders <span class="t-kw">AS</span> o <span class="t-kw">ON</span> o.user_id = u.user_id
 <span class="t-kw">WHERE</span> o.order_id <span class="t-kw">IS</span> <span class="t-kw">NULL</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>problem</th><th>id</th></tr></thead><tbody><tr><td>заказ без пользователя</td><td>112</td></tr><tr><td>пользователь без заказов</td><td>5</td></tr></tbody></table></div></div>
 <p>Два антисоединения, склеенные через <code>UNION ALL</code>. В PostgreSQL то же самое делается одним <code>FULL JOIN</code> с условием <code>WHERE u.user_id IS NULL OR o.order_id IS NULL</code>.</p>
 <p>Такой запрос — стандартная проверка целостности данных перед анализом.</p></details>
 <details class="sol"><summary>Задание 3. Первый и последний заказ в одной строке</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> ranked <span class="t-kw">AS</span> (
@@ -774,6 +839,7 @@ event_stats <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> ranked
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> user_id
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> user_id;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>first_date</th><th>first_amount</th><th>last_date</th><th>last_amount</th></tr></thead><tbody><tr><td>1</td><td>2026-01-03</td><td>1200</td><td>2026-03-02</td><td>2000</td></tr><tr><td>2</td><td>2026-01-06</td><td>5000</td><td>2026-02-01</td><td>700</td></tr><tr><td>3</td><td>2026-01-14</td><td>2500</td><td>2026-02-15</td><td>2500</td></tr><tr><td>6</td><td>2026-02-20</td><td>400</td><td>2026-02-20</td><td>400</td></tr><tr><td>9</td><td>2026-03-05</td><td>100</td><td>2026-03-05</td><td>100</td></tr></tbody></table></div></div>
 <p>Две нумерации в противоположных направлениях и условная агрегация, которая «вытаскивает» нужную строку в столбец. <code>MAX</code> здесь не ищет максимум — в каждой группе под условие попадает ровно одно значение, и <code>MAX</code> просто его возвращает.</p></details>
 <details class="sol"><summary>Задание 4. Больше среднего по отделу</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> with_avg <span class="t-kw">AS</span> (
     <span class="t-kw">SELECT</span> name, dept, salary,
@@ -784,6 +850,7 @@ event_stats <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> with_avg
 <span class="t-kw">WHERE</span> salary &gt; dept_avg
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> dept, salary <span class="t-kw">DESC</span>;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>dept</th><th>salary</th><th>dept_avg</th></tr></thead><tbody><tr><td>Павел</td><td>Аналитика</td><td>200</td><td>150</td></tr><tr><td>Рита</td><td>Продажи</td><td>180</td><td>150</td></tr></tbody></table></div></div>
 <p>Оконная функция добавляет среднее по отделу к каждой строке, не сворачивая таблицу. CTE нужен, потому что результат оконной функции нельзя использовать в <code>WHERE</code> того же запроса.</p></details>
 <details class="sol"><summary>Задание 5. Выручка по дням февраля с накоплением</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> RECURSIVE calendar(day) <span class="t-kw">AS</span> (
     <span class="t-kw">SELECT</span> <span class="t-str">&#x27;2026-02-01&#x27;</span>
@@ -804,6 +871,8 @@ daily <span class="t-kw">AS</span> (
        <span class="t-fn">SUM</span>(revenue) <span class="t-kw">OVER</span> (<span class="t-kw">ORDER</span> <span class="t-kw">BY</span> day) <span class="t-kw">AS</span> revenue_mtd
 <span class="t-kw">FROM</span> daily
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> day;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>day</th><th>revenue</th><th>revenue_mtd</th></tr></thead><tbody><tr><td>2026-02-01</td><td>700</td><td>700</td></tr><tr><td>2026-02-02</td><td>0</td><td>700</td></tr><tr><td>2026-02-03</td><td>0</td><td>700</td></tr><tr><td>2026-02-04</td><td>0</td><td>700</td></tr><tr><td>2026-02-05</td><td>0</td><td>700</td></tr><tr><td>2026-02-06</td><td>0</td><td>700</td></tr><tr><td>2026-02-07</td><td>1500</td><td>2200</td></tr><tr><td>2026-02-08</td><td>0</td><td>2200</td></tr></tbody></table></div>
+<p><em>Показаны первые 8 строк из 28.</em></p></div>
 <p>Порядок шагов важен: сначала календарь и одна строка на день, затем накопительная сумма. Если считать накопление прямо по таблице заказов, дни без заказов выпадут из результата.</p></details>
 <details class="sol"><summary>Задание 6. Интервалы между покупками</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> with_prev <span class="t-kw">AS</span> (
     <span class="t-kw">SELECT</span> user_id,
@@ -821,6 +890,7 @@ gaps <span class="t-kw">AS</span> (
 <span class="t-kw">SELECT</span> <span class="t-fn">ROUND</span>(<span class="t-fn">AVG</span>(days_since_prev), <span class="t-num">1</span>) <span class="t-kw">AS</span> avg_gap_days,
        <span class="t-fn">COUNT</span>(days_since_prev)         <span class="t-kw">AS</span> intervals
 <span class="t-kw">FROM</span> gaps;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>avg_gap_days</th><th>intervals</th></tr></thead><tbody><tr><td>23.2</td><td>5</td></tr></tbody></table></div></div>
 <p>У первого заказа каждого пользователя <code>prev_date</code> равен <code>NULL</code>, и интервал тоже <code>NULL</code>. <code>AVG</code> такие строки пропускает, и это ровно то, что нужно: у первой покупки нет «интервала с предыдущей».</p>
 <p>Средний интервал между покупками — основа для определения оттока: если клиент не покупал заметно дольше обычного интервала, его пора возвращать.</p></details>
 <details class="sol"><summary>Задание 7. Самая длинная серия</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> days <span class="t-kw">AS</span> (
@@ -841,6 +911,7 @@ streaks <span class="t-kw">AS</span> (
 <span class="t-kw">FROM</span> streaks
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> user_id
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> user_id;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>user_id</th><th>longest_streak</th></tr></thead><tbody><tr><td>1</td><td>3</td></tr><tr><td>2</td><td>3</td></tr><tr><td>3</td><td>1</td></tr></tbody></table></div></div>
 <p>Результат: у первого пользователя три дня подряд (1–3 марта), у второго тоже три (3–5 марта, а 1 марта стоит отдельно), у третьего — один.</p></details>
 <details class="sol"><summary>Задание 8. Все подчинённые</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">WITH</span> RECURSIVE chain <span class="t-kw">AS</span> (
     <span class="t-kw">SELECT</span> emp_id <span class="t-kw">AS</span> boss_id, emp_id <span class="t-kw">AS</span> member_id
@@ -858,6 +929,7 @@ streaks <span class="t-kw">AS</span> (
 <span class="t-kw">JOIN</span> employees <span class="t-kw">AS</span> b <span class="t-kw">ON</span> b.emp_id = c.boss_id
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> b.emp_id, b.name
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> subordinates <span class="t-kw">DESC</span>, b.name;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>subordinates</th></tr></thead><tbody><tr><td>Ольга</td><td>6</td></tr><tr><td>Павел</td><td>3</td></tr><tr><td>Рита</td><td>1</td></tr><tr><td>Семён</td><td>1</td></tr><tr><td>Таня</td><td>0</td></tr><tr><td>Ульяна</td><td>0</td></tr><tr><td>Фёдор</td><td>0</td></tr></tbody></table></div></div>
 <p>Каждый сотрудник начинает цепочку как «начальник самого себя», затем на каждом шаге к цепочке добавляются подчинённые уже найденных людей. В конце вычитаем единицу — самого сотрудника. У Ольги получится шесть подчинённых, у Павла — три (Семён, Таня и Фёдор, подчинённый Семёна).</p></details>
 <details class="sol"><summary>Задание 9. Покупка в первые 7 дней</summary><div class="code"><span class="lang">sql</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">SELECT</span> u.name,
        u.signup_date,
@@ -870,6 +942,7 @@ streaks <span class="t-kw">AS</span> (
  <span class="t-kw">AND</span> o.order_date &lt;  <span class="t-fn">date</span>(u.signup_date, <span class="t-str">&#x27;+7 day&#x27;</span>)
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> u.user_id, u.name, u.signup_date
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> u.user_id;</code></pre></div>
+<div class="result"><span class="result-label">Результат</span><div class="table"><table><thead><tr><th>name</th><th>signup_date</th><th>first_purchase</th></tr></thead><tbody><tr><td>Анна</td><td>2026-01-03</td><td>2026-01-03</td></tr><tr><td>Борис</td><td>2026-01-05</td><td>2026-01-06</td></tr><tr><td>Вера</td><td>2026-01-12</td><td>2026-01-14</td></tr></tbody></table></div></div>
 <p>Условие на окно в семь дней стоит прямо в соединении, границы заданы полуоткрытым интервалом. Чтобы получить конверсию в покупку за первую неделю, раздели число строк результата на общее число пользователей — или замени <code>JOIN</code> на <code>LEFT JOIN</code> и посчитай <code>AVG(CASE WHEN o.order_id IS NOT NULL THEN 1.0 ELSE 0 END)</code> по уникальным пользователям.</p></details><nav class="nav "><a class="prev" href="03-sql.html" id=prev><small>← Назад</small><b>Глава 3. SQL</b></a><a class="next" href="04-numpy.html" id=next><small>Вперёд →</small><b>Глава 4. NumPy</b></a></nav>
 </main>
 <footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
