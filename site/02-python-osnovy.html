@@ -254,7 +254,7 @@ cities = [<span class="t-str">&quot;Москва&quot;</span>, <span class="t-st
 <span class="t-kw">with</span> <span class="t-fn">open</span>(<span class="t-str">&quot;notes.txt&quot;</span>, encoding=<span class="t-str">&quot;utf-8&quot;</span>) <span class="t-kw">as</span> f:
     <span class="t-kw">for</span> line <span class="t-kw">in</span> f:
         <span class="t-fn">print</span>(line.strip())</code></pre></div>
-<p>Конструкция <code>with</code> сама закроет файл. Всегда указывай <code>encoding=&quot;utf-8&quot;</code> — иначе на Windows русские буквы превратятся в кракозябры.</p>
+<p>Конструкция <code>with</code> сама закроет файл. Всегда указывай <code>encoding=&quot;utf-8&quot;</code>. На macOS это кодировка по умолчанию, но на Windows — нет: без явного указания твой код на компьютере коллеги превратит русские буквы в кракозябры.</p>
 <h2 id="29-ошибки">2.9. Ошибки</h2>
 <p>Сообщение об ошибке (traceback) читают <strong>снизу вверх</strong>: последняя строка говорит, что случилось, строки выше — где.</p>
 <div class="table"><table><thead><tr><th>Ошибка</th><th>Что значит</th></tr></thead><tbody><tr><td><code>NameError</code></td><td>Переменной с таким именем нет (опечатка или ячейка не выполнена)</td></tr><tr><td><code>TypeError</code></td><td>Операция с неподходящим типом: <code>&quot;5&quot; + 5</code></td></tr><tr><td><code>KeyError</code></td><td>В словаре или таблице нет такого ключа или столбца</td></tr><tr><td><code>IndexError</code></td><td>Элемента с таким номером нет</td></tr><tr><td><code>ValueError</code></td><td>Тип подходит, значение — нет: <code>int(&quot;abc&quot;)</code></td></tr><tr><td><code>IndentationError</code></td><td>Сбит отступ</td></tr></tbody></table></div>

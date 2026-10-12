@@ -62,41 +62,43 @@
 
 Здесь — короткая версия. Подробный разбор каждой команды, виртуальных окружений, структуры проекта и типичных ошибок вынесен в отдельную главу: [Установка и настройка: полное руководство](ustanovka.md).
 
-### Python
+Все команды в книге даны для **macOS**.
 
-1. Скачай установщик с официального сайта python.org (версия 3.11 или новее).
-2. На Windows при установке поставь галочку **Add python.exe to PATH**.
-3. Открой терминал (на Windows — PowerShell) и проверь:
+### Терминал и Python
+
+1. Открой Терминал: `Cmd+Пробел`, набери `Terminal`, нажми Enter.
+2. Установи инструменты разработчика Apple (в них входит Git):
 
 ```bash
-python --version
+xcode-select --install
 ```
 
-Должно появиться что-то вроде `Python 3.12.x`.
+3. Установи Python: скачай установщик для macOS с python.org (версия 3.11 или новее) либо, если у тебя есть Homebrew, выполни `brew install python`.
+4. Проверь:
+
+```bash
+python3 --version
+```
+
+Должно появиться что-то вроде `Python 3.12.x`. На macOS команда называется `python3`; просто `python` заработает после активации окружения.
 
 ### Рабочая папка и библиотеки
 
 Создай папку для учёбы и виртуальное окружение в ней. Окружение — это изолированный набор библиотек для одного проекта.
 
 ```bash
-mkdir analyst
-cd analyst
-python -m venv .venv
+mkdir -p ~/projects/analyst
+cd ~/projects/analyst
+python3 -m venv .venv
 ```
 
-Активируй окружение. На Windows:
-
-```bash
-.venv\Scripts\Activate.ps1
-```
-
-На macOS и Linux:
+Активируй окружение — это нужно делать в каждом новом окне терминала:
 
 ```bash
 source .venv/bin/activate
 ```
 
-Установи библиотеки, которые понадобятся в книге:
+В начале строки появится `(.venv)`. Установи библиотеки, которые понадобятся в книге:
 
 ```bash
 pip install numpy pandas matplotlib seaborn scipy statsmodels scikit-learn requests beautifulsoup4 jupyterlab
@@ -128,7 +130,7 @@ jupyter lab
 Git хранит историю изменений, GitHub — показывает твою работу миру. Для аналитика GitHub — это портфолио.
 
 1. Зарегистрируйся на github.com.
-2. Установи Git с git-scm.com.
+2. Git уже установлен вместе с инструментами разработчика. Представься ему (`git config --global user.name ...`) и войди в GitHub — как именно, описано в [руководстве](ustanovka.md#9-git-и-github).
 3. Создай на GitHub пустой репозиторий, например `analyst-learning`.
 4. Свяжи с ним свою папку:
 

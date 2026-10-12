@@ -10,7 +10,9 @@ SQL — язык запросов к базам данных. Почти все 
 
 1. В репозитории открой папку `ChinookDatabase/DataSources`.
 2. Скачай файл `Chinook_Sqlite.sqlite`.
-3. Открой его в программе DB Browser for SQLite или DBeaver — либо прямо из Python (раздел 3.9).
+3. Открой его в программе DB Browser for SQLite или DBeaver — либо прямо из Python (раздел 3.9). Обе программы есть для macOS; через Homebrew они ставятся командами `brew install --cask db-browser-for-sqlite` и `brew install --cask dbeaver-community`.
+
+Скачанный файл окажется в `~/Downloads`. Перенеси его в папку проекта: `mv ~/Downloads/Chinook_Sqlite.sqlite data/`.
 
 Основные таблицы (имена даны для SQLite-версии; в версии для PostgreSQL они записаны в нижнем регистре с подчёркиванием — `invoice_line`, `customer_id`):
 

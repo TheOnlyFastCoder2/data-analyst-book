@@ -1,6 +1,6 @@
 """Собирает HTML-версию книги из Markdown-глав.
 
-Запуск:  python build.py
+Запуск:  python3 build.py
 Результат: папка site/, открывать site/index.html.
 Сторонние библиотеки не нужны.
 """
