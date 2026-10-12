@@ -84,10 +84,10 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 </head>
 <body>
 <header class="bar"><div class="bar-in">
-<a class="home" href="index.html">☰ Содержание</a><span class="where">14 из 19 · Глава 9. Гипотезы и A/B-тесты</span>
+<a class="home" href="index.html">☰ Содержание</a><span class="where">17 из 23 · Глава 9. Гипотезы и A/B-тесты</span>
 </div><div class="progress"><i style="width:74%"></i></div></header>
 <main>
-<nav class="nav top"><a class="prev" href="08-statistika.html"><small>← Назад</small><b>Глава 8. Описательная статистика и EDA</b></a><a class="next" href="10-produktovaya-analitika.html"><small>Вперёд →</small><b>Глава 10. Продуктовая аналитика</b></a></nav><h1 id="глава-9-гипотезы-и-ab-тесты">Глава 9. Гипотезы и A/B-тесты</h1>
+<nav class="nav top"><a class="prev" href="08-statistika.html"><small>← Назад</small><b>Глава 8. Описательная статистика и EDA</b></a><a class="next" href="09a-statistika-ab.html"><small>Вперёд →</small><b>Глава 9А. Статистика и A/B-тесты: глубже</b></a></nav><h1 id="глава-9-гипотезы-и-ab-тесты">Глава 9. Гипотезы и A/B-тесты</h1>
 <p>Ты увидел в данных разницу: конверсия в группе B — 5,6 %, в группе A — 5,0 %. Это настоящий эффект или случайность? На этот вопрос отвечает проверка гипотез. A/B-тест — её главное применение в бизнесе и обязательная тема собеседований.</p>
 <h2 id="91-выборка-и-генеральная-совокупность">9.1. Выборка и генеральная совокупность</h2>
 <ul>
@@ -244,6 +244,8 @@ post_b = rng.beta(<span class="t-num">1</span> + orders_b, <span class="t-num">1
 <span class="t-fn">print</span>(<span class="t-fn">round</span>((post_b &gt; post_a).mean(), <span class="t-num">3</span>))                    <span class="t-com"># вероятность, что B лучше A</span>
 <span class="t-fn">print</span>(np.percentile(post_b - post_a, [<span class="t-num">2.5</span>, <span class="t-num">97.5</span>]).<span class="t-fn">round</span>(<span class="t-num">4</span>))  <span class="t-com"># интервал для разницы</span></code></pre></div>
 <p>Результат — около 0,97: «B лучше A с вероятностью 97 %». Такую фразу менеджеру понять гораздо проще, чем «p = 0,058». Данные при этом те же — отличается вопрос, на который мы отвечаем.</p>
+<h2 id="что-дальше">Что дальше</h2>
+<p>Когда освоишься с материалом этой главы, переходи к углублённой: <a href="09a-statistika-ab.html">Глава 9А. Статистика и A/B-тесты: глубже</a>.</p>
 <h2 id="практика-на-github">Практика на GitHub</h2>
 <ul>
 <li><a href="https://github.com/AllenDowney/ThinkStats2" target="_blank" rel="noopener">AllenDowney/ThinkStats2</a> — главы про оценивание и проверку гипотез. Автор объясняет p-value через симуляции и перестановочные тесты — после этого формулы перестают быть магией.</li>
@@ -368,7 +370,7 @@ medians = np.array([
 low, high = np.percentile(medians, [<span class="t-num">2.5</span>, <span class="t-num">97.5</span>])
 <span class="t-fn">print</span>(<span class="t-str">f&quot;Медиана: {np.median(amount):.0f}, 95 % ДИ: от {low:.0f} до {high:.0f}&quot;</span>)</code></pre></div>
 <p>Три обязательных условия бутстрапа: выборка берётся <strong>с возвращением</strong> (<code>replace=True</code>), её размер равен размеру исходных данных, повторов достаточно много — от тысячи.</p>
-<p>Тем же способом можно сравнить медианы двух групп: в каждом повторе пересобирай обе группы, считай разницу медиан и смотри, попадает ли ноль в интервал.</p></details><nav class="nav "><a class="prev" href="08-statistika.html" id=prev><small>← Назад</small><b>Глава 8. Описательная статистика и EDA</b></a><a class="next" href="10-produktovaya-analitika.html" id=next><small>Вперёд →</small><b>Глава 10. Продуктовая аналитика</b></a></nav>
+<p>Тем же способом можно сравнить медианы двух групп: в каждом повторе пересобирай обе группы, считай разницу медиан и смотри, попадает ли ноль в интервал.</p></details><nav class="nav "><a class="prev" href="08-statistika.html" id=prev><small>← Назад</small><b>Глава 8. Описательная статистика и EDA</b></a><a class="next" href="09a-statistika-ab.html" id=next><small>Вперёд →</small><b>Глава 9А. Статистика и A/B-тесты: глубже</b></a></nav>
 </main>
 <footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
 <script>

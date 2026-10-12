@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 9А. Статистика и A/B-тесты: глубже</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">18 из 23 · Глава 9А. Статистика и A/B-тесты: глубже</span>
+</div><div class="progress"><i style="width:78%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="09-ab-testy.html"><small>← Назад</small><b>Глава 9. Гипотезы и A/B-тесты</b></a><a class="next" href="10-produktovaya-analitika.html"><small>Вперёд →</small><b>Глава 10. Продуктовая аналитика</b></a></nav><h1 id="глава-9а-статистика-и-ab-тесты-глубже">Глава 9А. Статистика и A/B-тесты: глубже</h1>
+<p>Глава 9 дала основу: p-value, доверительный интервал, размер выборки, типичные ошибки. Этого хватает, чтобы пройти собеседование на стажёра. Здесь — следующий уровень: то, что спрашивают у продуктовых аналитиков и что нужно, чтобы тесты в реальной компании давали правильные решения.</p>
+<p>Почти всё в главе объясняется <strong>через симуляции</strong>. Это главный приём: если не уверен, работает ли метод, — сгенерируй данные, для которых знаешь правильный ответ, и проверь.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">from</span> scipy <span class="t-kw">import</span> stats
+
+rng = np.random.default_rng(<span class="t-num">42</span>)</code></pre></div>
+<h2 id="9а1-распределения-которые-встречаются-в-работе">9А.1. Распределения, которые встречаются в работе</h2>
+<p>Не нужно знать двадцать распределений. Нужно узнавать пять и понимать, откуда они берутся.</p>
+<div class="table"><table><thead><tr><th>Распределение</th><th>Что описывает</th><th>Пример</th><th>Параметры</th></tr></thead><tbody><tr><td><strong>Бернулли</strong></td><td>Одно событие «да / нет»</td><td>Купил или нет</td><td>Вероятность <code>p</code></td></tr><tr><td><strong>Биномиальное</strong></td><td>Число успехов в <code>n</code> попытках</td><td>Сколько из 1000 посетителей купили</td><td><code>n</code>, <code>p</code></td></tr><tr><td><strong>Пуассона</strong></td><td>Число событий за период</td><td>Заказов в час, обращений в день</td><td>Среднее <code>λ</code></td></tr><tr><td><strong>Нормальное</strong></td><td>Сумма многих мелких независимых влияний</td><td>Рост, ошибки измерений, <strong>средние по выборкам</strong></td><td>Среднее, стандартное отклонение</td></tr><tr><td><strong>Логнормальное</strong></td><td>Произведение многих влияний; всегда больше нуля, длинный хвост</td><td>Чеки, доходы, время на сайте</td><td>Параметры логарифма</td></tr><tr><td><strong>Экспоненциальное</strong></td><td>Время до следующего события</td><td>Время между заказами</td><td>Интенсивность</td></tr></tbody></table></div>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>n_visitors, p = <span class="t-num">1000</span>, <span class="t-num">0.05</span>
+
+purchases = rng.binomial(n=n_visitors, p=p, size=<span class="t-num">10_000</span>)       <span class="t-com"># 10 000 «дней» по 1000 посетителей</span>
+<span class="t-fn">print</span>(purchases.mean(), purchases.std())                       <span class="t-com"># около 50 и около 6.9</span>
+<span class="t-fn">print</span>(np.sqrt(n_visitors * p * (<span class="t-num">1</span> - p)))                       <span class="t-com"># теория: корень из n·p·(1−p)</span>
+
+<span class="t-com"># Вероятности через scipy</span>
+<span class="t-fn">print</span>(stats.binom.pmf(<span class="t-num">50</span>, n_visitors, p))                      <span class="t-com"># ровно 50 покупок</span>
+<span class="t-fn">print</span>(stats.binom.cdf(<span class="t-num">40</span>, n_visitors, p))                      <span class="t-com"># 40 или меньше</span>
+<span class="t-fn">print</span>(<span class="t-num">1</span> - stats.binom.cdf(<span class="t-num">65</span>, n_visitors, p))                  <span class="t-com"># больше 65 — аномально много?</span></code></pre></div>
+<p>Последняя строка — рабочий инструмент: «сегодня 66 покупок вместо обычных 50, это событие или шум?» Вероятность получить больше 65 при обычной конверсии — около 1,5 %. Редко, но за два месяца наблюдений такой день случится сам по себе.</p>
+<p>У каждого распределения в SciPy один и тот же набор методов:</p>
+<div class="table"><table><thead><tr><th>Метод</th><th>Что возвращает</th></tr></thead><tbody><tr><td><code>rvs(size=n)</code></td><td>Случайные значения</td></tr><tr><td><code>pmf(x)</code> / <code>pdf(x)</code></td><td>Вероятность (плотность) значения</td></tr><tr><td><code>cdf(x)</code></td><td>Вероятность получить <code>x</code> или меньше</td></tr><tr><td><code>sf(x)</code></td><td>Вероятность получить больше <code>x</code>: то же, что <code>1 − cdf</code></td></tr><tr><td><code>ppf(q)</code></td><td>Значение, ниже которого лежит доля <code>q</code> (квантиль)</td></tr></tbody></table></div>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(stats.norm.ppf(<span class="t-num">0.975</span>))            <span class="t-com"># 1.96 — то самое число из доверительных интервалов</span>
+<span class="t-fn">print</span>(stats.norm.cdf(<span class="t-num">1.96</span>))             <span class="t-com"># 0.975</span>
+<span class="t-fn">print</span>(stats.poisson.sf(<span class="t-num">8</span>, mu=<span class="t-num">4</span>))        <span class="t-com"># вероятность больше 8 событий при среднем 4</span></code></pre></div>
+<h3 id="почему-чеки-логнормальны">Почему чеки логнормальны</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>checks = rng.lognormal(mean=<span class="t-num">7.5</span>, sigma=<span class="t-num">0.9</span>, size=<span class="t-num">100_000</span>)
+
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(checks.mean()), <span class="t-fn">round</span>(np.median(checks)))        <span class="t-com"># среднее намного выше медианы</span>
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(np.percentile(checks, <span class="t-num">99</span>)))                      <span class="t-com"># 99-й перцентиль</span>
+top_1_percent_share = np.sort(checks)[-<span class="t-num">1000</span>:].<span class="t-fn">sum</span>() / checks.<span class="t-fn">sum</span>()
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(top_1_percent_share, <span class="t-num">3</span>))                         <span class="t-com"># доля выручки от 1 % крупнейших чеков</span></code></pre></div>
+<p>Один процент крупнейших чеков даёт около 8 % выручки. Отсюда главная трудность тестов на денежных метриках: несколько «китов», случайно попавших в одну группу, сдвигают среднее сильнее, чем любое изменение в продукте.</p>
+<h2 id="9а2-центральная-предельная-теорема-на-практике">9А.2. Центральная предельная теорема на практике</h2>
+<p>ЦПТ утверждает: среднее большой выборки распределено почти нормально, каким бы ни было исходное распределение. Но слово «большой» зависит от того, насколько тяжёлый хвост.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">sample_means</span>(generator, n, repeats=<span class="t-num">5000</span>):
+    <span class="t-kw">return</span> np.array([generator(n).mean() <span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(repeats)])
+
+lognormal = <span class="t-kw">lambda</span> n: rng.lognormal(<span class="t-num">7.5</span>, <span class="t-num">0.9</span>, n)
+
+<span class="t-kw">for</span> n <span class="t-kw">in</span> (<span class="t-num">10</span>, <span class="t-num">100</span>, <span class="t-num">1000</span>, <span class="t-num">10_000</span>):
+    means = sample_means(lognormal, n, repeats=<span class="t-num">2000</span>)
+    <span class="t-fn">print</span>(n, <span class="t-str">&quot;асимметрия средних:&quot;</span>, <span class="t-fn">round</span>(stats.skew(means), <span class="t-num">2</span>))</code></pre></div>
+<p>Асимметрия распределения средних падает с ростом выборки: при десяти наблюдениях она велика, при десяти тысячах почти ноль. Вывод: для скошенных метрик t-тест начинает работать корректно только на больших выборках. При сотне наблюдений в группе ему верить нельзя — нужен бутстрап или перестановочный тест.</p>
+<h3 id="стандартная-ошибка">Стандартная ошибка</h3>
+<p>Стандартная ошибка среднего — стандартное отклонение, делённое на корень из размера выборки:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>sample = rng.lognormal(<span class="t-num">7.5</span>, <span class="t-num">0.9</span>, <span class="t-num">2000</span>)
+
+se_formula = sample.std(ddof=<span class="t-num">1</span>) / np.sqrt(<span class="t-fn">len</span>(sample))
+se_simulated = sample_means(lognormal, <span class="t-num">2000</span>, repeats=<span class="t-num">2000</span>).std()
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(se_formula, <span class="t-num">1</span>), <span class="t-fn">round</span>(se_simulated, <span class="t-num">1</span>))          <span class="t-com"># близкие числа</span></code></pre></div>
+<p>Из формулы следует закон, который нужно помнить всегда: <strong>точность растёт как корень из объёма данных</strong>. В 4 раза больше данных — в 2 раза точнее. В 100 раз больше — всего в 10 раз точнее.</p>
+<h2 id="9а3-размер-эффекта">9А.3. Размер эффекта</h2>
+<p>P-value отвечает на вопрос «есть ли эффект», но не «насколько он велик». В отчёте всегда должны быть <strong>величина эффекта и интервал для неё</strong>.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>control = rng.normal(<span class="t-num">100</span>, <span class="t-num">20</span>, <span class="t-num">5000</span>)
+treatment = rng.normal(<span class="t-num">102</span>, <span class="t-num">20</span>, <span class="t-num">5000</span>)
+
+diff = treatment.mean() - control.mean()                     <span class="t-com"># абсолютный эффект</span>
+lift = treatment.mean() / control.mean() - <span class="t-num">1</span>                 <span class="t-com"># относительный эффект</span>
+pooled_std = np.sqrt((control.var(ddof=<span class="t-num">1</span>) + treatment.var(ddof=<span class="t-num">1</span>)) / <span class="t-num">2</span>)
+cohens_d = diff / pooled_std                                 <span class="t-com"># эффект в стандартных отклонениях</span>
+
+<span class="t-fn">print</span>(<span class="t-str">f&quot;разница {diff:.2f}, прирост {lift:.2%}, d Коэна {cohens_d:.3f}&quot;</span>)
+<span class="t-fn">print</span>(<span class="t-str">&quot;p-value:&quot;</span>, stats.ttest_ind(treatment, control, equal_var=<span class="t-num">False</span>).pvalue)</code></pre></div>
+<div class="table"><table><thead><tr><th>Мера</th><th>Что показывает</th><th>Когда использовать</th></tr></thead><tbody><tr><td>Абсолютная разница</td><td>На сколько единиц изменилась метрика</td><td>Расчёт денег: «+2 рубля с пользователя»</td></tr><tr><td>Относительный прирост (lift)</td><td>На сколько процентов</td><td>Сравнение тестов между собой, общение с бизнесом</td></tr><tr><td>d Коэна</td><td>Эффект в стандартных отклонениях</td><td>Оценка «заметности» эффекта</td></tr></tbody></table></div>
+<p>Эффект в 0,1 стандартного отклонения на выборке в 5000 даёт крошечное p-value. Значимость говорит о количестве данных не меньше, чем о величине эффекта.</p>
+<h3 id="процентные-пункты-и-проценты">Процентные пункты и проценты</h3>
+<p>Конверсия выросла с 5 % до 6 %. Это <strong>+1 процентный пункт</strong> (абсолютно) и <strong>+20 %</strong> (относительно). Всегда уточняй, о чём речь: фраза «конверсия выросла на 1 %» может означать и то и другое, и разница между трактовками — в двадцать раз.</p>
+<h3 id="интервал-для-относительного-прироста">Интервал для относительного прироста</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">bootstrap_lift_ci</span>(control, treatment, repeats=<span class="t-num">5000</span>, alpha=<span class="t-num">0.05</span>):
+    lifts = np.empty(repeats)
+    <span class="t-kw">for</span> i <span class="t-kw">in</span> <span class="t-fn">range</span>(repeats):
+        c = rng.choice(control, <span class="t-fn">len</span>(control), replace=<span class="t-num">True</span>)
+        t = rng.choice(treatment, <span class="t-fn">len</span>(treatment), replace=<span class="t-num">True</span>)
+        lifts[i] = t.mean() / c.mean() - <span class="t-num">1</span>
+    <span class="t-kw">return</span> np.percentile(lifts, [<span class="t-num">100</span> * alpha / <span class="t-num">2</span>, <span class="t-num">100</span> * (<span class="t-num">1</span> - alpha / <span class="t-num">2</span>)])
+
+low, high = bootstrap_lift_ci(control, treatment, repeats=<span class="t-num">2000</span>)
+<span class="t-fn">print</span>(<span class="t-str">f&quot;прирост {lift:.2%}, 95 % ДИ от {low:.2%} до {high:.2%}&quot;</span>)</code></pre></div>
+<p>Интервал для отношения нельзя получить, просто поделив границы интервала разницы на среднее контроля: знаменатель тоже случаен. Бутстрап учитывает это автоматически.</p>
+<h2 id="9а4-как-выбрать-тест">9А.4. Как выбрать тест</h2>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>Что сравниваем?
+│
+├─ Доли (конверсия, доля оттока)
+│     └─ z-тест пропорций или хи-квадрат
+│
+├─ Средние
+│     ├─ выборки большие, хвост умеренный ......... t-тест Уэлча
+│     ├─ хвост тяжёлый или выборки малы ........... бутстрап / перестановочный тест
+│     └─ одни и те же объекты «до» и «после» ...... парный t-тест
+│
+├─ Отношения (CTR, средний чек по заказам) ........ дельта-метод, бутстрап по пользователям
+│
+├─ Медианы и перцентили ........................... бутстрап
+│
+└─ Три и больше групп ............................. ANOVA + попарные сравнения с поправкой</code></pre></div>
+<h3 id="манна--уитни-проверяет-не-то-что-кажется">Манна — Уитни проверяет не то, что кажется</h3>
+<p>Этот тест часто советуют «для ненормальных данных вместо t-теста». Но он проверяет другую гипотезу: не равенство средних, а то, что значение из одной группы с вероятностью 50 % больше значения из другой.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com"># Две группы с ОДИНАКОВЫМ средним, но разной формой распределения</span>
+a = rng.exponential(scale=<span class="t-num">100</span>, size=<span class="t-num">5000</span>)             <span class="t-com"># среднее 100, скошено</span>
+b = rng.normal(loc=<span class="t-num">100</span>, scale=<span class="t-num">10</span>, size=<span class="t-num">5000</span>)          <span class="t-com"># среднее 100, симметрично</span>
+
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(a.mean(), <span class="t-num">1</span>), <span class="t-fn">round</span>(b.mean(), <span class="t-num">1</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;t-тест:      &quot;</span>, <span class="t-fn">round</span>(stats.ttest_ind(a, b, equal_var=<span class="t-num">False</span>).pvalue, <span class="t-num">3</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;Манна—Уитни: &quot;</span>, stats.mannwhitneyu(a, b).pvalue)</code></pre></div>
+<p>Средние равны, t-тест различий не видит — и он прав. Манна — Уитни уверенно «находит различие», потому что распределения разной формы. Если бизнес интересует <strong>средняя выручка на пользователя</strong> (а она превращается в деньги), этот тест отвечает не на тот вопрос. Обратная ситуация тоже возможна: тест может не заметить роста среднего, если тот получен за счёт нескольких крупных покупок.</p>
+<p>Правило: выбирай тест под метрику, по которой принимается решение. Для среднего — тесты про среднее.</p>
+<h3 id="перестановочный-тест">Перестановочный тест</h3>
+<p>Самый понятный тест из существующих — его можно объяснить без единой формулы.</p>
+<p>Идея: если между группами нет разницы, то метки «A» и «B» ничего не значат. Перемешаем их случайно много раз и посмотрим, как часто случайная разница оказывается не меньше наблюдаемой. Эта доля и есть p-value.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">permutation_test</span>(a, b, repeats=<span class="t-num">5000</span>):
+    observed = b.mean() - a.mean()
+    combined = np.concatenate([a, b])
+    count = <span class="t-num">0</span>
+    <span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(repeats):
+        rng.shuffle(combined)
+        diff = combined[<span class="t-fn">len</span>(a):].mean() - combined[:<span class="t-fn">len</span>(a)].mean()
+        <span class="t-kw">if</span> <span class="t-fn">abs</span>(diff) &gt;= <span class="t-fn">abs</span>(observed):
+            count += <span class="t-num">1</span>
+    <span class="t-kw">return</span> observed, count / repeats
+
+group_a = rng.lognormal(<span class="t-num">7.5</span>, <span class="t-num">0.9</span>, <span class="t-num">300</span>)
+group_b = rng.lognormal(<span class="t-num">7.6</span>, <span class="t-num">0.9</span>, <span class="t-num">300</span>)
+
+observed, p_value = permutation_test(group_a, group_b, repeats=<span class="t-num">3000</span>)
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(observed, <span class="t-num">1</span>), p_value)</code></pre></div>
+<p>Тест не требует нормальности и работает для любой статистики — среднего, медианы, перцентиля: достаточно заменить <code>.mean()</code> на нужную функцию.</p>
+<h2 id="9а5-метрики-отношения-и-единица-анализа">9А.5. Метрики-отношения и единица анализа</h2>
+<p>Самая частая <strong>серьёзная</strong> ошибка в анализе A/B-тестов — и её почти не объясняют в учебниках.</p>
+<p>Возьмём CTR: клики, делённые на показы. Пользователей делят на группы случайно, поэтому независимы между собой <strong>пользователи</strong>. А показы одного пользователя зависимы: кто-то кликает на всё, кто-то ни на что. Если применить z-тест пропорций к показам, как будто каждый показ независим, разброс окажется сильно занижен, и тест будет находить «эффекты» там, где их нет.</p>
+<p>Проверим симуляцией. Сделаем A/A-тест, в котором разницы нет по построению:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">simulate_users</span>(n_users):
+    <span class="t-str">&quot;&quot;&quot;У каждого пользователя своя склонность кликать и своё число показов.&quot;&quot;&quot;</span>
+    views = rng.poisson(lam=rng.gamma(<span class="t-num">2.0</span>, <span class="t-num">10.0</span>, n_users)) + <span class="t-num">1</span>
+    click_rate = rng.beta(<span class="t-num">2</span>, <span class="t-num">30</span>, n_users)                    <span class="t-com"># индивидуальный CTR</span>
+    clicks = rng.binomial(views, click_rate)
+    <span class="t-kw">return</span> views, clicks
+
+
+<span class="t-kw">def</span> <span class="t-def">naive_p_value</span>(views_a, clicks_a, views_b, clicks_b):
+    <span class="t-str">&quot;&quot;&quot;НЕПРАВИЛЬНО: z-тест, как будто каждый показ независим.&quot;&quot;&quot;</span>
+    p_a, p_b = clicks_a.<span class="t-fn">sum</span>() / views_a.<span class="t-fn">sum</span>(), clicks_b.<span class="t-fn">sum</span>() / views_b.<span class="t-fn">sum</span>()
+    pooled = (clicks_a.<span class="t-fn">sum</span>() + clicks_b.<span class="t-fn">sum</span>()) / (views_a.<span class="t-fn">sum</span>() + views_b.<span class="t-fn">sum</span>())
+    se = np.sqrt(pooled * (<span class="t-num">1</span> - pooled) * (<span class="t-num">1</span> / views_a.<span class="t-fn">sum</span>() + <span class="t-num">1</span> / views_b.<span class="t-fn">sum</span>()))
+    <span class="t-kw">return</span> <span class="t-num">2</span> * stats.norm.sf(<span class="t-fn">abs</span>((p_b - p_a) / se))
+
+
+false_alarms = <span class="t-num">0</span>
+<span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">500</span>):
+    va, ca = simulate_users(<span class="t-num">2000</span>)
+    vb, cb = simulate_users(<span class="t-num">2000</span>)
+    false_alarms += naive_p_value(va, ca, vb, cb) &lt; <span class="t-num">0.05</span>
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;Доля ложных срабатываний наивного теста:&quot;</span>, false_alarms / <span class="t-num">500</span>)</code></pre></div>
+<p>Вместо положенных 5 % наивный тест ошибается в несколько раз чаще. Каждый такой «успех» — фича, выкаченная на всех без пользы.</p>
+<h3 id="дельта-метод">Дельта-метод</h3>
+<p>Правильная дисперсия отношения двух сумм учитывает разброс и числителя, и знаменателя, и связь между ними:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">ratio_and_variance</span>(numerator, denominator):
+    <span class="t-str">&quot;&quot;&quot;Отношение сумм и дисперсия его оценки (дельта-метод). Данные — по пользователям.&quot;&quot;&quot;</span>
+    n = <span class="t-fn">len</span>(numerator)
+    mean_num, mean_den = numerator.mean(), denominator.mean()
+    ratio = mean_num / mean_den
+    cov = np.cov(numerator, denominator, ddof=<span class="t-num">1</span>)
+    variance = (cov[<span class="t-num">0</span>, <span class="t-num">0</span>] - <span class="t-num">2</span> * ratio * cov[<span class="t-num">0</span>, <span class="t-num">1</span>] + ratio ** <span class="t-num">2</span> * cov[<span class="t-num">1</span>, <span class="t-num">1</span>]) / (mean_den ** <span class="t-num">2</span> * n)
+    <span class="t-kw">return</span> ratio, variance
+
+
+<span class="t-kw">def</span> <span class="t-def">delta_p_value</span>(views_a, clicks_a, views_b, clicks_b):
+    ratio_a, var_a = ratio_and_variance(clicks_a, views_a)
+    ratio_b, var_b = ratio_and_variance(clicks_b, views_b)
+    z = (ratio_b - ratio_a) / np.sqrt(var_a + var_b)
+    <span class="t-kw">return</span> <span class="t-num">2</span> * stats.norm.sf(<span class="t-fn">abs</span>(z))
+
+
+false_alarms = <span class="t-num">0</span>
+<span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">500</span>):
+    va, ca = simulate_users(<span class="t-num">2000</span>)
+    vb, cb = simulate_users(<span class="t-num">2000</span>)
+    false_alarms += delta_p_value(va, ca, vb, cb) &lt; <span class="t-num">0.05</span>
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;Доля ложных срабатываний дельта-метода:&quot;</span>, false_alarms / <span class="t-num">500</span>)       <span class="t-com"># около 0.05</span></code></pre></div>
+<p>Альтернатива без формул — <strong>бутстрап по пользователям</strong>: в каждом повторе выбираем с возвращением пользователей целиком, вместе со всеми их показами и кликами, и пересчитываем отношение.</p>
+<h3 id="правило">Правило</h3>
+<p><strong>Единица анализа должна совпадать с единицей рандомизации.</strong> Делили пользователей — анализируй пользователей. Какие метрики это затрагивает:</p>
+<div class="table"><table><thead><tr><th>Метрика</th><th>Числитель</th><th>Знаменатель</th><th>Нужен дельта-метод?</th></tr></thead><tbody><tr><td>Конверсия пользователя в покупку</td><td>Купившие пользователи</td><td>Все пользователи</td><td>Нет: одна строка на пользователя</td></tr><tr><td>Выручка на пользователя (ARPU)</td><td>Выручка</td><td>Пользователи</td><td>Нет</td></tr><tr><td>CTR</td><td>Клики</td><td>Показы</td><td><strong>Да</strong></td></tr><tr><td>Средний чек</td><td>Выручка</td><td>Заказы</td><td><strong>Да</strong></td></tr><tr><td>Конверсия сессии в заказ</td><td>Заказы</td><td>Сессии</td><td><strong>Да</strong></td></tr><tr><td>Доля успешных поисков</td><td>Успешные поиски</td><td>Все поиски</td><td><strong>Да</strong></td></tr></tbody></table></div>
+<p>Простой способ избежать проблемы — пересчитать метрику на пользователя: вместо «CTR по показам» взять «средний CTR пользователя» или «клики на пользователя». Но это уже другая метрика с другим смыслом, и выбирать её надо до теста.</p>
+<h2 id="9а6-мощность-симуляция-вместо-формул">9А.6. Мощность: симуляция вместо формул</h2>
+<p>Формула размера выборки из главы 9 работает для простых случаев. Для любой нестандартной метрики мощность проще <strong>посчитать симуляцией</strong>: много раз сгенерировать тест с известным эффектом и посмотреть, как часто он его находит.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">simulated_power</span>(n, lift, repeats=<span class="t-num">1000</span>, alpha=<span class="t-num">0.05</span>):
+    <span class="t-str">&quot;&quot;&quot;Мощность t-теста для логнормальной метрики при заданном относительном эффекте.&quot;&quot;&quot;</span>
+    detected = <span class="t-num">0</span>
+    <span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(repeats):
+        a = rng.lognormal(<span class="t-num">7.5</span>, <span class="t-num">0.9</span>, n)
+        b = rng.lognormal(<span class="t-num">7.5</span>, <span class="t-num">0.9</span>, n) * (<span class="t-num">1</span> + lift)
+        detected += stats.ttest_ind(a, b, equal_var=<span class="t-num">False</span>).pvalue &lt; alpha
+    <span class="t-kw">return</span> detected / repeats
+
+<span class="t-kw">for</span> n <span class="t-kw">in</span> (<span class="t-num">1000</span>, <span class="t-num">5000</span>, <span class="t-num">20_000</span>):
+    <span class="t-fn">print</span>(n, simulated_power(n, lift=<span class="t-num">0.05</span>, repeats=<span class="t-num">400</span>))</code></pre></div>
+<p>Эффект в 5 % на метрике с тяжёлым хвостом при тысяче пользователей в группе находится реже чем в каждом пятом тесте, при пяти тысячах — примерно в половине. Привычные 80 % мощности достигаются только около десяти тысяч пользователей в группе. Запускать такой тест на маленькой выборке бессмысленно: почти наверняка он «ничего не покажет», а команда сделает ложный вывод, что идея не работает.</p>
+<p>Преимущество симуляции: вместо <code>rng.lognormal</code> можно подставить <strong>настоящие исторические данные</strong> — выбирать пользователей из прошлого периода, искусственно добавлять эффект одной группе и считать тест. Так получают мощность именно для своей метрики, со всеми её особенностями.</p>
+<h3 id="mde-при-фиксированной-выборке">MDE при фиксированной выборке</h3>
+<p>Часто вопрос стоит наоборот: трафик ограничен, тест может идти две недели — какой эффект мы вообще способны заметить?</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">mde_for_proportion</span>(p, n, alpha=<span class="t-num">0.05</span>, power=<span class="t-num">0.8</span>):
+    <span class="t-str">&quot;&quot;&quot;Минимальный обнаруживаемый абсолютный эффект для конверсии при n пользователях в группе.&quot;&quot;&quot;</span>
+    z_alpha = stats.norm.ppf(<span class="t-num">1</span> - alpha / <span class="t-num">2</span>)
+    z_beta = stats.norm.ppf(power)
+    <span class="t-kw">return</span> (z_alpha + z_beta) * np.sqrt(<span class="t-num">2</span> * p * (<span class="t-num">1</span> - p) / n)
+
+<span class="t-kw">for</span> n <span class="t-kw">in</span> (<span class="t-num">5000</span>, <span class="t-num">20_000</span>, <span class="t-num">80_000</span>):
+    mde = mde_for_proportion(<span class="t-num">0.05</span>, n)
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;n = {n:&gt;6}: MDE = {mde:.4f} ({mde / 0.05:.1%} относительно)&quot;</span>)</code></pre></div>
+<p>При пяти тысячах пользователей в группе MDE — 24 % относительно. Если реалистичный эффект от изменения — 2–3 %, такой тест запускать не стоит: он заведомо ничего не докажет. Лучше узнать это до запуска.</p>
+<h2 id="9а7-множественные-сравнения">9А.7. Множественные сравнения</h2>
+<p>Проверяем двадцать метрик при α = 0,05. Даже если изменение не влияет ни на что, в среднем одна метрика окажется «значимой» случайно.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">any_false_positive</span>(n_metrics, repeats=<span class="t-num">2000</span>, alpha=<span class="t-num">0.05</span>):
+    <span class="t-str">&quot;&quot;&quot;Вероятность получить хотя бы одну «значимую» метрику, когда эффекта нет ни в одной.&quot;&quot;&quot;</span>
+    p_values = rng.uniform(<span class="t-num">0</span>, <span class="t-num">1</span>, size=(repeats, n_metrics))      <span class="t-com"># при верной H0 p-value равномерно</span>
+    <span class="t-kw">return</span> (p_values.<span class="t-fn">min</span>(axis=<span class="t-num">1</span>) &lt; alpha).mean()
+
+<span class="t-kw">for</span> k <span class="t-kw">in</span> (<span class="t-num">1</span>, <span class="t-num">5</span>, <span class="t-num">20</span>):
+    <span class="t-fn">print</span>(k, <span class="t-fn">round</span>(any_false_positive(k), <span class="t-num">3</span>), <span class="t-str">&quot;теория:&quot;</span>, <span class="t-fn">round</span>(<span class="t-num">1</span> - <span class="t-num">0.95</span> ** k, <span class="t-num">3</span>))</code></pre></div>
+<p>При двадцати метриках шанс хотя бы одной ложной находки — 64 %.</p>
+<h3 id="поправки">Поправки</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">bonferroni</span>(p_values, alpha=<span class="t-num">0.05</span>):
+    <span class="t-str">&quot;&quot;&quot;Самая строгая: порог делится на число сравнений.&quot;&quot;&quot;</span>
+    <span class="t-kw">return</span> np.asarray(p_values) &lt; alpha / <span class="t-fn">len</span>(p_values)
+
+
+<span class="t-kw">def</span> <span class="t-def">holm</span>(p_values, alpha=<span class="t-num">0.05</span>):
+    <span class="t-str">&quot;&quot;&quot;Чуть мягче Бонферрони и никогда не хуже неё.&quot;&quot;&quot;</span>
+    p_values = np.asarray(p_values)
+    order = np.argsort(p_values)
+    significant = np.zeros(<span class="t-fn">len</span>(p_values), dtype=<span class="t-fn">bool</span>)
+    <span class="t-kw">for</span> position, index <span class="t-kw">in</span> <span class="t-fn">enumerate</span>(order):
+        <span class="t-kw">if</span> p_values[index] &lt; alpha / (<span class="t-fn">len</span>(p_values) - position):
+            significant[index] = <span class="t-num">True</span>
+        <span class="t-kw">else</span>:
+            <span class="t-kw">break</span>                              <span class="t-com"># как только одна не прошла — остальные тоже</span>
+    <span class="t-kw">return</span> significant
+
+
+<span class="t-kw">def</span> <span class="t-def">benjamini_hochberg</span>(p_values, alpha=<span class="t-num">0.05</span>):
+    <span class="t-str">&quot;&quot;&quot;Контролирует долю ложных находок среди всех находок (FDR).&quot;&quot;&quot;</span>
+    p_values = np.asarray(p_values)
+    n = <span class="t-fn">len</span>(p_values)
+    order = np.argsort(p_values)
+    thresholds = alpha * np.arange(<span class="t-num">1</span>, n + <span class="t-num">1</span>) / n
+    passed = p_values[order] &lt;= thresholds
+    significant = np.zeros(n, dtype=<span class="t-fn">bool</span>)
+    <span class="t-kw">if</span> passed.<span class="t-fn">any</span>():
+        significant[order[: np.where(passed)[<span class="t-num">0</span>].<span class="t-fn">max</span>() + <span class="t-num">1</span>]] = <span class="t-num">True</span>
+    <span class="t-kw">return</span> significant
+
+
+p_values = [<span class="t-num">0.001</span>, <span class="t-num">0.008</span>, <span class="t-num">0.012</span>, <span class="t-num">0.04</span>, <span class="t-num">0.2</span>, <span class="t-num">0.6</span>]
+<span class="t-fn">print</span>(<span class="t-str">&quot;без поправки:      &quot;</span>, (np.array(p_values) &lt; <span class="t-num">0.05</span>).<span class="t-fn">sum</span>())
+<span class="t-fn">print</span>(<span class="t-str">&quot;Бонферрони:        &quot;</span>, bonferroni(p_values).<span class="t-fn">sum</span>())
+<span class="t-fn">print</span>(<span class="t-str">&quot;Холм:              &quot;</span>, holm(p_values).<span class="t-fn">sum</span>())
+<span class="t-fn">print</span>(<span class="t-str">&quot;Бенджамини—Хохберг:&quot;</span>, benjamini_hochberg(p_values).<span class="t-fn">sum</span>())</code></pre></div>
+<div class="table"><table><thead><tr><th>Поправка</th><th>Что контролирует</th><th>Когда использовать</th></tr></thead><tbody><tr><td>Бонферрони</td><td>Вероятность хотя бы одной ложной находки</td><td>Сравнений мало, цена ошибки высока</td></tr><tr><td>Холм</td><td>То же, но с большей мощностью</td><td>Всегда вместо Бонферрони</td></tr><tr><td>Бенджамини — Хохберг</td><td>Долю ложных среди найденных</td><td>Сравнений много: десятки сегментов, метрик</td></tr></tbody></table></div>
+<h3 id="как-с-этим-жить">Как с этим жить</h3>
+<p>Поправки снижают мощность, поэтому лучшая стратегия — уменьшить число сравнений:</p>
+<ul>
+<li><strong>одна</strong> целевая метрика, выбранная до теста: по ней решение, к ней поправка не нужна;</li>
+<li>несколько <strong>контрольных</strong> метрик — они должны «не ухудшиться», а не «улучшиться»;</li>
+<li>всё остальное — <strong>исследовательские</strong> наблюдения: источник гипотез для следующих тестов, но не основание для решения.</li>
+</ul>
+<p>То же относится к сегментам. «В целом эффекта нет, но у новых пользователей на Android — есть» — это гипотеза для отдельного теста, а не результат.</p>
+<p>Несколько вариантов в одном тесте (A/B/C/D) — тоже множественные сравнения: три пары «вариант против контроля» требуют поправки.</p>
+<h2 id="9а8-снижение-дисперсии-cuped">9А.8. Снижение дисперсии: CUPED</h2>
+<p>Чем меньше разброс метрики, тем меньший эффект можно заметить на той же выборке. Метод CUPED уменьшает разброс, используя данные о пользователях <strong>до начала теста</strong>.</p>
+<p>Идея: поведение пользователя в тесте во многом предсказывается его поведением раньше — кто много покупал в прошлом месяце, много купит и в этом. Эта «предсказуемая» часть не связана с тестом, и её можно вычесть.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>n = <span class="t-num">5000</span>
+pre_a = rng.lognormal(<span class="t-num">7.0</span>, <span class="t-num">0.8</span>, n)                          <span class="t-com"># траты до теста</span>
+pre_b = rng.lognormal(<span class="t-num">7.0</span>, <span class="t-num">0.8</span>, n)
+during_a = <span class="t-num">0.7</span> * pre_a + rng.lognormal(<span class="t-num">6.0</span>, <span class="t-num">0.8</span>, n)         <span class="t-com"># траты в тесте связаны с прошлыми</span>
+during_b = (<span class="t-num">0.7</span> * pre_b + rng.lognormal(<span class="t-num">6.0</span>, <span class="t-num">0.8</span>, n)) * <span class="t-num">1.03</span>    <span class="t-com"># в группе B эффект +3 %</span>
+
+<span class="t-com"># Коэффициент theta считается один раз по обеим группам вместе</span>
+metric_all = np.concatenate([during_a, during_b])
+covariate_all = np.concatenate([pre_a, pre_b])
+theta = np.cov(metric_all, covariate_all, ddof=<span class="t-num">1</span>)[<span class="t-num">0</span>, <span class="t-num">1</span>] / covariate_all.var(ddof=<span class="t-num">1</span>)
+
+<span class="t-com"># Из метрики вычитается её «предсказуемая» часть</span>
+adj_a = during_a - theta * (pre_a - covariate_all.mean())
+adj_b = during_b - theta * (pre_b - covariate_all.mean())
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;p-value без CUPED:&quot;</span>, <span class="t-fn">round</span>(stats.ttest_ind(during_a, during_b, equal_var=<span class="t-num">False</span>).pvalue, <span class="t-num">4</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;p-value с CUPED:  &quot;</span>, <span class="t-fn">round</span>(stats.ttest_ind(adj_a, adj_b, equal_var=<span class="t-num">False</span>).pvalue, <span class="t-num">4</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;снижение дисперсии:&quot;</span>, <span class="t-fn">round</span>(<span class="t-num">1</span> - adj_a.var() / during_a.var(), <span class="t-num">2</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;корреляция с ковариатой:&quot;</span>, <span class="t-fn">round</span>(np.corrcoef(during_a, pre_a)[<span class="t-num">0</span>, <span class="t-num">1</span>], <span class="t-num">2</span>))</code></pre></div>
+<p>Что важно понимать:</p>
+<ul>
+<li>Среднее метрики CUPED <strong>не меняет</strong> — эффект остаётся тем же. Уменьшается только шум.</li>
+<li>Снижение дисперсии равно квадрату корреляции между метрикой и ковариатой. Корреляция 0,7 убирает около половины дисперсии — это равносильно удвоению выборки.</li>
+<li>Ковариата должна быть измерена <strong>до теста</strong>. Если взять что-то, на что тест мог повлиять, результат будет искажён.</li>
+<li>У новых пользователей истории нет, для них CUPED бесполезен.</li>
+<li>Лучшая ковариата — та же метрика за период до теста.</li>
+</ul>
+<p>Родственные приёмы: <strong>стратификация</strong> (сравнивать внутри однородных слоёв — платформ, стран — и взвешивать результат) и ограничение выбросов сверху (перцентиль 99) — оно тоже резко снижает дисперсию денежных метрик, но слегка меняет саму метрику.</p>
+<h2 id="9а9-подглядывание-и-последовательное-тестирование">9А.9. Подглядывание и последовательное тестирование</h2>
+<p>В главе 9 мы видели: если смотреть на p-value каждый день и останавливаться при первом значении ниже 0,05, ложных срабатываний становится 25 % вместо 5 %. На практике смотреть всё равно хочется — и иногда нужно: если новая версия ломает оплату, ждать две недели нельзя.</p>
+<p>Варианты решения:</p>
+<p><strong>1. Фиксированный горизонт.</strong> Размер выборки определён заранее, решение принимается один раз. Смотреть на графики можно, принимать решение об успехе — нет. Досрочная остановка разрешена только при явной поломке.</p>
+<p><strong>2. Более строгий порог на промежуточных проверках.</strong> Если запланировано <code>k</code> проверок, для каждой используют порог жёстче 0,05. Простейший вариант — делить α на число проверок; на практике применяют специальные границы (О'Брайена — Флеминга), которые почти не тратят α на ранние проверки.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">peeking_false_positive_rate</span>(n_total, n_looks, threshold, repeats=<span class="t-num">1000</span>):
+    false_positives = <span class="t-num">0</span>
+    checkpoints = np.linspace(n_total / n_looks, n_total, n_looks).astype(<span class="t-fn">int</span>)
+    <span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(repeats):
+        a = rng.normal(<span class="t-num">0</span>, <span class="t-num">1</span>, n_total)
+        b = rng.normal(<span class="t-num">0</span>, <span class="t-num">1</span>, n_total)
+        <span class="t-kw">for</span> n <span class="t-kw">in</span> checkpoints:
+            <span class="t-kw">if</span> stats.ttest_ind(a[:n], b[:n]).pvalue &lt; threshold:
+                false_positives += <span class="t-num">1</span>
+                <span class="t-kw">break</span>
+    <span class="t-kw">return</span> false_positives / repeats
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;5 проверок, порог 0.05: &quot;</span>, peeking_false_positive_rate(<span class="t-num">2000</span>, <span class="t-num">5</span>, <span class="t-num">0.05</span>, repeats=<span class="t-num">600</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;5 проверок, порог 0.01: &quot;</span>, peeking_false_positive_rate(<span class="t-num">2000</span>, <span class="t-num">5</span>, <span class="t-num">0.01</span>, repeats=<span class="t-num">600</span>))</code></pre></div>
+<p>С порогом 0,05 при пяти проверках ложных срабатываний около 13 %, с порогом 0,01 — около 3 %: в пределах допустимого, ценой некоторой потери мощности.</p>
+<p><strong>3. Специальные последовательные методы</strong> (mSPRT, «всегда-валидные» p-value) позволяют смотреть когда угодно. Они встроены в крупные платформы экспериментов; достаточно знать, что они существуют.</p>
+<h2 id="9а10-что-ещё-ломает-эксперименты">9А.10. Что ещё ломает эксперименты</h2>
+<h3 id="несоответствие-размеров-групп-srm">Несоответствие размеров групп (SRM)</h3>
+<p>Проверка из главы 9, которую нужно делать <strong>первой</strong>, до любых метрик. Типичные причины SRM:</p>
+<ul>
+<li>редирект в одной из групп работает медленнее, и часть пользователей уходит до записи события;</li>
+<li>боты попадают в одну группу чаще;</li>
+<li>баг в новой версии мешает логированию;</li>
+<li>фильтр при анализе («только те, кто дошёл до экрана X») зависит от самой фичи.</li>
+</ul>
+<p>Последний пункт коварнее всего. Если анализировать только тех, кто <strong>увидел</strong> новую кнопку, группы перестают быть сравнимыми: условие отбора зависит от воздействия. Сравнивать нужно всех, кто был <strong>назначен</strong> в группу.</p>
+<h3 id="эффекты-новизны-и-привыкания">Эффекты новизны и привыкания</h3>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>Эффект
+  │ ██
+  │ ████
+  │ ██████▄▄
+  │ ██████████▄▄▄▄▄▄▄▄▄▄▄▄   ← настоящий долгосрочный эффект
+  └──────────────────────── дни</code></pre></div>
+<p>Новое привлекает внимание само по себе; через неделю-две эффект спадает. Бывает и наоборот: пользователи сначала теряются в новом интерфейсе, а потом привыкают. Проверка: построй эффект по дням теста и отдельно — только для <strong>новых</strong> пользователей, у которых нет старых привычек.</p>
+<h3 id="сетевые-эффекты">Сетевые эффекты</h3>
+<p>A/B-тест предполагает, что пользователи одной группы не влияют на другую. Это неверно в маркетплейсах (тестовая группа скупает товар, контрольной не достаётся), соцсетях, такси и доставке (общий пул водителей и курьеров). Там делят не пользователей, а города, районы или промежутки времени.</p>
+<h3 id="сезонность-и-длительность">Сезонность и длительность</h3>
+<ul>
+<li>Тест должен идти целое число недель: состав аудитории в будни и выходные разный.</li>
+<li>Не запускай тесты в аномальные периоды: праздники, распродажи, сбои.</li>
+<li>Слишком короткий тест захватывает в основном самых активных пользователей: они приходят чаще и попадают в тест в первые дни. Их реакция может отличаться от реакции остальных.</li>
+</ul>
+<h3 id="разбавление">Разбавление</h3>
+<p>Если фичу видят только 10 % пользователей группы, а анализируются все 100 %, эффект разбавляется в десять раз и тонет в шуме. Решение — анализировать тех, кто <strong>мог</strong> увидеть изменение: условие отбора должно быть одинаковым для обеих групп и не зависеть от самой фичи. Например, «открыл страницу корзины» — если изменение находится на странице корзины и не влияет на то, откроют ли её.</p>
+<h3 id="заражение-между-тестами">Заражение между тестами</h3>
+<p>В компании одновременно идут десятки тестов. Обычно они независимы, но тесты, меняющие одно и то же место, могут конфликтовать. Проверка — посмотреть результат отдельно в срезах другого теста.</p>
+<h2 id="9а11-когда-ab-тест-невозможен">9А.11. Когда A/B-тест невозможен</h2>
+<p>Иногда разделить пользователей нельзя: изменение цен для всех, рекламная кампания на телевидении, новый закон, запуск в целом городе. Тогда используют методы причинно-следственного анализа. Они слабее эксперимента, но лучше наивного «до и после».</p>
+<h3 id="почему-до-и-после-не-работает">Почему «до и после» не работает</h3>
+<p>Запустили фичу 1 марта, в марте выручка выросла на 10 %. Заслуга фичи? Неизвестно: 8 Марта, сезон, рекламная кампания, общий рост рынка. Сравнение «до и после» приписывает изменению всё, что случилось одновременно с ним.</p>
+<h3 id="разность-разностей-difference-in-differences">Разность разностей (difference-in-differences)</h3>
+<p>Нужна контрольная группа, которую изменение не затронуло, — например, другой город. Идея: сравниваем не уровни, а <strong>изменения</strong>.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>data = {
+    <span class="t-com">#                 до     после</span>
+    <span class="t-str">&quot;Казань (тест)&quot;</span>:    (<span class="t-num">100.0</span>, <span class="t-num">125.0</span>),
+    <span class="t-str">&quot;Самара (контроль)&quot;</span>: (<span class="t-num">90.0</span>, <span class="t-num">104.0</span>),
+}
+
+change_test = data[<span class="t-str">&quot;Казань (тест)&quot;</span>][<span class="t-num">1</span>] - data[<span class="t-str">&quot;Казань (тест)&quot;</span>][<span class="t-num">0</span>]              <span class="t-com"># +25</span>
+change_control = data[<span class="t-str">&quot;Самара (контроль)&quot;</span>][<span class="t-num">1</span>] - data[<span class="t-str">&quot;Самара (контроль)&quot;</span>][<span class="t-num">0</span>]   <span class="t-com"># +14</span>
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;Наивное «до и после»:&quot;</span>, change_test)
+<span class="t-fn">print</span>(<span class="t-str">&quot;Разность разностей:  &quot;</span>, change_test - change_control)                  <span class="t-com"># +11</span></code></pre></div>
+<p>Из 25 единиц роста в Казани 14 случились бы и так — столько же выросла Самара без всякой фичи. Эффект — 11.</p>
+<p>Ключевое допущение — <strong>параллельные тренды</strong>: без воздействия обе группы менялись бы одинаково. Проверяют его по периоду до запуска: если линии на графике шли параллельно, допущению можно верить.</p>
+<h3 id="другие-подходы--знать-по-названиям">Другие подходы — знать по названиям</h3>
+<div class="table"><table><thead><tr><th>Метод</th><th>Идея</th></tr></thead><tbody><tr><td><strong>Синтетический контроль</strong></td><td>Контрольная группа собирается как взвешенная смесь нескольких регионов, повторяющая поведение тестового до запуска</td></tr><tr><td><strong>Разрывный дизайн</strong></td><td>Сравниваются объекты чуть выше и чуть ниже порога: скидку дали тем, у кого чек от 5000, — сравниваем 4990 и 5010</td></tr><tr><td><strong>Сопоставление (matching)</strong></td><td>Каждому «получившему воздействие» подбирается похожий «не получивший»</td></tr><tr><td><strong>Причинный анализ временного ряда</strong></td><td>По истории строится прогноз «что было бы без изменения» и сравнивается с фактом</td></tr></tbody></table></div>
+<p>Общий принцип: всё это способы построить <strong>контрфактическую</strong> оценку — что произошло бы без воздействия. A/B-тест делает это лучше всех, потому что случайное разделение гарантирует сравнимость групп.</p>
+<h2 id="9а12-байесовский-подход-чуть-глубже">9А.12. Байесовский подход: чуть глубже</h2>
+<p>В главе 9 мы получили вероятность того, что B лучше A. Байесовский анализ даёт ещё одну полезную для решений величину — <strong>ожидаемые потери</strong>.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>visitors_a, orders_a = <span class="t-num">10_000</span>, <span class="t-num">500</span>
+visitors_b, orders_b = <span class="t-num">10_000</span>, <span class="t-num">540</span>
+
+post_a = rng.beta(<span class="t-num">1</span> + orders_a, <span class="t-num">1</span> + visitors_a - orders_a, <span class="t-num">200_000</span>)
+post_b = rng.beta(<span class="t-num">1</span> + orders_b, <span class="t-num">1</span> + visitors_b - orders_b, <span class="t-num">200_000</span>)
+
+prob_b_better = (post_b &gt; post_a).mean()
+loss_if_choose_b = np.maximum(post_a - post_b, <span class="t-num">0</span>).mean()      <span class="t-com"># сколько теряем, если B на самом деле хуже</span>
+loss_if_choose_a = np.maximum(post_b - post_a, <span class="t-num">0</span>).mean()
+
+<span class="t-fn">print</span>(<span class="t-str">f&quot;P(B лучше A) = {prob_b_better:.3f}&quot;</span>)
+<span class="t-fn">print</span>(<span class="t-str">f&quot;Ожидаемые потери при выборе B: {loss_if_choose_b:.5f}&quot;</span>)
+<span class="t-fn">print</span>(<span class="t-str">f&quot;Ожидаемые потери при выборе A: {loss_if_choose_a:.5f}&quot;</span>)</code></pre></div>
+<p>Вероятность, что B лучше, — около 90 %. По частотным меркам «не значимо». Но ожидаемые потери при выборе B в двадцать с лишним раз меньше, чем при выборе A: если B и хуже, то совсем чуть-чуть, а если лучше — заметно. Когда внедрение ничего не стоит, выбор очевиден.</p>
+<h3 id="априорное-распределение">Априорное распределение</h3>
+<p><code>Beta(1, 1)</code> — «ничего не знаем заранее». Но обычно мы знаем: конверсия нашего сайта — около 5 %, а не 50 %. Это знание можно заложить:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>weak_prior = (<span class="t-num">1</span>, <span class="t-num">1</span>)                 <span class="t-com"># ничего не знаем</span>
+informed_prior = (<span class="t-num">50</span>, <span class="t-num">950</span>)          <span class="t-com"># «как будто уже видели 1000 посетителей с конверсией 5 %»</span>
+
+<span class="t-kw">for</span> name, (alpha, beta) <span class="t-kw">in</span> [(<span class="t-str">&quot;слабый&quot;</span>, weak_prior), (<span class="t-str">&quot;информативный&quot;</span>, informed_prior)]:
+    posterior = stats.beta(alpha + <span class="t-num">3</span>, beta + <span class="t-num">17</span>)             <span class="t-com"># наблюдали 3 покупки из 20</span>
+    low, high = posterior.ppf([<span class="t-num">0.025</span>, <span class="t-num">0.975</span>])
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;{name:&lt;14} среднее {posterior.mean():.3f}, 95 % интервал {low:.3f}–{high:.3f}&quot;</span>)</code></pre></div>
+<p>На двадцати посетителях слабый априор даёт оценку около 18 % с огромным интервалом. Информативный удерживает её возле 5 %: три покупки из двадцати — слишком мало данных, чтобы поверить в конверсию 15 %. Чем больше данных, тем меньше влияние априорного распределения.</p>
+<p>Байесовский подход не отменяет главных правил: подглядывание и множественные сравнения вредят и ему, просто менее заметно.</p>
+<h2 id="9а13-отчёт-по-тесту">9А.13. Отчёт по тесту</h2>
+<p>Результат теста — это документ, по которому принимают решение. Структура:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>1. Решение (одна строка)
+   Рекомендуем внедрять / не внедрять / продлить тест.
+
+2. Что тестировали
+   Гипотеза: если ..., то ..., потому что ...
+   Группы, доли трафика, даты, платформы.
+
+3. Корректность
+   Размеры групп и проверка SRM.
+   Длительность: целое число недель? Достигнут ли расчётный размер выборки?
+   Не было ли сбоев и аномальных дней.
+
+4. Целевая метрика
+   Значения в группах, абсолютная и относительная разница,
+   95 % доверительный интервал, p-value.
+
+5. Контрольные метрики
+   Что не должно было ухудшиться — и ухудшилось ли.
+
+6. Дополнительные наблюдения
+   Динамика эффекта по дням, сегменты — с пометкой «исследовательское».
+
+7. Оценка эффекта в деньгах
+   Сколько это даст в месяц или год, с диапазоном по границам интервала.
+
+8. Ограничения и следующие шаги</code></pre></div>
+<p>Пример хорошей формулировки результата:</p>
+<blockquote><p>Конверсия в заказ выросла с 4,82 % до 5,11 % (+0,29 п. п., +6,0 %). 95 % ДИ: от +0,05 до +0,53 п. п., p = 0,018. Средний чек не изменился (−0,4 %, ДИ от −2,1 % до +1,3 %). Ожидаемый эффект на выручку — от 0,9 до 9,5 млн рублей в год. Рекомендуем внедрять.</p></blockquote>
+<p>Чего не должно быть в отчёте:</p>
+<ul>
+<li>«значимо» без величины эффекта и интервала;</li>
+<li>сегмент, найденный после теста, в роли главного результата;</li>
+<li>«тест не показал значимых различий, значит, эффекта нет» — правильно: «эффект, если он есть, меньше MDE»;</li>
+<li>красивого графика, оборванного в день, когда результат выглядел лучше всего.</li>
+</ul>
+<h3 id="чек-лист-перед-запуском">Чек-лист перед запуском</h3>
+<ul>
+<li>☐ Гипотеза записана в формате «если — то — потому что».</li>
+<li>☐ Выбрана одна целевая метрика и несколько контрольных.</li>
+<li>☐ Посчитаны размер выборки и длительность; MDE реалистичен.</li>
+<li>☐ Определена единица рандомизации; метрики-отношения считаются корректно.</li>
+<li>☐ Проверено, что A/A-тест на этой системе даёт 5 % ложных срабатываний.</li>
+<li>☐ Заранее записано, какое решение будет принято при каждом исходе.</li>
+</ul>
+<h3 id="чек-лист-при-анализе">Чек-лист при анализе</h3>
+<ul>
+<li>☐ Нет SRM.</li>
+<li>☐ Тест шёл запланированное время.</li>
+<li>☐ Использован тест, выбранный до запуска.</li>
+<li>☐ Посмотрены выбросы: не определил ли результат один пользователь.</li>
+<li>☐ Эффект по дням не затухает.</li>
+<li>☐ Контрольные метрики не ухудшились.</li>
+<li>☐ В выводе есть размер эффекта, интервал и оценка в деньгах.</li>
+</ul>
+<h2 id="практика-на-github">Практика на GitHub</h2>
+<ul>
+<li><a href="https://github.com/AllenDowney/ThinkStats2" target="_blank" rel="noopener">AllenDowney/ThinkStats2</a> — главы про проверку гипотез и оценивание построены на тех же перестановочных тестах и симуляциях, что и эта глава. Пройди упражнения к ним: после этого формулы перестают быть магией.</li>
+<li><a href="https://github.com/AllenDowney/ThinkBayes2" target="_blank" rel="noopener">AllenDowney/ThinkBayes2</a> — оценка долей, априорные распределения, сравнение групп; главы про принятие решений показывают, как от вероятностей перейти к выбору действия.</li>
+<li><a href="https://github.com/Yourius/Projects_Ya" target="_blank" rel="noopener">Yourius/Projects_Ya</a> — проект с A/A/B-тестом: разбери, как проверена корректность разбиения и какая поправка на множественные сравнения применена. Попробуй применить Холма вместо неё и сравни выводы.</li>
+<li><a href="https://github.com/GonorAndres/data-analyst-path" target="_blank" rel="noopener">GonorAndres/data-analyst-path</a> — проект с A/B-тестом: оцени отчёт по структуре из раздела 9А.13 — чего в нём не хватает?</li>
+<li><a href="https://github.com/DataAna1ytics/Projects_Data_Analytics" target="_blank" rel="noopener">DataAna1ytics/Projects_Data_Analytics</a> — проверка гипотез на данных, собранных через SQL.</li>
+</ul>
+<h2 id="задания">Задания</h2>
+<ol>
+<li><strong>Распределения.</strong> В среднем в час приходит 12 заказов. Какова вероятность получить за час 20 заказов и больше? С какого числа заказов стоит считать час аномальным, если мы готовы к ложной тревоге раз в тысячу часов?</li>
+<li><strong>ЦПТ.</strong> Для экспоненциального распределения найди симуляцией, при каком размере выборки асимметрия распределения средних становится меньше 0,1.</li>
+<li><strong>Перестановочный тест.</strong> Напиши перестановочный тест для <strong>медианы</strong> и сравни его p-value с тестом Манна — Уитни на двух логнормальных выборках.</li>
+<li><strong>Метрика-отношение.</strong> Смоделируй тест со средним чеком (выручка / число заказов), где у пользователей разное число заказов. Убедись в A/A-симуляции, что t-тест по заказам даёт завышенную долю ложных срабатываний, а дельта-метод — около 5 %.</li>
+<li><strong>Мощность.</strong> Симуляцией построй таблицу мощности для конверсии 5 % и относительного эффекта 10 % при размерах группы 5, 10, 20 и 40 тысяч. Сравни с формулой из главы 9.</li>
+<li><strong>Множественные сравнения.</strong> Смоделируй 1000 тестов, в каждом по 10 метрик, из которых эффект есть только в одной. Сравни без поправки, с Бонферрони и с Бенджамини — Хохбергом: долю тестов с ложной находкой и долю тестов, где настоящий эффект найден.</li>
+<li><strong>CUPED.</strong> Покажи симуляцией, как снижение дисперсии зависит от корреляции между метрикой и ковариатой (корреляции 0,3; 0,6; 0,9).</li>
+<li><strong>Разность разностей.</strong> Даны недельные продажи в двух городах за 8 недель до запуска и 4 недели после. Проверь допущение параллельных трендов и оцени эффект.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Какое распределение описывает число покупок из тысячи посетителей? А число заказов за час?</li>
+<li>Почему для денежных метрик t-тест требует больших выборок?</li>
+<li>Чем процентный пункт отличается от процента?</li>
+<li>Какую гипотезу на самом деле проверяет тест Манна — Уитни?</li>
+<li>Почему нельзя применять z-тест пропорций к CTR, посчитанному по показам?</li>
+<li>Что такое единица рандомизации и единица анализа?</li>
+<li>Чем поправка Бонферрони отличается от Бенджамини — Хохберга?</li>
+<li>За счёт чего CUPED уменьшает дисперсию и меняет ли он оценку эффекта?</li>
+<li>Почему нельзя анализировать только пользователей, увидевших фичу?</li>
+<li>Что такое допущение параллельных трендов?</li>
+<li>Что должно быть в выводе по тесту кроме p-value?</li>
+</ul>
+<h2 id="решения">Решения</h2>
+<p>Во всех решениях используется общий импорт:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">from</span> scipy <span class="t-kw">import</span> stats
+
+rng = np.random.default_rng(<span class="t-num">42</span>)</code></pre></div>
+<details class="sol"><summary>Задание 1. Распределения</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>lam = <span class="t-num">12</span>
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;P(20 и больше):&quot;</span>, <span class="t-fn">round</span>(stats.poisson.sf(<span class="t-num">19</span>, mu=lam), <span class="t-num">4</span>))        <span class="t-com"># около 0.021</span>
+
+threshold = stats.poisson.ppf(<span class="t-num">1</span> - <span class="t-num">0.001</span>, mu=lam)
+<span class="t-fn">print</span>(<span class="t-str">&quot;Порог аномалии:&quot;</span>, threshold)                                      <span class="t-com"># 24</span>
+<span class="t-fn">print</span>(<span class="t-str">&quot;P(больше порога):&quot;</span>, <span class="t-fn">round</span>(stats.poisson.sf(threshold, mu=lam), <span class="t-num">5</span>))</code></pre></div>
+<p>Число событий за период описывается распределением Пуассона. <code>sf(19)</code> — вероятность получить <strong>больше 19</strong>, то есть 20 и больше; с <code>sf(20)</code> получилась бы вероятность 21 и больше. Ошибка на единицу в таких расчётах — самая частая.</p>
+<p>Двадцать заказов при среднем двенадцати случаются примерно раз в 50 часов — это не аномалия. Аномальным стоит считать час с 25 заказами и больше.</p>
+<p>Оговорка: реальный поток заказов обычно разбросан сильнее пуассоновского, потому что интенсивность зависит от времени суток и дня недели. Порог нужно считать отдельно для каждого часа дня или брать из исторических перцентилей.</p></details>
+<details class="sol"><summary>Задание 2. ЦПТ для экспоненциального распределения</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">skew_of_means</span>(n, repeats=<span class="t-num">20_000</span>):
+    means = rng.exponential(scale=<span class="t-num">1.0</span>, size=(repeats, n)).mean(axis=<span class="t-num">1</span>)
+    <span class="t-kw">return</span> stats.skew(means)
+
+<span class="t-kw">for</span> n <span class="t-kw">in</span> (<span class="t-num">10</span>, <span class="t-num">50</span>, <span class="t-num">100</span>, <span class="t-num">400</span>, <span class="t-num">1000</span>):
+    <span class="t-fn">print</span>(n, <span class="t-fn">round</span>(skew_of_means(n), <span class="t-num">3</span>))</code></pre></div>
+<p>Асимметрия средних падает как <code>2 / √n</code>: при <code>n = 100</code> она около 0,2, при <code>n = 400</code> — около 0,1. Значит, нужно больше четырёхсот наблюдений.</p>
+<p>Массив генерируется сразу двумерным — <code>repeats</code> строк по <code>n</code> значений, — и среднее берётся по строкам. Это в десятки раз быстрее цикла; приём векторизации из главы 4.</p></details>
+<details class="sol"><summary>Задание 3. Перестановочный тест для медианы</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">permutation_test_stat</span>(a, b, statistic=np.median, repeats=<span class="t-num">3000</span>):
+    observed = statistic(b) - statistic(a)
+    combined = np.concatenate([a, b])
+    extreme = <span class="t-num">0</span>
+    <span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(repeats):
+        rng.shuffle(combined)
+        diff = statistic(combined[<span class="t-fn">len</span>(a):]) - statistic(combined[:<span class="t-fn">len</span>(a)])
+        extreme += <span class="t-fn">abs</span>(diff) &gt;= <span class="t-fn">abs</span>(observed)
+    <span class="t-kw">return</span> observed, extreme / repeats
+
+a = rng.lognormal(<span class="t-num">7.5</span>, <span class="t-num">0.9</span>, <span class="t-num">1000</span>)
+b = rng.lognormal(<span class="t-num">7.7</span>, <span class="t-num">0.9</span>, <span class="t-num">1000</span>)
+
+observed, p_perm = permutation_test_stat(a, b)
+<span class="t-fn">print</span>(<span class="t-str">&quot;разница медиан:&quot;</span>, <span class="t-fn">round</span>(observed, <span class="t-num">1</span>), <span class="t-str">&quot;p-value:&quot;</span>, p_perm)
+<span class="t-fn">print</span>(<span class="t-str">&quot;Манна—Уитни:   &quot;</span>, <span class="t-fn">round</span>(stats.mannwhitneyu(a, b).pvalue, <span class="t-num">4</span>))</code></pre></div>
+<p>Функция принимает статистику параметром — тот же код проверит разницу средних, 90-х перцентилей или чего угодно. Это паттерн «стратегия» из главы 2В.</p>
+<p>Оба теста дадут маленькое p-value: здесь распределения одной формы и отличаются сдвигом, а в такой ситуации Манна — Уитни и сравнение медиан согласуются. Расходятся они, когда меняется форма распределения — как в примере раздела 9А.4.</p></details>
+<details class="sol"><summary>Задание 4. Средний чек</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">simulate_orders</span>(n_users):
+    <span class="t-str">&quot;&quot;&quot;Возвращает по пользователям: число заказов и суммарную выручку.&quot;&quot;&quot;</span>
+    orders = rng.poisson(lam=rng.gamma(<span class="t-num">2.0</span>, <span class="t-num">1.5</span>, n_users)) + <span class="t-num">1</span>
+    user_level = rng.lognormal(<span class="t-num">7.0</span>, <span class="t-num">0.6</span>, n_users)                 <span class="t-com"># у каждого свой типичный чек</span>
+    revenue = np.array([rng.lognormal(np.log(level), <span class="t-num">0.4</span>, k).<span class="t-fn">sum</span>() <span class="t-kw">for</span> level, k <span class="t-kw">in</span> <span class="t-fn">zip</span>(user_level, orders)])
+    <span class="t-kw">return</span> orders, revenue
+
+
+<span class="t-kw">def</span> <span class="t-def">delta_p_value</span>(num_a, den_a, num_b, den_b):
+    <span class="t-kw">def</span> <span class="t-def">ratio_var</span>(num, den):
+        ratio = num.mean() / den.mean()
+        cov = np.cov(num, den, ddof=<span class="t-num">1</span>)
+        <span class="t-kw">return</span> ratio, (cov[<span class="t-num">0</span>, <span class="t-num">0</span>] - <span class="t-num">2</span> * ratio * cov[<span class="t-num">0</span>, <span class="t-num">1</span>] + ratio ** <span class="t-num">2</span> * cov[<span class="t-num">1</span>, <span class="t-num">1</span>]) / (den.mean() ** <span class="t-num">2</span> * <span class="t-fn">len</span>(num))
+    ratio_a, var_a = ratio_var(num_a, den_a)
+    ratio_b, var_b = ratio_var(num_b, den_b)
+    <span class="t-kw">return</span> <span class="t-num">2</span> * stats.norm.sf(<span class="t-fn">abs</span>(ratio_b - ratio_a) / np.sqrt(var_a + var_b))
+
+
+<span class="t-kw">def</span> <span class="t-def">naive_p_value</span>(orders_a, revenue_a, orders_b, revenue_b):
+    <span class="t-str">&quot;&quot;&quot;НЕПРАВИЛЬНО: t-тест по заказам, как будто они независимы.&quot;&quot;&quot;</span>
+    checks_a = np.repeat(revenue_a / orders_a, orders_a)          <span class="t-com"># каждому заказу — средний чек его пользователя</span>
+    checks_b = np.repeat(revenue_b / orders_b, orders_b)
+    <span class="t-kw">return</span> stats.ttest_ind(checks_a, checks_b, equal_var=<span class="t-num">False</span>).pvalue
+
+
+naive, delta = <span class="t-num">0</span>, <span class="t-num">0</span>
+REPEATS = <span class="t-num">300</span>
+<span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(REPEATS):
+    oa, ra = simulate_orders(<span class="t-num">1500</span>)
+    ob, rb = simulate_orders(<span class="t-num">1500</span>)
+    naive += naive_p_value(oa, ra, ob, rb) &lt; <span class="t-num">0.05</span>
+    delta += delta_p_value(ra, oa, rb, ob) &lt; <span class="t-num">0.05</span>
+
+<span class="t-fn">print</span>(<span class="t-str">&quot;Наивный тест по заказам:&quot;</span>, naive / REPEATS)
+<span class="t-fn">print</span>(<span class="t-str">&quot;Дельта-метод:           &quot;</span>, delta / REPEATS)</code></pre></div>
+<p>Наивный тест ошибается заметно чаще 5 %, дельта-метод держится около 5 %. Причина та же, что и с CTR: заказы одного пользователя похожи друг на друга, поэтому независимых наблюдений меньше, чем строк в таблице заказов.</p>
+<p>Чем сильнее различаются пользователи между собой и чем больше у них заказов, тем сильнее ошибается наивный тест.</p></details>
+<details class="sol"><summary>Задание 5. Мощность симуляцией</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">power_proportion_simulated</span>(p, lift, n, repeats=<span class="t-num">2000</span>, alpha=<span class="t-num">0.05</span>):
+    successes_a = rng.binomial(n, p, repeats)
+    successes_b = rng.binomial(n, p * (<span class="t-num">1</span> + lift), repeats)
+    p_a, p_b = successes_a / n, successes_b / n
+    pooled = (successes_a + successes_b) / (<span class="t-num">2</span> * n)
+    z = (p_b - p_a) / np.sqrt(pooled * (<span class="t-num">1</span> - pooled) * <span class="t-num">2</span> / n)
+    <span class="t-kw">return</span> (<span class="t-num">2</span> * stats.norm.sf(np.<span class="t-fn">abs</span>(z)) &lt; alpha).mean()
+
+
+<span class="t-kw">def</span> <span class="t-def">power_proportion_formula</span>(p, lift, n, alpha=<span class="t-num">0.05</span>):
+    p2 = p * (<span class="t-num">1</span> + lift)
+    se = np.sqrt((p * (<span class="t-num">1</span> - p) + p2 * (<span class="t-num">1</span> - p2)) / n)
+    <span class="t-kw">return</span> stats.norm.cdf(<span class="t-fn">abs</span>(p2 - p) / se - stats.norm.ppf(<span class="t-num">1</span> - alpha / <span class="t-num">2</span>))
+
+
+<span class="t-kw">for</span> n <span class="t-kw">in</span> (<span class="t-num">5000</span>, <span class="t-num">10_000</span>, <span class="t-num">20_000</span>, <span class="t-num">40_000</span>):
+    <span class="t-fn">print</span>(n, <span class="t-fn">round</span>(power_proportion_simulated(<span class="t-num">0.05</span>, <span class="t-num">0.10</span>, n), <span class="t-num">3</span>), <span class="t-fn">round</span>(power_proportion_formula(<span class="t-num">0.05</span>, <span class="t-num">0.10</span>, n), <span class="t-num">3</span>))</code></pre></div>
+<p>Симуляция и формула совпадают с точностью до случайной погрешности. Мощность 80 % достигается примерно при 31 тысяче пользователей в группе — то же число, что давала функция <code>sample_size</code> из главы 9.</p>
+<p>Здесь не понадобился цикл: <code>rng.binomial</code> сразу генерирует результаты двух тысяч тестов, и все p-value считаются векторно.</p></details>
+<details class="sol"><summary>Задание 6. Множественные сравнения</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">simulate_p_values</span>(n_tests=<span class="t-num">1000</span>, n_metrics=<span class="t-num">10</span>, n=<span class="t-num">2000</span>, effect=<span class="t-num">0.1</span>):
+    <span class="t-str">&quot;&quot;&quot;Первая метрика с эффектом, остальные — без. Возвращает матрицу p-value.&quot;&quot;&quot;</span>
+    p_values = np.empty((n_tests, n_metrics))
+    <span class="t-kw">for</span> metric <span class="t-kw">in</span> <span class="t-fn">range</span>(n_metrics):
+        shift = effect <span class="t-kw">if</span> metric == <span class="t-num">0</span> <span class="t-kw">else</span> <span class="t-num">0.0</span>
+        a = rng.normal(<span class="t-num">0</span>, <span class="t-num">1</span>, size=(n_tests, n))
+        b = rng.normal(shift, <span class="t-num">1</span>, size=(n_tests, n))
+        p_values[:, metric] = stats.ttest_ind(a, b, axis=<span class="t-num">1</span>).pvalue
+    <span class="t-kw">return</span> p_values
+
+
+<span class="t-kw">def</span> <span class="t-def">bh_mask</span>(p_row, alpha=<span class="t-num">0.05</span>):
+    order = np.argsort(p_row)
+    passed = p_row[order] &lt;= alpha * np.arange(<span class="t-num">1</span>, <span class="t-fn">len</span>(p_row) + <span class="t-num">1</span>) / <span class="t-fn">len</span>(p_row)
+    mask = np.zeros(<span class="t-fn">len</span>(p_row), dtype=<span class="t-fn">bool</span>)
+    <span class="t-kw">if</span> passed.<span class="t-fn">any</span>():
+        mask[order[: np.where(passed)[<span class="t-num">0</span>].<span class="t-fn">max</span>() + <span class="t-num">1</span>]] = <span class="t-num">True</span>
+    <span class="t-kw">return</span> mask
+
+
+p = simulate_p_values()
+methods = {
+    <span class="t-str">&quot;без поправки&quot;</span>: p &lt; <span class="t-num">0.05</span>,
+    <span class="t-str">&quot;Бонферрони&quot;</span>: p &lt; <span class="t-num">0.05</span> / p.shape[<span class="t-num">1</span>],
+    <span class="t-str">&quot;Бенджамини—Хохберг&quot;</span>: np.array([bh_mask(row) <span class="t-kw">for</span> row <span class="t-kw">in</span> p]),
+}
+
+<span class="t-kw">for</span> name, significant <span class="t-kw">in</span> methods.items():
+    false_found = significant[:, <span class="t-num">1</span>:].<span class="t-fn">any</span>(axis=<span class="t-num">1</span>).mean()        <span class="t-com"># хотя бы одна ложная находка</span>
+    true_found = significant[:, <span class="t-num">0</span>].mean()                      <span class="t-com"># настоящий эффект найден</span>
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;{name:&lt;20} ложная находка: {false_found:.3f}   настоящий эффект найден: {true_found:.3f}&quot;</span>)</code></pre></div>
+<p>Типичная картина: без поправки ложная находка есть примерно в 37 % тестов. Бонферрони снижает её до 5 %, но и настоящий эффект находит заметно реже — примерно в 65 % тестов вместо 88 %. Бенджамини — Хохберг здесь почти не отличается от Бонферрони: настоящий эффект всего один из десяти. Его преимущество в мощности проявляется, когда настоящих эффектов несколько.</p>
+<p>Вывод тот же, что в разделе 9А.7: поправки стоят мощности, поэтому лучше заранее сократить число проверяемых метрик.</p></details>
+<details class="sol"><summary>Задание 7. CUPED и корреляция</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">variance_reduction</span>(correlation, n=<span class="t-num">20_000</span>):
+    covariate = rng.normal(<span class="t-num">0</span>, <span class="t-num">1</span>, n)
+    noise = rng.normal(<span class="t-num">0</span>, <span class="t-num">1</span>, n)
+    metric = correlation * covariate + np.sqrt(<span class="t-num">1</span> - correlation ** <span class="t-num">2</span>) * noise    <span class="t-com"># заданная корреляция</span>
+    theta = np.cov(metric, covariate, ddof=<span class="t-num">1</span>)[<span class="t-num">0</span>, <span class="t-num">1</span>] / covariate.var(ddof=<span class="t-num">1</span>)
+    adjusted = metric - theta * (covariate - covariate.mean())
+    <span class="t-kw">return</span> np.corrcoef(metric, covariate)[<span class="t-num">0</span>, <span class="t-num">1</span>], <span class="t-num">1</span> - adjusted.var() / metric.var()
+
+<span class="t-kw">for</span> target <span class="t-kw">in</span> (<span class="t-num">0.3</span>, <span class="t-num">0.6</span>, <span class="t-num">0.9</span>):
+    actual, reduction = variance_reduction(target)
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;корреляция {actual:.2f}: дисперсия снижена на {reduction:.1%} (теория: {target ** 2:.1%})&quot;</span>)</code></pre></div>
+<p>Снижение дисперсии равно квадрату корреляции: 9 %, 36 % и 81 %. При корреляции 0,3 метод почти бесполезен, при 0,9 — равносилен пятикратному увеличению выборки.</p>
+<p>Практический вывод: прежде чем внедрять CUPED для метрики, посчитай её корреляцию со значением за предыдущий период. Для стабильных метрик (число сессий, траты постоянных клиентов) она высока, для редких событий (покупка раз в полгода) — близка к нулю.</p></details>
+<details class="sol"><summary>Задание 8. Разность разностей</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>weeks = np.arange(<span class="t-num">1</span>, <span class="t-num">13</span>)
+launch_week = <span class="t-num">9</span>                                   <span class="t-com"># запуск в тестовом городе с 9-й недели</span>
+
+control = <span class="t-num">200</span> + <span class="t-num">5</span> * weeks + rng.normal(<span class="t-num">0</span>, <span class="t-num">4</span>, <span class="t-num">12</span>)
+test = <span class="t-num">260</span> + <span class="t-num">5</span> * weeks + rng.normal(<span class="t-num">0</span>, <span class="t-num">4</span>, <span class="t-num">12</span>)
+test[weeks &gt;= launch_week] += <span class="t-num">30</span>                  <span class="t-com"># настоящий эффект: +30</span>
+
+before = weeks &lt; launch_week
+
+<span class="t-com"># 1. Проверка параллельных трендов по периоду до запуска</span>
+slope_test = stats.linregress(weeks[before], test[before]).slope
+slope_control = stats.linregress(weeks[before], control[before]).slope
+<span class="t-fn">print</span>(<span class="t-str">f&quot;Наклон до запуска: тест {slope_test:.2f}, контроль {slope_control:.2f}&quot;</span>)
+
+gap_before = test[before] - control[before]
+<span class="t-fn">print</span>(<span class="t-str">&quot;Разрыв между городами до запуска:&quot;</span>, gap_before.<span class="t-fn">round</span>(<span class="t-num">1</span>))
+
+<span class="t-com"># 2. Оценка эффекта</span>
+change_test = test[~before].mean() - test[before].mean()
+change_control = control[~before].mean() - control[before].mean()
+
+<span class="t-fn">print</span>(<span class="t-str">f&quot;Наивное «до и после»: {change_test:.1f}&quot;</span>)
+<span class="t-fn">print</span>(<span class="t-str">f&quot;Разность разностей:   {change_test - change_control:.1f}&quot;</span>)</code></pre></div>
+<p>Наклоны до запуска близки, разрыв между городами держится около 60 без тренда — допущение параллельных трендов правдоподобно.</p>
+<p>Наивное сравнение даёт около 60: оно приписывает фиче и общий рост, который шёл в обоих городах. Разность разностей возвращает оценку, близкую к настоящему эффекту 30.</p>
+<p>Если бы до запуска разрыв между городами систематически рос или сокращался, метод применять было бы нельзя: он приписал бы фиче продолжение уже существовавшего расхождения.</p></details><nav class="nav "><a class="prev" href="09-ab-testy.html" id=prev><small>← Назад</small><b>Глава 9. Гипотезы и A/B-тесты</b></a><a class="next" href="10-produktovaya-analitika.html" id=next><small>Вперёд →</small><b>Глава 10. Продуктовая аналитика</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

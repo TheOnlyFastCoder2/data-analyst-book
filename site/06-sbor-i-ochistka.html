@@ -84,10 +84,10 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 </head>
 <body>
 <header class="bar"><div class="bar-in">
-<a class="home" href="index.html">☰ Содержание</a><span class="where">11 из 19 · Глава 6. Сбор и очистка данных</span>
-</div><div class="progress"><i style="width:58%"></i></div></header>
+<a class="home" href="index.html">☰ Содержание</a><span class="where">13 из 23 · Глава 6. Сбор и очистка данных</span>
+</div><div class="progress"><i style="width:57%"></i></div></header>
 <main>
-<nav class="nav top"><a class="prev" href="05-pandas.html"><small>← Назад</small><b>Глава 5. pandas</b></a><a class="next" href="07-vizualizaciya.html"><small>Вперёд →</small><b>Глава 7. Визуализация</b></a></nav><h1 id="глава-6-сбор-и-очистка-данных">Глава 6. Сбор и очистка данных</h1>
+<nav class="nav top"><a class="prev" href="05a-pandas-priemy.html"><small>← Назад</small><b>Глава 5А. pandas: приёмы и рецепты</b></a><a class="next" href="07-vizualizaciya.html"><small>Вперёд →</small><b>Глава 7. Визуализация</b></a></nav><h1 id="глава-6-сбор-и-очистка-данных">Глава 6. Сбор и очистка данных</h1>
 <p>Говорят, что аналитик 80 % времени готовит данные и только 20 % анализирует. Цифра условная, но суть верная: реальные данные всегда грязные. Вывод, сделанный на грязных данных, хуже, чем отсутствие вывода, — ему поверят.</p>
 <h2 id="61-источники-данных">6.1. Источники данных</h2>
 <p>На карте roadmap.sh их четыре: базы данных, CSV-файлы, API и веб-скрейпинг.</p>
@@ -401,7 +401,7 @@ tables = pd.read_html(url)                 <span class="t-com"># нужна би
 <ol start="4">
 <li>Проверь, сколько значений стало <code>NaN</code>, и посмотри на них глазами.</li>
 </ol>
-<p>Если Википедия отвечает ошибкой 403, добавь заголовок <code>User-Agent</code>: скачай страницу через <code>requests.get(url, headers={&quot;User-Agent&quot;: &quot;Mozilla/5.0&quot;})</code> и передай текст в <code>pd.read_html(io.StringIO(response.text))</code>.</p></details><nav class="nav "><a class="prev" href="05-pandas.html" id=prev><small>← Назад</small><b>Глава 5. pandas</b></a><a class="next" href="07-vizualizaciya.html" id=next><small>Вперёд →</small><b>Глава 7. Визуализация</b></a></nav>
+<p>Если Википедия отвечает ошибкой 403, добавь заголовок <code>User-Agent</code>: скачай страницу через <code>requests.get(url, headers={&quot;User-Agent&quot;: &quot;Mozilla/5.0&quot;})</code> и передай текст в <code>pd.read_html(io.StringIO(response.text))</code>.</p></details><nav class="nav "><a class="prev" href="05a-pandas-priemy.html" id=prev><small>← Назад</small><b>Глава 5А. pandas: приёмы и рецепты</b></a><a class="next" href="07-vizualizaciya.html" id=next><small>Вперёд →</small><b>Глава 7. Визуализация</b></a></nav>
 </main>
 <footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
 <script>

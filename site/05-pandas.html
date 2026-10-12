@@ -84,10 +84,10 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 </head>
 <body>
 <header class="bar"><div class="bar-in">
-<a class="home" href="index.html">☰ Содержание</a><span class="where">10 из 19 · Глава 5. pandas</span>
-</div><div class="progress"><i style="width:53%"></i></div></header>
+<a class="home" href="index.html">☰ Содержание</a><span class="where">11 из 23 · Глава 5. pandas</span>
+</div><div class="progress"><i style="width:48%"></i></div></header>
 <main>
-<nav class="nav top"><a class="prev" href="04-numpy.html"><small>← Назад</small><b>Глава 4. NumPy</b></a><a class="next" href="06-sbor-i-ochistka.html"><small>Вперёд →</small><b>Глава 6. Сбор и очистка данных</b></a></nav><h1 id="глава-5-pandas">Глава 5. pandas</h1>
+<nav class="nav top"><a class="prev" href="04-numpy.html"><small>← Назад</small><b>Глава 4. NumPy</b></a><a class="next" href="05a-pandas-priemy.html"><small>Вперёд →</small><b>Глава 5А. pandas: приёмы и рецепты</b></a></nav><h1 id="глава-5-pandas">Глава 5. pandas</h1>
 <p>pandas — главный рабочий инструмент аналитика в Python. Это «Excel в коде»: таблицы, фильтры, сводные, соединения — но воспроизводимо и на миллионах строк.</p>
 <p>Это самая важная глава книги. Не торопись: каждый пример набери руками и поменяй в нём что-нибудь.</p>
 <h2 id="51-series-и-dataframe">5.1. Series и DataFrame</h2>
@@ -320,6 +320,8 @@ result = (
 <li><strong>Забыл присвоить результат.</strong> Большинство методов возвращают новую таблицу, а не меняют старую: пиши <code>df = df.sort_values(...)</code>.</li>
 <li><strong>Цикл <code>for</code> по строкам.</strong> Если пишешь <code>for i, row in df.iterrows()</code> — остановись и поищи векторный способ.</li>
 </ul>
+<h2 id="что-дальше">Что дальше</h2>
+<p>Когда освоишься с материалом этой главы, переходи к углублённой: <a href="05a-pandas-priemy.html">Глава 5А. pandas: приёмы и рецепты</a>.</p>
 <h2 id="практика-на-github">Практика на GitHub</h2>
 <ol>
 <li><a href="https://github.com/guipsamora/pandas_exercises" target="_blank" rel="noopener">guipsamora/pandas_exercises</a> — основной тренажёр. Папки пронумерованы по темам; проходи по порядку: знакомство с данными, фильтрация и сортировка, группировка, apply, соединения, статистика. В каждой папке есть ноутбук с заданиями и отдельный с решениями — решения открывай только после своей попытки.</li>
@@ -457,7 +459,7 @@ top_genre = (
 <span class="t-fn">print</span>(top_genre.head(<span class="t-num">10</span>))</code></pre></div>
 <p>Приём «отсортировать и взять первую строку группы через <code>drop_duplicates</code>» — pandas-аналог <code>ROW_NUMBER() ... WHERE rn = 1</code>.</p>
 <p>Сравни результаты с ответами SQL: они должны совпасть. Если при равенстве продаж лидер отличается — это не ошибка, а разный порядок среди равных.</p>
-<p>В реальной работе загружать таблицы целиком нельзя — они слишком большие. Там соединения и группировки делают в SQL, а в pandas забирают уже готовый небольшой результат.</p></details><nav class="nav "><a class="prev" href="04-numpy.html" id=prev><small>← Назад</small><b>Глава 4. NumPy</b></a><a class="next" href="06-sbor-i-ochistka.html" id=next><small>Вперёд →</small><b>Глава 6. Сбор и очистка данных</b></a></nav>
+<p>В реальной работе загружать таблицы целиком нельзя — они слишком большие. Там соединения и группировки делают в SQL, а в pandas забирают уже готовый небольшой результат.</p></details><nav class="nav "><a class="prev" href="04-numpy.html" id=prev><small>← Назад</small><b>Глава 4. NumPy</b></a><a class="next" href="05a-pandas-priemy.html" id=next><small>Вперёд →</small><b>Глава 5А. pandas: приёмы и рецепты</b></a></nav>
 </main>
 <footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
 <script>

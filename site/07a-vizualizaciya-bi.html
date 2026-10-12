@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 7А. Визуализация и BI: глубже</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">15 из 23 · Глава 7А. Визуализация и BI: глубже</span>
+</div><div class="progress"><i style="width:65%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="07-vizualizaciya.html"><small>← Назад</small><b>Глава 7. Визуализация</b></a><a class="next" href="08-statistika.html"><small>Вперёд →</small><b>Глава 8. Описательная статистика и EDA</b></a></nav><h1 id="глава-7а-визуализация-и-bi-глубже">Глава 7А. Визуализация и BI: глубже</h1>
+<p>В главе 7 ты научился строить основные графики. Здесь — как довести график до уровня, на котором его не стыдно показать руководителю, набор готовых рецептов для типовых аналитических задач и подробный разбор BI-инструментов: как они устроены внутри, где в них считают неправильно и как собрать дашборд, которым будут пользоваться.</p>
+<p>Примеры на Matplotlib написаны на чистом NumPy, чтобы каждый можно было запустить отдельно. С таблицами pandas всё работает так же: вместо массивов передаются столбцы.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> matplotlib.pyplot <span class="t-kw">as</span> plt
+<span class="t-kw">from</span> matplotlib.ticker <span class="t-kw">import</span> FuncFormatter, PercentFormatter
+
+rng = np.random.default_rng(<span class="t-num">42</span>)</code></pre></div>
+<h2 id="7а1-из-чего-состоит-график">7А.1. Из чего состоит график</h2>
+<p>Чтобы настраивать график, нужно знать названия его частей — по ним ищется всё остальное.</p>
+<div class="table"><table><thead><tr><th>Часть</th><th>Что это</th><th>Как обратиться</th></tr></thead><tbody><tr><td>Figure</td><td>Весь рисунок</td><td><code>fig</code></td></tr><tr><td>Axes</td><td>Область одного графика</td><td><code>ax</code></td></tr><tr><td>Title</td><td>Заголовок</td><td><code>ax.set_title()</code></td></tr><tr><td>Axis label</td><td>Подпись оси</td><td><code>ax.set_xlabel()</code>, <code>ax.set_ylabel()</code></td></tr><tr><td>Ticks</td><td>Деления на оси</td><td><code>ax.set_xticks()</code>, <code>ax.tick_params()</code></td></tr><tr><td>Tick labels</td><td>Подписи делений</td><td><code>ax.xaxis.set_major_formatter()</code></td></tr><tr><td>Spines</td><td>Рамка: четыре линии по краям</td><td><code>ax.spines[&quot;top&quot;]</code></td></tr><tr><td>Grid</td><td>Сетка</td><td><code>ax.grid()</code></td></tr><tr><td>Legend</td><td>Легенда</td><td><code>ax.legend()</code></td></tr><tr><td>Artist</td><td>Любой нарисованный элемент: линия, столбец, текст</td><td>возвращается методами <code>ax.plot()</code>, <code>ax.bar()</code></td></tr></tbody></table></div>
+<p>Правило: <strong>все настройки делаются через <code>ax</code></strong>. Запомни одну строку — <code>fig, ax = plt.subplots()</code> — и дальше ищи нужный метод у <code>ax</code>.</p>
+<h2 id="7а2-свой-стиль-оформления">7А.2. Свой стиль оформления</h2>
+<p>График по умолчанию выглядит как «график по умолчанию». Чтобы не настраивать каждый заново, один раз задай стиль и заведи функцию-помощник.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>plt.rcParams.update({
+    <span class="t-str">&quot;figure.figsize&quot;</span>: (<span class="t-num">9</span>, <span class="t-num">4.5</span>),
+    <span class="t-str">&quot;figure.dpi&quot;</span>: <span class="t-num">110</span>,
+    <span class="t-str">&quot;font.size&quot;</span>: <span class="t-num">11</span>,
+    <span class="t-str">&quot;axes.titlesize&quot;</span>: <span class="t-num">14</span>,
+    <span class="t-str">&quot;axes.titleweight&quot;</span>: <span class="t-str">&quot;bold&quot;</span>,
+    <span class="t-str">&quot;axes.titlelocation&quot;</span>: <span class="t-str">&quot;left&quot;</span>,
+    <span class="t-str">&quot;axes.spines.top&quot;</span>: <span class="t-num">False</span>,
+    <span class="t-str">&quot;axes.spines.right&quot;</span>: <span class="t-num">False</span>,
+    <span class="t-str">&quot;axes.grid&quot;</span>: <span class="t-num">True</span>,
+    <span class="t-str">&quot;axes.grid.axis&quot;</span>: <span class="t-str">&quot;y&quot;</span>,
+    <span class="t-str">&quot;grid.alpha&quot;</span>: <span class="t-num">0.3</span>,
+    <span class="t-str">&quot;axes.axisbelow&quot;</span>: <span class="t-num">True</span>,
+    <span class="t-str">&quot;legend.frameon&quot;</span>: <span class="t-num">False</span>,
+})
+
+ACCENT = <span class="t-str">&quot;#1f6f5c&quot;</span>      <span class="t-com"># главный цвет</span>
+MUTED = <span class="t-str">&quot;#b5b5b5&quot;</span>       <span class="t-com"># всё второстепенное</span>
+WARNING = <span class="t-str">&quot;#c44e52&quot;</span>     <span class="t-com"># плохое, падение</span>
+
+
+<span class="t-kw">def</span> <span class="t-def">finish</span>(ax, title, subtitle=<span class="t-num">None</span>, source=<span class="t-num">None</span>):
+    <span class="t-str">&quot;&quot;&quot;Заголовок-вывод, поясняющий подзаголовок и источник данных.&quot;&quot;&quot;</span>
+    ax.set_title(title, pad=<span class="t-num">28</span> <span class="t-kw">if</span> subtitle <span class="t-kw">else</span> <span class="t-num">12</span>)
+    <span class="t-kw">if</span> subtitle:
+        ax.text(<span class="t-num">0</span>, <span class="t-num">1.04</span>, subtitle, transform=ax.transAxes, color=<span class="t-str">&quot;#666666&quot;</span>, fontsize=<span class="t-num">10.5</span>)
+    <span class="t-kw">if</span> source:
+        ax.figure.text(<span class="t-num">0.01</span>, <span class="t-num">0.005</span>, <span class="t-str">f&quot;Источник: {source}&quot;</span>, color=<span class="t-str">&quot;#999999&quot;</span>, fontsize=<span class="t-num">8.5</span>)
+    ax.figure.tight_layout()</code></pre></div>
+<p><code>plt.rcParams</code> — глобальные настройки: они действуют на все графики ноутбука. Три цвета с понятными ролями заменяют радугу: один акцентный, один нейтральный и один для тревожного.</p>
+<p>Такой блок удобно держать в отдельном файле <code>style.py</code> и импортировать в начале каждого ноутбука — графики всего проекта будут выглядеть единообразно.</p>
+<h2 id="7а3-оси-числа-проценты-даты">7А.3. Оси: числа, проценты, даты</h2>
+<p>Подписи вида <code>2000000</code> и <code>0.0525</code> заставляют читателя считать нули. Формат задаётся форматтером.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>months = np.arange(<span class="t-num">1</span>, <span class="t-num">13</span>)
+revenue = <span class="t-num">1_800_000</span> + <span class="t-num">90_000</span> * months + rng.normal(<span class="t-num">0</span>, <span class="t-num">60_000</span>, <span class="t-num">12</span>)
+conversion = <span class="t-num">0.045</span> + <span class="t-num">0.001</span> * months + rng.normal(<span class="t-num">0</span>, <span class="t-num">0.002</span>, <span class="t-num">12</span>)
+
+fig, (ax1, ax2) = plt.subplots(<span class="t-num">1</span>, <span class="t-num">2</span>, figsize=(<span class="t-num">11</span>, <span class="t-num">4</span>))
+
+ax1.plot(months, revenue, color=ACCENT, marker=<span class="t-str">&quot;o&quot;</span>)
+ax1.yaxis.set_major_formatter(FuncFormatter(<span class="t-kw">lambda</span> value, _: <span class="t-str">f&quot;{value / 1e6:.1f} млн&quot;</span>))
+ax1.set_ylim(<span class="t-num">0</span>, revenue.<span class="t-fn">max</span>() * <span class="t-num">1.15</span>)
+ax1.set_xticks(months)
+ax1.set_title(<span class="t-str">&quot;Выручка, руб.&quot;</span>)
+
+ax2.plot(months, conversion, color=ACCENT, marker=<span class="t-str">&quot;o&quot;</span>)
+ax2.yaxis.set_major_formatter(PercentFormatter(xmax=<span class="t-num">1</span>, decimals=<span class="t-num">1</span>))
+ax2.set_xticks(months)
+ax2.set_title(<span class="t-str">&quot;Конверсия&quot;</span>)
+
+fig.tight_layout()
+plt.show()</code></pre></div>
+<ul>
+<li><code>FuncFormatter</code> принимает функцию «число → строка»: так делают тысячи, миллионы, рубли.</li>
+<li><code>PercentFormatter(xmax=1)</code> превращает доли в проценты: <code>0.05</code> → <code>5.0%</code>.</li>
+<li><code>set_ylim(0, ...)</code> начинает ось с нуля. Для столбцов это обязательно, для линий — по ситуации: если важен уровень, начинай с нуля; если важны колебания — можно обрезать, но тогда не делай выводов о масштабе изменений.</li>
+</ul>
+<h3 id="даты-на-оси">Даты на оси</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> matplotlib.dates <span class="t-kw">as</span> mdates
+
+days = np.arange(<span class="t-str">&quot;2026-01-01&quot;</span>, <span class="t-str">&quot;2026-04-01&quot;</span>, dtype=<span class="t-str">&quot;datetime64[D]&quot;</span>)
+orders = <span class="t-num">120</span> + <span class="t-num">0.4</span> * np.arange(<span class="t-fn">len</span>(days)) + rng.normal(<span class="t-num">0</span>, <span class="t-num">12</span>, <span class="t-fn">len</span>(days))
+
+fig, ax = plt.subplots()
+ax.plot(days, orders, color=ACCENT)
+ax.xaxis.set_major_locator(mdates.MonthLocator())             <span class="t-com"># деление в начале каждого месяца</span>
+ax.xaxis.set_major_formatter(mdates.DateFormatter(<span class="t-str">&quot;%d.%m&quot;</span>))   <span class="t-com"># формат подписи</span>
+ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=<span class="t-num">0</span>))  <span class="t-com"># мелкие деления по понедельникам</span>
+finish(ax, <span class="t-str">&quot;Заказы по дням&quot;</span>)
+plt.show()</code></pre></div>
+<p><code>Locator</code> решает, <strong>где</strong> стоят деления, <code>Formatter</code> — <strong>как</strong> они подписаны.</p>
+<h3 id="логарифмическая-шкала">Логарифмическая шкала</h3>
+<p>Когда значения различаются на порядки, на обычной шкале маленькие сливаются в линию у нуля:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>categories = [<span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Петербург&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>, <span class="t-str">&quot;Тверь&quot;</span>]
+users = np.array([<span class="t-num">1_200_000</span>, <span class="t-num">480_000</span>, <span class="t-num">95_000</span>, <span class="t-num">41_000</span>, <span class="t-num">6_000</span>])
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">3.5</span>))
+ax.barh(categories[::-<span class="t-num">1</span>], users[::-<span class="t-num">1</span>], color=ACCENT)
+ax.set_xscale(<span class="t-str">&quot;log&quot;</span>)
+ax.xaxis.set_major_formatter(FuncFormatter(<span class="t-kw">lambda</span> v, _: <span class="t-str">f&quot;{v:,.0f}&quot;</span>.replace(<span class="t-str">&quot;,&quot;</span>, <span class="t-str">&quot; &quot;</span>)))
+finish(ax, <span class="t-str">&quot;Пользователи по городам&quot;</span>, subtitle=<span class="t-str">&quot;Логарифмическая шкала: каждое деление — в 10 раз больше&quot;</span>)
+plt.show()</code></pre></div>
+<p>Логарифмическую шкалу обязательно подписывай: читатель, не заметивший её, сделает неверный вывод о соотношении величин.</p>
+<h2 id="7а4-аннотации-и-выделение-главного">7А.4. Аннотации и выделение главного</h2>
+<p>Аналитический график отличается от иллюстрации тем, что <strong>показывает, куда смотреть</strong>.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>weeks = np.arange(<span class="t-num">1</span>, <span class="t-num">21</span>)
+conversion = np.r_[rng.normal(<span class="t-num">0.050</span>, <span class="t-num">0.002</span>, <span class="t-num">11</span>), rng.normal(<span class="t-num">0.058</span>, <span class="t-num">0.002</span>, <span class="t-num">9</span>)]
+
+fig, ax = plt.subplots()
+ax.plot(weeks, conversion, color=ACCENT, linewidth=<span class="t-num">2.2</span>, marker=<span class="t-str">&quot;o&quot;</span>, markersize=<span class="t-num">4</span>)
+
+ax.axvline(<span class="t-num">11.5</span>, color=<span class="t-str">&quot;#666666&quot;</span>, linestyle=<span class="t-str">&quot;--&quot;</span>, linewidth=<span class="t-num">1</span>)              <span class="t-com"># момент события</span>
+ax.axvspan(<span class="t-num">11.5</span>, <span class="t-num">20.5</span>, color=ACCENT, alpha=<span class="t-num">0.07</span>)                            <span class="t-com"># период после</span>
+ax.annotate(
+    <span class="t-str">&quot;Запуск новой корзины&quot;</span>,
+    xy=(<span class="t-num">11.5</span>, <span class="t-num">0.0575</span>), xytext=(<span class="t-num">5.5</span>, <span class="t-num">0.0605</span>),
+    arrowprops={<span class="t-str">&quot;arrowstyle&quot;</span>: <span class="t-str">&quot;-&gt;&quot;</span>, <span class="t-str">&quot;color&quot;</span>: <span class="t-str">&quot;#666666&quot;</span>}, color=<span class="t-str">&quot;#444444&quot;</span>,
+)
+
+before, after = conversion[:<span class="t-num">11</span>].mean(), conversion[<span class="t-num">11</span>:].mean()
+ax.hlines([before, after], [<span class="t-num">1</span>, <span class="t-num">12</span>], [<span class="t-num">11</span>, <span class="t-num">20</span>], color=MUTED, linestyle=<span class="t-str">&quot;:&quot;</span>)
+ax.text(<span class="t-num">1</span>, before - <span class="t-num">0.0012</span>, <span class="t-str">f&quot;среднее {before:.1%}&quot;</span>, color=<span class="t-str">&quot;#666666&quot;</span>)
+ax.text(<span class="t-num">15.5</span>, after + <span class="t-num">0.0008</span>, <span class="t-str">f&quot;среднее {after:.1%}&quot;</span>, color=<span class="t-str">&quot;#666666&quot;</span>)
+
+ax.yaxis.set_major_formatter(PercentFormatter(xmax=<span class="t-num">1</span>, decimals=<span class="t-num">1</span>))
+ax.set_xlabel(<span class="t-str">&quot;Неделя&quot;</span>)
+finish(ax, <span class="t-str">f&quot;После запуска новой корзины конверсия выросла с {before:.1%} до {after:.1%}&quot;</span>,
+       subtitle=<span class="t-str">&quot;Конверсия в заказ по неделям&quot;</span>)
+plt.show()</code></pre></div>
+<p>Инструменты выделения:</p>
+<div class="table"><table><thead><tr><th>Метод</th><th>Что рисует</th><th>Для чего</th></tr></thead><tbody><tr><td><code>ax.axvline(x)</code> / <code>ax.axhline(y)</code></td><td>Вертикальная / горизонтальная линия</td><td>Событие, цель, порог</td></tr><tr><td><code>ax.axvspan(x1, x2)</code></td><td>Закрашенная полоса</td><td>Период: акция, сбой, праздники</td></tr><tr><td><code>ax.annotate(text, xy, xytext)</code></td><td>Подпись со стрелкой</td><td>Объяснение конкретной точки</td></tr><tr><td><code>ax.text(x, y, text)</code></td><td>Текст</td><td>Значения, пояснения</td></tr><tr><td><code>ax.bar_label(bars)</code></td><td>Числа над столбцами</td><td>Когда важны точные значения</td></tr></tbody></table></div>
+<h3 id="подписи-вместо-легенды">Подписи вместо легенды</h3>
+<p>Легенда заставляет глаз прыгать между линией и расшифровкой. Подпиши линии прямо у их концов:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>x = np.arange(<span class="t-num">1</span>, <span class="t-num">13</span>)
+series = {
+    <span class="t-str">&quot;Москва&quot;</span>: <span class="t-num">100</span> + <span class="t-num">8</span> * x + rng.normal(<span class="t-num">0</span>, <span class="t-num">4</span>, <span class="t-num">12</span>),
+    <span class="t-str">&quot;Казань&quot;</span>: <span class="t-num">80</span> + <span class="t-num">3</span> * x + rng.normal(<span class="t-num">0</span>, <span class="t-num">4</span>, <span class="t-num">12</span>),
+    <span class="t-str">&quot;Уфа&quot;</span>: <span class="t-num">70</span> + <span class="t-num">1</span> * x + rng.normal(<span class="t-num">0</span>, <span class="t-num">4</span>, <span class="t-num">12</span>),
+    <span class="t-str">&quot;Самара&quot;</span>: <span class="t-num">60</span> + <span class="t-num">2</span> * x + rng.normal(<span class="t-num">0</span>, <span class="t-num">4</span>, <span class="t-num">12</span>),
+}
+
+fig, ax = plt.subplots()
+<span class="t-kw">for</span> name, values <span class="t-kw">in</span> series.items():
+    is_main = name == <span class="t-str">&quot;Москва&quot;</span>
+    ax.plot(x, values, color=ACCENT <span class="t-kw">if</span> is_main <span class="t-kw">else</span> MUTED, linewidth=<span class="t-num">2.6</span> <span class="t-kw">if</span> is_main <span class="t-kw">else</span> <span class="t-num">1.4</span>)
+    ax.text(<span class="t-num">12.2</span>, values[-<span class="t-num">1</span>], name, va=<span class="t-str">&quot;center&quot;</span>, color=ACCENT <span class="t-kw">if</span> is_main <span class="t-kw">else</span> <span class="t-str">&quot;#777777&quot;</span>,
+            fontweight=<span class="t-str">&quot;bold&quot;</span> <span class="t-kw">if</span> is_main <span class="t-kw">else</span> <span class="t-str">&quot;normal&quot;</span>)
+
+ax.set_xlim(<span class="t-num">1</span>, <span class="t-num">13.6</span>)
+ax.set_xticks(x)
+ax.grid(<span class="t-num">False</span>)
+finish(ax, <span class="t-str">&quot;Москва растёт втрое быстрее остальных городов&quot;</span>, subtitle=<span class="t-str">&quot;Заказы в месяц, тыс.&quot;</span>)
+plt.show()</code></pre></div>
+<p>Один город выделен цветом и толщиной, остальные серые — это приём «акцент на фоне контекста». Он решает проблему «спагетти» из десяти разноцветных линий.</p>
+<h2 id="7а5-цвет">7А.5. Цвет</h2>
+<p>Цвет должен что-то <strong>означать</strong>. Три типа палитр — три типа данных:</p>
+<div class="table"><table><thead><tr><th>Тип</th><th>Когда</th><th>Примеры в Matplotlib</th></tr></thead><tbody><tr><td><strong>Категориальная</strong></td><td>Разные группы без порядка</td><td><code>tab10</code>, <code>Set2</code></td></tr><tr><td><strong>Последовательная</strong></td><td>Величина от малого к большому</td><td><code>Blues</code>, <code>Greens</code>, <code>viridis</code></td></tr><tr><td><strong>Расходящаяся</strong></td><td>Отклонение от центра в обе стороны</td><td><code>RdBu</code>, <code>coolwarm</code></td></tr></tbody></table></div>
+<p>Правила:</p>
+<ul>
+<li><strong>Категорий с разными цветами — не больше пяти-шести.</strong> Остальное объединяй в «Прочие» или выделяй одну на сером фоне.</li>
+<li><strong>Один и тот же объект — всегда один и тот же цвет</strong> на всех графиках отчёта.</li>
+<li><strong>Расходящаяся палитра должна быть центрирована</strong> на осмысленном значении — нуле, плане, среднем. Задаётся параметрами <code>vmin</code>, <code>vmax</code> или <code>center</code>.</li>
+<li><strong>Красный и зелёный несут смысл</strong> «плохо» и «хорошо». Не используй их для нейтральных категорий.</li>
+<li><strong>Учитывай дальтонизм:</strong> красный и зелёный одинаковой яркости для части людей неразличимы. Дублируй смысл знаком, подписью или формой. Палитры <code>viridis</code> и <code>cividis</code> читаются при любом цветовосприятии.</li>
+<li><strong>Радужные палитры (<code>jet</code>, <code>rainbow</code>) не используй:</strong> они создают ложные границы там, где данные меняются плавно.</li>
+</ul>
+<h2 id="7а6-рецепты">7А.6. Рецепты</h2>
+<p>Восемь графиков, которые закрывают большинство задач отчёта.</p>
+<h3 id="линия-с-доверительным-интервалом">Линия с доверительным интервалом</h3>
+<p>Показывает не только оценку, но и её неопределённость:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>days = np.arange(<span class="t-num">1</span>, <span class="t-num">31</span>)
+visitors = rng.integers(<span class="t-num">1800</span>, <span class="t-num">2600</span>, <span class="t-num">30</span>)
+orders = rng.binomial(visitors, <span class="t-num">0.05</span> + <span class="t-num">0.0004</span> * days)
+
+cr = orders / visitors
+se = np.sqrt(cr * (<span class="t-num">1</span> - cr) / visitors)
+
+fig, ax = plt.subplots()
+ax.fill_between(days, cr - <span class="t-num">1.96</span> * se, cr + <span class="t-num">1.96</span> * se, color=ACCENT, alpha=<span class="t-num">0.18</span>, label=<span class="t-str">&quot;95 % интервал&quot;</span>)
+ax.plot(days, cr, color=ACCENT, linewidth=<span class="t-num">2</span>, label=<span class="t-str">&quot;Конверсия&quot;</span>)
+ax.yaxis.set_major_formatter(PercentFormatter(xmax=<span class="t-num">1</span>, decimals=<span class="t-num">1</span>))
+ax.set_xlabel(<span class="t-str">&quot;День месяца&quot;</span>)
+ax.legend(loc=<span class="t-str">&quot;upper left&quot;</span>)
+finish(ax, <span class="t-str">&quot;Дневные колебания конверсии укладываются в интервал неопределённости&quot;</span>)
+plt.show()</code></pre></div>
+<p>Без полосы интервала каждый зубец на графике хочется объяснить. С полосой видно, что большинство зубцов — шум.</p>
+<h3 id="малые-кратные-small-multiples">Малые кратные (small multiples)</h3>
+<p>Вместо одного перегруженного графика — сетка одинаковых маленьких:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>segments = [<span class="t-str">&quot;Новые&quot;</span>, <span class="t-str">&quot;Вернувшиеся&quot;</span>, <span class="t-str">&quot;Постоянные&quot;</span>, <span class="t-str">&quot;Спящие&quot;</span>, <span class="t-str">&quot;VIP&quot;</span>, <span class="t-str">&quot;Оптовые&quot;</span>]
+x = np.arange(<span class="t-num">1</span>, <span class="t-num">13</span>)
+
+fig, axes = plt.subplots(<span class="t-num">2</span>, <span class="t-num">3</span>, figsize=(<span class="t-num">11</span>, <span class="t-num">5.5</span>), sharex=<span class="t-num">True</span>, sharey=<span class="t-num">True</span>)
+<span class="t-kw">for</span> ax, name <span class="t-kw">in</span> <span class="t-fn">zip</span>(axes.flat, segments):
+    values = <span class="t-num">100</span> + rng.normal(<span class="t-num">0</span>, <span class="t-num">6</span>, <span class="t-num">12</span>).cumsum() + rng.uniform(-<span class="t-num">20</span>, <span class="t-num">20</span>)
+    color = ACCENT <span class="t-kw">if</span> values[-<span class="t-num">1</span>] &gt;= values[<span class="t-num">0</span>] <span class="t-kw">else</span> WARNING
+    ax.plot(x, values, color=color, linewidth=<span class="t-num">2</span>)
+    ax.fill_between(x, values, values.<span class="t-fn">min</span>() - <span class="t-num">5</span>, color=color, alpha=<span class="t-num">0.08</span>)
+    ax.set_title(<span class="t-str">f&quot;{name}: {values[-1] / values[0] - 1:+.0%}&quot;</span>, fontsize=<span class="t-num">11</span>)
+
+fig.suptitle(<span class="t-str">&quot;Динамика заказов по сегментам за год&quot;</span>, x=<span class="t-num">0.01</span>, ha=<span class="t-str">&quot;left&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>, fontsize=<span class="t-num">14</span>)
+fig.tight_layout()
+plt.show()</code></pre></div>
+<p><code>sharey=True</code> задаёт общую ось Y — без неё сравнивать панели между собой нельзя. Каждая панель подписана главным числом, цвет кодирует направление.</p>
+<h3 id="диаграмма-парето">Диаграмма Парето</h3>
+<p>Столбцы по убыванию плюс накопленная доля — «какие немногие причины дают основной эффект»:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>reasons = [<span class="t-str">&quot;Долгая доставка&quot;</span>, <span class="t-str">&quot;Цена&quot;</span>, <span class="t-str">&quot;Не тот товар&quot;</span>, <span class="t-str">&quot;Брак&quot;</span>, <span class="t-str">&quot;Передумал&quot;</span>, <span class="t-str">&quot;Ошибка оплаты&quot;</span>, <span class="t-str">&quot;Другое&quot;</span>]
+counts = np.array([<span class="t-num">420</span>, <span class="t-num">310</span>, <span class="t-num">150</span>, <span class="t-num">90</span>, <span class="t-num">60</span>, <span class="t-num">40</span>, <span class="t-num">30</span>])
+
+cumulative = counts.cumsum() / counts.<span class="t-fn">sum</span>()
+
+fig, ax = plt.subplots()
+bars = ax.bar(reasons, counts, color=[ACCENT <span class="t-kw">if</span> c &lt;= <span class="t-num">0.8</span> <span class="t-kw">else</span> MUTED <span class="t-kw">for</span> c <span class="t-kw">in</span> cumulative])
+ax.bar_label(bars, padding=<span class="t-num">2</span>, fontsize=<span class="t-num">9</span>)
+ax.tick_params(axis=<span class="t-str">&quot;x&quot;</span>, rotation=<span class="t-num">25</span>)
+ax.grid(<span class="t-num">False</span>)
+
+ax2 = ax.twinx()
+ax2.plot(reasons, cumulative, color=<span class="t-str">&quot;#444444&quot;</span>, marker=<span class="t-str">&quot;o&quot;</span>, linewidth=<span class="t-num">1.5</span>)
+ax2.axhline(<span class="t-num">0.8</span>, color=<span class="t-str">&quot;#888888&quot;</span>, linestyle=<span class="t-str">&quot;:&quot;</span>, linewidth=<span class="t-num">1</span>)
+ax2.set_ylim(<span class="t-num">0</span>, <span class="t-num">1.05</span>)
+ax2.yaxis.set_major_formatter(PercentFormatter(xmax=<span class="t-num">1</span>))
+ax2.spines[<span class="t-str">&quot;right&quot;</span>].set_visible(<span class="t-num">True</span>)
+ax2.grid(<span class="t-num">False</span>)
+
+finish(ax, <span class="t-str">&quot;Три причины дают 80 % отмен заказов&quot;</span>, subtitle=<span class="t-str">&quot;Число отмен по причинам и накопленная доля&quot;</span>)
+plt.show()</code></pre></div>
+<p>Это один из немногих случаев, где вторая ось Y оправданна: обе оси описывают одну и ту же величину — количество и его накопленную долю.</p>
+<h3 id="гантели-сравнение-до-и-после">«Гантели»: сравнение до и после</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>cities = np.array([<span class="t-str">&quot;Самара&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>, <span class="t-str">&quot;Пермь&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>, <span class="t-str">&quot;Москва&quot;</span>])
+before = np.array([<span class="t-num">0.031</span>, <span class="t-num">0.034</span>, <span class="t-num">0.040</span>, <span class="t-num">0.043</span>, <span class="t-num">0.052</span>])
+after = np.array([<span class="t-num">0.036</span>, <span class="t-num">0.033</span>, <span class="t-num">0.049</span>, <span class="t-num">0.050</span>, <span class="t-num">0.055</span>])
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">3.8</span>))
+<span class="t-kw">for</span> i, (b, a) <span class="t-kw">in</span> <span class="t-fn">enumerate</span>(<span class="t-fn">zip</span>(before, after)):
+    ax.plot([b, a], [i, i], color=ACCENT <span class="t-kw">if</span> a &gt;= b <span class="t-kw">else</span> WARNING, linewidth=<span class="t-num">2.5</span>, zorder=<span class="t-num">1</span>)
+ax.scatter(before, <span class="t-fn">range</span>(<span class="t-fn">len</span>(cities)), color=<span class="t-str">&quot;white&quot;</span>, edgecolor=<span class="t-str">&quot;#555555&quot;</span>, s=<span class="t-num">70</span>, zorder=<span class="t-num">2</span>, label=<span class="t-str">&quot;До&quot;</span>)
+ax.scatter(after, <span class="t-fn">range</span>(<span class="t-fn">len</span>(cities)), color=<span class="t-str">&quot;#333333&quot;</span>, s=<span class="t-num">70</span>, zorder=<span class="t-num">2</span>, label=<span class="t-str">&quot;После&quot;</span>)
+
+ax.set_yticks(<span class="t-fn">range</span>(<span class="t-fn">len</span>(cities)), cities)
+ax.xaxis.set_major_formatter(PercentFormatter(xmax=<span class="t-num">1</span>, decimals=<span class="t-num">1</span>))
+ax.grid(axis=<span class="t-str">&quot;y&quot;</span>, visible=<span class="t-num">False</span>)
+ax.grid(axis=<span class="t-str">&quot;x&quot;</span>, alpha=<span class="t-num">0.3</span>)
+ax.legend(loc=<span class="t-str">&quot;upper left&quot;</span>, ncols=<span class="t-num">2</span>)
+finish(ax, <span class="t-str">&quot;Конверсия выросла во всех городах, кроме Уфы&quot;</span>, subtitle=<span class="t-str">&quot;Конверсия до и после редизайна&quot;</span>)
+plt.show()</code></pre></div>
+<p>Длина отрезка показывает размер изменения, цвет — направление. Две группы столбцов рядом передали бы то же самое гораздо хуже.</p>
+<h3 id="каскадная-диаграмма-waterfall">Каскадная диаграмма (waterfall)</h3>
+<p>Показывает, <strong>из чего складывается</strong> изменение метрики:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>labels = [<span class="t-str">&quot;Выручка\nянварь&quot;</span>, <span class="t-str">&quot;Новые\nклиенты&quot;</span>, <span class="t-str">&quot;Рост\nчека&quot;</span>, <span class="t-str">&quot;Отток&quot;</span>, <span class="t-str">&quot;Скидки&quot;</span>, <span class="t-str">&quot;Выручка\nфевраль&quot;</span>]
+deltas = [<span class="t-num">0</span>, <span class="t-num">320</span>, <span class="t-num">140</span>, -<span class="t-num">210</span>, -<span class="t-num">90</span>, <span class="t-num">0</span>]
+start = <span class="t-num">1200</span>
+
+values, bottoms, colors = [], [], []
+level = start
+<span class="t-kw">for</span> i, delta <span class="t-kw">in</span> <span class="t-fn">enumerate</span>(deltas):
+    <span class="t-kw">if</span> i == <span class="t-num">0</span> <span class="t-kw">or</span> i == <span class="t-fn">len</span>(deltas) - <span class="t-num">1</span>:            <span class="t-com"># итоговые столбцы стоят на нуле</span>
+        values.append(level)
+        bottoms.append(<span class="t-num">0</span>)
+        colors.append(<span class="t-str">&quot;#555555&quot;</span>)
+    <span class="t-kw">else</span>:                                         <span class="t-com"># изменения «висят» на текущем уровне</span>
+        values.append(<span class="t-fn">abs</span>(delta))
+        bottoms.append(level <span class="t-kw">if</span> delta &gt;= <span class="t-num">0</span> <span class="t-kw">else</span> level + delta)
+        colors.append(ACCENT <span class="t-kw">if</span> delta &gt;= <span class="t-num">0</span> <span class="t-kw">else</span> WARNING)
+        level += delta
+
+fig, ax = plt.subplots()
+bars = ax.bar(labels, values, bottom=bottoms, color=colors, width=<span class="t-num">0.62</span>)
+<span class="t-kw">for</span> bar, delta, value <span class="t-kw">in</span> <span class="t-fn">zip</span>(bars, deltas, values):
+    text = <span class="t-str">f&quot;{value:,.0f}&quot;</span> <span class="t-kw">if</span> delta == <span class="t-num">0</span> <span class="t-kw">else</span> <span class="t-str">f&quot;{delta:+,.0f}&quot;</span>
+    ax.text(bar.get_x() + bar.get_width() / <span class="t-num">2</span>, bar.get_y() + bar.get_height() + <span class="t-num">18</span>, text, ha=<span class="t-str">&quot;center&quot;</span>, fontsize=<span class="t-num">10</span>)
+
+ax.set_ylim(<span class="t-num">0</span>, <span class="t-num">1900</span>)
+ax.grid(<span class="t-num">False</span>)
+finish(ax, <span class="t-str">&quot;Выручка выросла на 13 %: новые клиенты перекрыли отток&quot;</span>,
+       subtitle=<span class="t-str">&quot;Факторы изменения выручки, тыс. руб.&quot;</span>)
+plt.show()</code></pre></div>
+<p>Это график-объяснение: он отвечает на вопрос «почему изменилась метрика» и напрямую продолжает разложение из раздела 10.7.</p>
+<h3 id="доли-столбцы-до-100-">Доли: столбцы до 100 %</h3>
+<p>Когда важна <strong>структура</strong>, а не абсолютные значения:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>months_labels = [<span class="t-str">&quot;Янв&quot;</span>, <span class="t-str">&quot;Фев&quot;</span>, <span class="t-str">&quot;Мар&quot;</span>, <span class="t-str">&quot;Апр&quot;</span>, <span class="t-str">&quot;Май&quot;</span>, <span class="t-str">&quot;Июн&quot;</span>]
+channels = {
+    <span class="t-str">&quot;Поиск&quot;</span>: np.array([<span class="t-num">40</span>, <span class="t-num">39</span>, <span class="t-num">37</span>, <span class="t-num">35</span>, <span class="t-num">33</span>, <span class="t-num">31</span>]),
+    <span class="t-str">&quot;Реклама&quot;</span>: np.array([<span class="t-num">35</span>, <span class="t-num">34</span>, <span class="t-num">33</span>, <span class="t-num">33</span>, <span class="t-num">32</span>, <span class="t-num">31</span>]),
+    <span class="t-str">&quot;Рекомендации&quot;</span>: np.array([<span class="t-num">15</span>, <span class="t-num">17</span>, <span class="t-num">20</span>, <span class="t-num">22</span>, <span class="t-num">25</span>, <span class="t-num">28</span>]),
+    <span class="t-str">&quot;Прочее&quot;</span>: np.array([<span class="t-num">10</span>, <span class="t-num">10</span>, <span class="t-num">10</span>, <span class="t-num">10</span>, <span class="t-num">10</span>, <span class="t-num">10</span>]),
+}
+palette = {<span class="t-str">&quot;Поиск&quot;</span>: <span class="t-str">&quot;#9aa5ad&quot;</span>, <span class="t-str">&quot;Реклама&quot;</span>: <span class="t-str">&quot;#c9cfd3&quot;</span>, <span class="t-str">&quot;Рекомендации&quot;</span>: ACCENT, <span class="t-str">&quot;Прочее&quot;</span>: <span class="t-str">&quot;#e6e8ea&quot;</span>}
+
+fig, ax = plt.subplots()
+bottom = np.zeros(<span class="t-fn">len</span>(months_labels))
+<span class="t-kw">for</span> name, values <span class="t-kw">in</span> channels.items():
+    bars = ax.bar(months_labels, values, bottom=bottom, color=palette[name], label=name, width=<span class="t-num">0.7</span>)
+    <span class="t-kw">if</span> name == <span class="t-str">&quot;Рекомендации&quot;</span>:
+        ax.bar_label(bars, labels=[<span class="t-str">f&quot;{v}%&quot;</span> <span class="t-kw">for</span> v <span class="t-kw">in</span> values], label_type=<span class="t-str">&quot;center&quot;</span>, color=<span class="t-str">&quot;white&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>)
+    bottom += values
+
+ax.yaxis.set_major_formatter(PercentFormatter(xmax=<span class="t-num">100</span>))
+ax.grid(<span class="t-num">False</span>)
+ax.legend(loc=<span class="t-str">&quot;upper center&quot;</span>, bbox_to_anchor=(<span class="t-num">0.5</span>, -<span class="t-num">0.08</span>), ncols=<span class="t-num">4</span>)
+finish(ax, <span class="t-str">&quot;Доля рекомендаций в заказах за полгода выросла почти вдвое&quot;</span>, subtitle=<span class="t-str">&quot;Структура заказов по каналам&quot;</span>)
+plt.show()</code></pre></div>
+<p>Легко сравнить можно только нижний и верхний слои — у них ровная опорная линия. Поэтому главную категорию ставят вниз или выделяют цветом и подписывают, как здесь.</p>
+<h3 id="точечный-график-с-линией-тренда">Точечный график с линией тренда</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>ad_spend = rng.uniform(<span class="t-num">50</span>, <span class="t-num">500</span>, <span class="t-num">60</span>)
+new_users = <span class="t-num">20</span> + <span class="t-num">0.9</span> * ad_spend + rng.normal(<span class="t-num">0</span>, <span class="t-num">55</span>, <span class="t-num">60</span>)
+
+slope, intercept = np.polyfit(ad_spend, new_users, deg=<span class="t-num">1</span>)
+correlation = np.corrcoef(ad_spend, new_users)[<span class="t-num">0</span>, <span class="t-num">1</span>]
+line_x = np.array([ad_spend.<span class="t-fn">min</span>(), ad_spend.<span class="t-fn">max</span>()])
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">7</span>, <span class="t-num">4.5</span>))
+ax.scatter(ad_spend, new_users, color=ACCENT, alpha=<span class="t-num">0.55</span>, s=<span class="t-num">32</span>)
+ax.plot(line_x, intercept + slope * line_x, color=<span class="t-str">&quot;#333333&quot;</span>, linewidth=<span class="t-num">1.5</span>)
+ax.text(<span class="t-num">0.03</span>, <span class="t-num">0.92</span>, <span class="t-str">f&quot;r = {correlation:.2f}\nкаждая 1 тыс. руб. ≈ {slope:.1f} пользователя&quot;</span>,
+        transform=ax.transAxes, va=<span class="t-str">&quot;top&quot;</span>, color=<span class="t-str">&quot;#444444&quot;</span>)
+ax.set_xlabel(<span class="t-str">&quot;Расходы на рекламу в день, тыс. руб.&quot;</span>)
+ax.set_ylabel(<span class="t-str">&quot;Новые пользователи&quot;</span>)
+ax.grid(<span class="t-num">True</span>, axis=<span class="t-str">&quot;both&quot;</span>, alpha=<span class="t-num">0.25</span>)
+finish(ax, <span class="t-str">&quot;Чем больше расходы на рекламу, тем больше новых пользователей&quot;</span>)
+plt.show()</code></pre></div>
+<p><code>transform=ax.transAxes</code> размещает текст в долях области графика (от 0 до 1), а не в единицах данных: подпись остаётся в углу при любых значениях.</p>
+<h3 id="распределение-гистограмма-и-ecdf">Распределение: гистограмма и ECDF</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>checks = rng.lognormal(<span class="t-num">7.6</span>, <span class="t-num">0.8</span>, <span class="t-num">5000</span>)
+
+fig, (ax1, ax2) = plt.subplots(<span class="t-num">1</span>, <span class="t-num">2</span>, figsize=(<span class="t-num">11</span>, <span class="t-num">4</span>))
+
+ax1.hist(checks, bins=<span class="t-num">60</span>, <span class="t-fn">range</span>=(<span class="t-num">0</span>, <span class="t-num">12_000</span>), color=ACCENT, alpha=<span class="t-num">0.85</span>)
+top = ax1.get_ylim()[<span class="t-num">1</span>]
+<span class="t-kw">for</span> value, name, color, height <span class="t-kw">in</span> [(np.median(checks), <span class="t-str">&quot;медиана&quot;</span>, <span class="t-str">&quot;#222222&quot;</span>, <span class="t-num">0.95</span>), (checks.mean(), <span class="t-str">&quot;среднее&quot;</span>, WARNING, <span class="t-num">0.78</span>)]:
+    ax1.axvline(value, color=color, linestyle=<span class="t-str">&quot;--&quot;</span>, linewidth=<span class="t-num">1.3</span>)
+    ax1.text(value + <span class="t-num">200</span>, top * height, <span class="t-str">f&quot;{name} {value:,.0f}&quot;</span>, color=color, fontsize=<span class="t-num">9.5</span>)
+ax1.set_title(<span class="t-str">&quot;Гистограмма&quot;</span>)
+ax1.set_xlabel(<span class="t-str">&quot;Сумма чека, руб.&quot;</span>)
+
+sorted_checks = np.sort(checks)
+share = np.arange(<span class="t-num">1</span>, <span class="t-fn">len</span>(checks) + <span class="t-num">1</span>) / <span class="t-fn">len</span>(checks)
+ax2.plot(sorted_checks, share, color=ACCENT, linewidth=<span class="t-num">2</span>)
+<span class="t-kw">for</span> q <span class="t-kw">in</span> (<span class="t-num">0.5</span>, <span class="t-num">0.9</span>):
+    value = np.quantile(checks, q)
+    ax2.plot([<span class="t-num">0</span>, value, value], [q, q, <span class="t-num">0</span>], color=<span class="t-str">&quot;#888888&quot;</span>, linestyle=<span class="t-str">&quot;:&quot;</span>, linewidth=<span class="t-num">1</span>)
+    ax2.text(value + <span class="t-num">150</span>, q - <span class="t-num">0.06</span>, <span class="t-str">f&quot;{q:.0%} чеков ≤ {value:,.0f}&quot;</span>, fontsize=<span class="t-num">9.5</span>)
+ax2.set_xlim(<span class="t-num">0</span>, <span class="t-num">12_000</span>)
+ax2.yaxis.set_major_formatter(PercentFormatter(xmax=<span class="t-num">1</span>))
+ax2.set_title(<span class="t-str">&quot;Накопленная доля (ECDF)&quot;</span>)
+ax2.set_xlabel(<span class="t-str">&quot;Сумма чека, руб.&quot;</span>)
+
+fig.tight_layout()
+plt.show()</code></pre></div>
+<p>ECDF — эмпирическая функция распределения: для каждого значения показывает, какая доля наблюдений не превышает его. В отличие от гистограммы, она не зависит от выбора ширины столбцов и позволяет прямо с графика читать перцентили. Две ECDF на одних осях — лучший способ сравнить распределения двух групп A/B-теста.</p>
+<h3 id="когортная-тепловая-карта">Когортная тепловая карта</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>cohorts = [<span class="t-str">&quot;Янв&quot;</span>, <span class="t-str">&quot;Фев&quot;</span>, <span class="t-str">&quot;Мар&quot;</span>, <span class="t-str">&quot;Апр&quot;</span>, <span class="t-str">&quot;Май&quot;</span>, <span class="t-str">&quot;Июн&quot;</span>]
+retention = np.full((<span class="t-num">6</span>, <span class="t-num">6</span>), np.nan)
+<span class="t-kw">for</span> i <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">6</span>):
+    <span class="t-kw">for</span> j <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">6</span> - i):
+        retention[i, j] = <span class="t-num">1.0</span> <span class="t-kw">if</span> j == <span class="t-num">0</span> <span class="t-kw">else</span> (<span class="t-num">0.42</span> + <span class="t-num">0.02</span> * i) * <span class="t-num">0.8</span> ** (j - <span class="t-num">1</span>) + rng.normal(<span class="t-num">0</span>, <span class="t-num">0.01</span>)
+
+shown = retention[:-<span class="t-num">1</span>, <span class="t-num">1</span>:]            <span class="t-com"># без нулевого месяца и без последней когорты: у неё ещё нет истории</span>
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">8</span>, <span class="t-num">4.2</span>))
+image = ax.imshow(shown, cmap=<span class="t-str">&quot;Greens&quot;</span>, vmin=<span class="t-num">0</span>, vmax=<span class="t-num">0.6</span>, aspect=<span class="t-str">&quot;auto&quot;</span>)
+
+<span class="t-kw">for</span> i <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">5</span>):
+    <span class="t-kw">for</span> j <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">1</span>, <span class="t-num">6</span>):
+        value = retention[i, j]
+        <span class="t-kw">if</span> <span class="t-kw">not</span> np.isnan(value):
+            ax.text(j - <span class="t-num">1</span>, i, <span class="t-str">f&quot;{value:.0%}&quot;</span>, ha=<span class="t-str">&quot;center&quot;</span>, va=<span class="t-str">&quot;center&quot;</span>,
+                    color=<span class="t-str">&quot;white&quot;</span> <span class="t-kw">if</span> value &gt; <span class="t-num">0.35</span> <span class="t-kw">else</span> <span class="t-str">&quot;#222222&quot;</span>, fontsize=<span class="t-num">10</span>)
+
+ax.set_xticks(<span class="t-fn">range</span>(<span class="t-num">5</span>), [<span class="t-str">f&quot;Месяц {m}&quot;</span> <span class="t-kw">for</span> m <span class="t-kw">in</span> <span class="t-fn">range</span>(<span class="t-num">1</span>, <span class="t-num">6</span>)])
+ax.set_yticks(<span class="t-fn">range</span>(<span class="t-num">5</span>), cohorts[:-<span class="t-num">1</span>])
+ax.grid(<span class="t-num">False</span>)
+ax.spines[[<span class="t-str">&quot;left&quot;</span>, <span class="t-str">&quot;bottom&quot;</span>]].set_visible(<span class="t-num">False</span>)
+ax.tick_params(length=<span class="t-num">0</span>)
+finish(ax, <span class="t-str">&quot;Каждая новая когорта удерживается лучше предыдущей&quot;</span>, subtitle=<span class="t-str">&quot;Доля вернувшихся по месяцам жизни когорты&quot;</span>)
+plt.show()</code></pre></div>
+<p>Нулевой месяц (всегда 100 %) убран: он занимал бы самый тёмный цвет и «съедал» контраст остальных ячеек. Последняя когорта тоже не показана — у неё пока есть только нулевой месяц. Цвет текста переключается в зависимости от фона — иначе подписи на тёмных ячейках не прочитать.</p>
+<h2 id="7а7-чего-не-делать">7А.7. Чего не делать</h2>
+<div class="table"><table><thead><tr><th>Антипаттерн</th><th>Почему плохо</th><th>Что вместо</th></tr></thead><tbody><tr><td>Две оси Y с разными величинами</td><td>Подбором масштабов можно «доказать» любую связь</td><td>Два графика один под другим с общей осью X</td></tr><tr><td>Трёхмерные столбцы и круги</td><td>Перспектива искажает размеры</td><td>Обычный плоский график</td></tr><tr><td>Круговая диаграмма с 8 секторами</td><td>Углы плохо сравниваются</td><td>Отсортированные горизонтальные столбцы</td></tr><tr><td>Десять цветных линий</td><td>Невозможно проследить ни одну</td><td>Акцент на одной, малые кратные</td></tr><tr><td>Столбцы не с нуля</td><td>Разница в 2 % выглядит как двукратная</td><td>Ось от нуля или точечный график</td></tr><tr><td>Легенда из 12 пунктов</td><td>Глаз мечется между графиком и легендой</td><td>Прямые подписи, объединение в «Прочие»</td></tr><tr><td>Накопительный итог вместо значений</td><td>Растёт всегда, скрывает замедление</td><td>Значения по периодам</td></tr><tr><td>Сортировка по алфавиту</td><td>Не видно лидеров и отстающих</td><td>Сортировка по значению</td></tr><tr><td>Неполный последний период</td><td>Выглядит как обвал</td><td>Отбросить или показать пунктиром</td></tr><tr><td>Заголовок «График 3»</td><td>Не сообщает ничего</td><td>Заголовок-вывод</td></tr></tbody></table></div>
+<p>Про последний пункт таблицы особо: неполный последний месяц или неделя — самая частая причина ложной тревоги «у нас всё упало!».</p>
+<h2 id="7а8-интерактивные-графики">7А.8. Интерактивные графики</h2>
+<p>Для исследования данных удобны графики, где можно навести мышь, увеличить фрагмент и отключить серию. Самая популярная библиотека — Plotly:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">pip</span> install plotly</code></pre></div>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> plotly.express <span class="t-kw">as</span> px
+
+fig = px.line(df, x=<span class="t-str">&quot;date&quot;</span>, y=<span class="t-str">&quot;revenue&quot;</span>, color=<span class="t-str">&quot;city&quot;</span>, title=<span class="t-str">&quot;Выручка по городам&quot;</span>)
+fig.show()
+
+fig = px.scatter(users, x=<span class="t-str">&quot;orders&quot;</span>, y=<span class="t-str">&quot;revenue&quot;</span>, color=<span class="t-str">&quot;segment&quot;</span>, hover_data=[<span class="t-str">&quot;user_id&quot;</span>], trendline=<span class="t-str">&quot;ols&quot;</span>)
+fig.write_html(<span class="t-str">&quot;scatter.html&quot;</span>)          <span class="t-com"># самостоятельный файл, открывается в любом браузере</span></code></pre></div>
+<p>Когда что использовать:</p>
+<div class="table"><table><thead><tr><th>Задача</th><th>Инструмент</th></tr></thead><tbody><tr><td>График в отчёт, презентацию, README</td><td>Matplotlib, seaborn — статичная картинка</td></tr><tr><td>Самому покрутить данные в ноутбуке</td><td>Plotly</td></tr><tr><td>Регулярный отчёт для других людей</td><td>BI-система</td></tr></tbody></table></div>
+<p>Интерактивность не заменяет вывод: если читателю нужно наводить мышь, чтобы понять главное, — график не доделан.</p>
+<h2 id="7а9-как-устроен-bi-инструмент">7А.9. Как устроен BI-инструмент</h2>
+<p>DataLens, Tableau, Power BI, Superset и Metabase выглядят по-разному, но устроены одинаково. Поняв схему, ты разберёшься в любом из них за пару дней.</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>Источник данных  →  Модель данных  →  Показатели  →  Чарты  →  Дашборд
+(база, файл)        (таблицы и связи)  (формулы)      (графики)  (страница с фильтрами)</code></pre></div>
+<h3 id="измерения-и-показатели">Измерения и показатели</h3>
+<p>Главное разделение во всех BI-системах:</p>
+<ul>
+<li><strong>Измерение (dimension)</strong> — то, <strong>по чему</strong> режем: дата, город, категория, канал. Обычно текст или дата.</li>
+<li><strong>Показатель (measure)</strong> — то, <strong>что</strong> считаем: выручка, число заказов, конверсия. Всегда результат агрегации.</li>
+</ul>
+<p>Собрать график — значит ответить: какой показатель, в разрезе каких измерений. «Выручка по месяцам в разрезе городов» — один показатель и два измерения. Это тот же <code>GROUP BY</code> и та же сводная таблица.</p>
+<h3 id="модель-данных-схема-звезда">Модель данных: схема «звезда»</h3>
+<p>В BI данные обычно организуют так:</p>
+<ul>
+<li><strong>Таблица фактов</strong> — события: заказы, платежи, визиты. Длинная, содержит числа и ключи.</li>
+<li><strong>Таблицы измерений (справочники)</strong> — описания: клиенты, товары, календарь. Короткие, содержат атрибуты.</li>
+</ul>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>        Клиенты                 Товары
+           │                      │
+           └────► Заказы ◄────────┘
+                    ▲
+                    │
+                Календарь</code></pre></div>
+<p>Факты в центре, справочники вокруг — отсюда название. Связи всегда «один ко многим»: один клиент — много заказов.</p>
+<p>Почему так, а не одной огромной таблицей:</p>
+<ul>
+<li>название города хранится один раз, а не в миллионе строк;</li>
+<li>справочник легко поправить и дополнить;</li>
+<li>фильтр по справочнику автоматически фильтрует факты.</li>
+</ul>
+<p>Отдельно важна <strong>таблица-календарь</strong>: строка на каждый день с признаками — месяц, квартал, день недели, праздник. Она решает проблему пропущенных дат (раздел 3А.8) и даёт удобные группировки по времени.</p>
+<h3 id="зерно">Зерно</h3>
+<p>Тот же вопрос, что в SQL: <strong>что означает одна строка</strong> таблицы фактов? Заказ? Позиция в заказе? Событие? От ответа зависит, какой функцией считать каждый показатель. Если зерно — позиция в заказе, то число заказов — это <code>COUNTD(order_id)</code>, а не число строк.</p>
+<h3 id="живое-подключение-и-выгрузка">Живое подключение и выгрузка</h3>
+<div class="table"><table><thead><tr><th></th><th>Живое подключение (live, direct query)</th><th>Выгрузка (extract, import, материализация)</th></tr></thead><tbody><tr><td>Как работает</td><td>Каждое действие — запрос в базу</td><td>Данные скопированы в сам инструмент</td></tr><tr><td>Свежесть</td><td>Всегда актуально</td><td>На момент обновления</td></tr><tr><td>Скорость</td><td>Зависит от базы</td><td>Быстро</td></tr><tr><td>Когда</td><td>Данные меняются часто, база быстрая</td><td>Данные большие, база медленная</td></tr></tbody></table></div>
+<h2 id="7а10-где-в-bi-считают-неправильно">7А.10. Где в BI считают неправильно</h2>
+<p>BI-инструмент скрывает SQL, но ошибки SQL никуда не исчезают — они становятся незаметнее.</p>
+<h3 id="отношение-сумм-а-не-среднее-отношений">Отношение сумм, а не среднее отношений</h3>
+<p>Средний чек — это выручка, делённая на число заказов. Правильная формула показателя:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>SUM([amount]) / COUNTD([order_id])</code></pre></div>
+<p>Неправильно — посчитать отношение в каждой строке, а потом взять среднее. Разница проявляется в итогах: «средний чек по всем городам» как среднее из средних чеков городов — это та самая ловушка среднего средних из раздела 5А.3.</p>
+<p>Правило: <strong>в показателе-отношении агрегируй числитель и знаменатель по отдельности, потом дели.</strong> Тогда формула верна на любом уровне детализации — и для города, и для итога.</p>
+<h3 id="неаддитивные-показатели">Неаддитивные показатели</h3>
+<p>Выручку можно складывать: сумма по дням равна выручке за месяц. Уникальных пользователей — <strong>нельзя</strong>: человек, заходивший 20 дней, в сумме дневных значений посчитается 20 раз.</p>
+<div class="table"><table><thead><tr><th>Тип показателя</th><th>Примеры</th><th>Можно ли складывать</th></tr></thead><tbody><tr><td>Аддитивный</td><td>Выручка, число заказов</td><td>Да, по любым измерениям</td></tr><tr><td>Полуаддитивный</td><td>Остаток на складе, число активных подписок</td><td>По товарам — да, по времени — нет</td></tr><tr><td>Неаддитивный</td><td>Уникальные пользователи, конверсия, средний чек, медиана</td><td>Нет</td></tr></tbody></table></div>
+<p>Практическое следствие: итоговая строка таблицы для неаддитивного показателя не равна сумме строк, и это правильно. Объясни это пользователям дашборда заранее — иначе получишь вопрос «почему итог не сходится».</p>
+<p>Второе следствие: неаддитивные показатели нельзя посчитать из заранее агрегированной таблицы. Если в источнике лежат «уники по дням», получить из них «уники за месяц» невозможно — нужны исходные события.</p>
+<h3 id="размножение-строк">Размножение строк</h3>
+<p>Присоединил к заказам таблицу позиций — и сумма по столбцу «стоимость доставки» выросла в разы: доставка записана на заказ, а строк теперь столько, сколько позиций. Это та же ловушка <code>JOIN</code> из главы 3, только спрятанная за мышкой.</p>
+<p>Проверка: после каждого добавления таблицы в модель сравни общую сумму ключевого показателя с эталоном.</p>
+<h3 id="уровень-детализации">Уровень детализации</h3>
+<p>Задача: показать долю города в общей выручке. Числитель — выручка города, знаменатель — выручка <strong>всех</strong> городов, хотя график построен в разрезе городов. Знаменатель нужно посчитать на другом уровне детализации, чем сам график.</p>
+<p>Для этого во всех инструментах есть специальные выражения:</p>
+<div class="table"><table><thead><tr><th>Инструмент</th><th>Как записать «выручка по всем городам»</th></tr></thead><tbody><tr><td>DataLens</td><td><code>SUM([amount] FIXED)</code></td></tr><tr><td>Tableau</td><td><code>{FIXED : SUM([amount])}</code></td></tr><tr><td>Power BI (DAX)</td><td><code>CALCULATE(SUM(orders[amount]), ALL(orders[city]))</code></td></tr><tr><td>SQL</td><td><code>SUM(amount) OVER ()</code></td></tr></tbody></table></div>
+<p>Это одна и та же идея: оконная функция из главы 3. Другой типичный пример — «средняя выручка на клиента»: сначала сумма по каждому клиенту, потом среднее этих сумм.</p>
+<h3 id="фильтр-меняет-смысл-показателя">Фильтр меняет смысл показателя</h3>
+<p>Показатель «доля повторных заказов» при фильтре «только март» может означать две разные вещи: заказы, повторные <strong>внутри марта</strong>, или заказы марта от клиентов, покупавших <strong>когда-либо раньше</strong>. Обычный фильтр отрезает историю и даёт первое, хотя нужно почти всегда второе. Признак «повторный заказ» надёжнее посчитать заранее — в SQL или в датасете — как столбец.</p>
+<h3 id="часовой-пояс-и-границы-дня">Часовой пояс и границы дня</h3>
+<p>Источник вечных расхождений между дашбордами: один считает сутки по UTC, другой по Москве (раздел 5А.7). Зафиксируй часовой пояс в описании дашборда.</p>
+<h2 id="7а11-yandex-datalens-дашборд-по-шагам">7А.11. Yandex DataLens: дашборд по шагам</h2>
+<p>DataLens работает в браузере, поэтому на Mac это основной вариант. Названия пунктов интерфейса со временем меняются — ориентируйся на смысл шагов.</p>
+<h3 id="шаг-1-подключение">Шаг 1. Подключение</h3>
+<p>Подключение описывает, <strong>откуда</strong> брать данные: база (ClickHouse, PostgreSQL), файл CSV или Excel, Google Sheets. Для учёбы загрузи файл <code>orders_clean.csv</code>.</p>
+<h3 id="шаг-2-датасет">Шаг 2. Датасет</h3>
+<p>Датасет — слой между источником и графиками: в нём задаются типы полей, связи таблиц и вычисляемые поля.</p>
+<ol>
+<li>Проверь типы: дата — «Дата», сумма — «Дробное число», город — «Строка».</li>
+<li>Для каждого поля указано, измерение это или показатель. Поле становится показателем, когда у него задана агрегация.</li>
+<li>Добавь вторую таблицу и свяжи её по ключу, если нужно. Сразу проверь, что число строк не изменилось.</li>
+</ol>
+<h3 id="шаг-3-вычисляемые-поля">Шаг 3. Вычисляемые поля</h3>
+<p>Определения метрик лучше задавать в датасете, а не в отдельных чартах: тогда все графики считают одинаково.</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>Выручка              SUM([amount])
+Заказы               COUNTD([order_id])
+Покупатели           COUNTD([user_id])
+Средний чек          SUM([amount]) / COUNTD([order_id])
+Заказов на клиента   COUNTD([order_id]) / COUNTD([user_id])
+Месяц                DATETRUNC([date], &quot;month&quot;)
+Размер заказа        IF [amount] &gt;= 5000 THEN &quot;Крупный&quot; ELSE &quot;Обычный&quot; END
+Доля в выручке       SUM([amount]) / SUM([amount] TOTAL)</code></pre></div>
+<p>Последняя формула — оконная функция: <code>TOTAL</code> означает «по всем строкам графика». Точные названия функций сверяй со справочником DataLens: он открывается прямо в редакторе формул.</p>
+<h3 id="шаг-4-чарты">Шаг 4. Чарты</h3>
+<p>Чарт — один график. Собирается перетаскиванием полей в секции: что по оси X, что по Y, что задаёт цвет.</p>
+<p>Минимальный набор для дашборда продаж:</p>
+<div class="table"><table><thead><tr><th>Чарт</th><th>Тип</th><th>Поля</th></tr></thead><tbody><tr><td>Выручка</td><td>Индикатор</td><td>Показатель «Выручка»</td></tr><tr><td>Заказы</td><td>Индикатор</td><td>«Заказы»</td></tr><tr><td>Средний чек</td><td>Индикатор</td><td>«Средний чек»</td></tr><tr><td>Динамика</td><td>Линейная диаграмма</td><td>X: «Месяц» или неделя, Y: «Выручка»</td></tr><tr><td>По городам</td><td>Столбчатая, отсортированная</td><td>X: город, Y: «Выручка»</td></tr><tr><td>Структура</td><td>Столбчатая с накоплением</td><td>X: месяц, Y: «Выручка», цвет: категория</td></tr><tr><td>Детали</td><td>Таблица</td><td>Город, категория, заказы, выручка, средний чек</td></tr></tbody></table></div>
+<h3 id="шаг-5-дашборд">Шаг 5. Дашборд</h3>
+<ol>
+<li>Создай дашборд и добавь чарты.</li>
+<li>Расставь: индикаторы — верхней строкой, динамика — под ними на всю ширину, разрезы — ниже рядом, таблица — в самом низу.</li>
+<li>Добавь <strong>селекторы</strong> (фильтры): период, город, категория. Проверь, что каждый влияет на все чарты.</li>
+<li>Добавь текстовый блок: что показывает дашборд, откуда данные, когда обновляются, к кому обращаться.</li>
+</ol>
+<h3 id="шаг-6-проверка-и-публикация">Шаг 6. Проверка и публикация</h3>
+<ul>
+<li>Общая выручка совпадает с <code>df[&quot;amount&quot;].sum()</code> в pandas.</li>
+<li>При фильтре по одному городу выручка совпадает с расчётом в pandas для этого города.</li>
+<li>Средний чек в итоге равен общей выручке, делённой на общее число заказов.</li>
+<li>Дашборд читается на ноутбуке без горизонтальной прокрутки.</li>
+</ul>
+<p>Затем открой доступ по ссылке и добавь её в README проекта.</p>
+<h2 id="7а12-tableau-основные-понятия">7А.12. Tableau: основные понятия</h2>
+<p>Tableau Public — бесплатная версия, есть приложение для macOS. Ограничение: работы сохраняются только в открытом доступе, поэтому не загружай туда чужие и рабочие данные.</p>
+<p>Ключевые понятия:</p>
+<div class="table"><table><thead><tr><th>Понятие</th><th>Что это</th></tr></thead><tbody><tr><td><strong>Dimensions / Measures</strong></td><td>Измерения и показатели</td></tr><tr><td><strong>Синие и зелёные поля</strong></td><td>Синее — дискретное (даёт заголовки), зелёное — непрерывное (даёт ось). Одно и то же поле с датой можно использовать обоими способами</td></tr><tr><td><strong>Полки Rows и Columns</strong></td><td>Что по вертикали и по горизонтали</td></tr><tr><td><strong>Marks</strong></td><td>Свойства меток: цвет, размер, подпись, детализация, подсказка</td></tr><tr><td><strong>Worksheet</strong></td><td>Один график</td></tr><tr><td><strong>Dashboard</strong></td><td>Страница из нескольких листов</td></tr><tr><td><strong>Story</strong></td><td>Последовательность слайдов</td></tr><tr><td><strong>Calculated Field</strong></td><td>Вычисляемое поле</td></tr><tr><td><strong>Table Calculation</strong></td><td>Расчёт поверх готовой таблицы: накопительный итог, доля, разница</td></tr><tr><td><strong>LOD-выражение</strong></td><td>Расчёт на своём уровне детализации</td></tr><tr><td><strong>Action</strong></td><td>Интерактивность: клик по столбцу фильтрует другие графики</td></tr><tr><td><strong>Extract / Live</strong></td><td>Выгрузка или живое подключение</td></tr></tbody></table></div>
+<p>Примеры вычисляемых полей:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>Средний чек            SUM([Amount]) / COUNTD([Order Id])
+Размер заказа          IF [Amount] &gt;= 5000 THEN &quot;Крупный&quot; ELSE &quot;Обычный&quot; END
+Выручка клиента        { FIXED [User Id] : SUM([Amount]) }
+Дата первого заказа    { FIXED [User Id] : MIN([Date]) }
+Доля в выручке         SUM([Amount]) / TOTAL(SUM([Amount]))</code></pre></div>
+<p>LOD-выражение <code>{ FIXED [User Id] : MIN([Date]) }</code> — «дата первого заказа клиента, независимо от того, что сейчас на графике». Из него получается когорта клиента, и на этом строится весь когортный анализ в Tableau.</p>
+<p>Что нужно знать про порядок вычислений: фильтры применяются не одновременно. Обычный фильтр по измерению срабатывает <strong>после</strong> <code>FIXED</code>-выражений, поэтому не влияет на них. Чтобы фильтр применялся раньше, его делают <strong>контекстным</strong>. На этом основана половина вопросов «почему число не изменилось после фильтра».</p>
+<h2 id="7а13-power-bi-что-нужно-знать">7А.13. Power BI: что нужно знать</h2>
+<p>Power BI Desktop не существует для macOS, но это самый распространённый BI-инструмент в корпорациях, и вопросы по нему на собеседованиях задают. Достаточно понимать устройство и термины.</p>
+<p>Три части:</p>
+<div class="table"><table><thead><tr><th>Часть</th><th>Что делает</th><th>Язык</th></tr></thead><tbody><tr><td><strong>Power Query</strong></td><td>Загрузка и очистка данных: типы, фильтры, объединение таблиц</td><td>M (обычно настраивается мышкой)</td></tr><tr><td><strong>Модель данных</strong></td><td>Таблицы и связи между ними, схема «звезда»</td><td>—</td></tr><tr><td><strong>Отчёт</strong></td><td>Визуализации и страницы</td><td>DAX — для формул</td></tr></tbody></table></div>
+<h3 id="мера-и-вычисляемый-столбец">Мера и вычисляемый столбец</h3>
+<p>Главное различие в DAX и самый частый вопрос:</p>
+<div class="table"><table><thead><tr><th></th><th>Вычисляемый столбец</th><th>Мера</th></tr></thead><tbody><tr><td>Когда считается</td><td>Один раз, при обновлении данных</td><td>Каждый раз при отображении</td></tr><tr><td>Для чего</td><td>Значение в каждой строке</td><td>Агрегат, зависящий от фильтров</td></tr><tr><td>Пример</td><td>Размер заказа: «Крупный» или «Обычный»</td><td>Выручка, средний чек</td></tr><tr><td>Занимает память</td><td>Да</td><td>Нет</td></tr></tbody></table></div>
+<p>Правило: всё, что агрегируется, — мера. Столбец нужен, только если по значению надо фильтровать или группировать.</p>
+<h3 id="контекст-фильтра-и-calculate">Контекст фильтра и CALCULATE</h3>
+<p>Мера вычисляется в <strong>контексте фильтра</strong>: в ячейке «Москва, март» она видит только строки Москвы за март. Функция <code>CALCULATE</code> этот контекст изменяет — на ней держится весь DAX.</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>Выручка = SUM(orders[amount])
+
+Средний чек = DIVIDE([Выручка], DISTINCTCOUNT(orders[order_id]))
+
+Выручка Москвы = CALCULATE([Выручка], orders[city] = &quot;Москва&quot;)
+
+Доля в выручке = DIVIDE([Выручка], CALCULATE([Выручка], ALL(orders[city])))
+
+Выручка год назад = CALCULATE([Выручка], SAMEPERIODLASTYEAR(calendar[date]))
+
+Выручка с начала года = TOTALYTD([Выручка], calendar[date])</code></pre></div>
+<ul>
+<li><code>DIVIDE</code> — деление с защитой от нуля, аналог <code>NULLIF</code> из SQL.</li>
+<li><code>ALL(...)</code> снимает фильтр со столбца — так получается знаменатель «по всем городам».</li>
+<li>Функции сравнения периодов требуют отдельной таблицы-календаря.</li>
+</ul>
+<p>На Mac попрактиковаться можно в веб-версии Power BI Service (нужна рабочая учётная запись Microsoft) или в виртуальной машине с Windows. Для первого места работы это необязательно: дашборд в DataLens или Tableau показывает то же умение.</p>
+<h3 id="соответствие-терминов">Соответствие терминов</h3>
+<div class="table"><table><thead><tr><th>Идея</th><th>SQL</th><th>DataLens</th><th>Tableau</th><th>Power BI</th></tr></thead><tbody><tr><td>Разрез</td><td><code>GROUP BY</code></td><td>Измерение</td><td>Dimension</td><td>Столбец в строках, срез</td></tr><tr><td>Агрегат</td><td><code>SUM()</code></td><td>Показатель</td><td>Measure</td><td>Мера</td></tr><tr><td>Уникальные</td><td><code>COUNT(DISTINCT)</code></td><td><code>COUNTD</code></td><td><code>COUNTD</code></td><td><code>DISTINCTCOUNT</code></td></tr><tr><td>Условие</td><td><code>CASE WHEN</code></td><td><code>IF ... END</code></td><td><code>IF ... END</code></td><td><code>IF</code>, <code>SWITCH</code></td></tr><tr><td>Доля от итога</td><td><code>SUM() OVER ()</code></td><td><code>SUM(... TOTAL)</code></td><td><code>TOTAL()</code></td><td><code>CALCULATE(..., ALL())</code></td></tr><tr><td>Расчёт на другом уровне</td><td>Подзапрос, окно</td><td><code>FIXED</code></td><td><code>{FIXED}</code></td><td><code>CALCULATE</code>, <code>ALLEXCEPT</code></td></tr><tr><td>Накопительный итог</td><td><code>SUM() OVER (ORDER BY)</code></td><td><code>RSUM</code></td><td><code>RUNNING_SUM</code></td><td><code>TOTALYTD</code> и аналоги</td></tr><tr><td>Фильтр</td><td><code>WHERE</code></td><td>Селектор</td><td>Filter</td><td>Срез (Slicer)</td></tr><tr><td>Слой с формулами</td><td>VIEW</td><td>Датасет</td><td>Источник данных</td><td>Модель</td></tr></tbody></table></div>
+<p>Вывод из таблицы: инструменты разные, идеи одни. Крепкий SQL — лучший фундамент для любого BI.</p>
+<h2 id="7а14-как-спроектировать-дашборд">7А.14. Как спроектировать дашборд</h2>
+<p>Плохой дашборд — это двадцать графиков, которые никто не открывает. Хороший начинается не с данных, а с вопросов.</p>
+<h3 id="пять-вопросов-до-начала">Пять вопросов до начала</h3>
+<ol>
+<li><strong>Кто</strong> будет смотреть? Директору, маркетологу и аналитику нужны разные дашборды.</li>
+<li><strong>Какое решение</strong> он принимает на основе этих данных?</li>
+<li><strong>Как часто</strong> смотрит: раз в день, в неделю, в квартал?</li>
+<li><strong>Что он должен понять за первые десять секунд?</strong></li>
+<li><strong>Что он сделает</strong>, если число плохое? Куда пойдёт за подробностями?</li>
+</ol>
+<p>Если на второй вопрос ответа нет — дашборд, скорее всего, не нужен.</p>
+<h3 id="три-типа-дашбордов">Три типа дашбордов</h3>
+<div class="table"><table><thead><tr><th>Тип</th><th>Для кого</th><th>Что показывает</th><th>Обновление</th></tr></thead><tbody><tr><td><strong>Операционный</strong></td><td>Те, кто действует сейчас: поддержка, логистика</td><td>Текущее состояние, очереди, сбои</td><td>Минуты</td></tr><tr><td><strong>Аналитический</strong></td><td>Менеджеры продукта, маркетинг</td><td>Динамика, сегменты, сравнения</td><td>День</td></tr><tr><td><strong>Стратегический</strong></td><td>Руководство</td><td>Несколько главных KPI против плана</td><td>Неделя, месяц</td></tr></tbody></table></div>
+<p>Не смешивай типы на одной странице.</p>
+<h3 id="макет">Макет</h3>
+<p>Люди читают экран слева направо и сверху вниз, уделяя больше всего внимания левому верхнему углу.</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>┌────────────────────────────────────────────────────────┐
+│ Название · период · когда обновлено        [Фильтры]   │
+├─────────────┬─────────────┬─────────────┬──────────────┤
+│ Выручка     │ Заказы      │ Средний чек │ Конверсия    │
+│ 2,4 млн     │ 1 240       │ 1 935 ₽     │ 5,2 %        │
+│ ▲ 8 %       │ ▲ 5 %       │ ▲ 3 %       │ ▼ 0,3 п. п.  │
+├─────────────┴─────────────┴─────────────┴──────────────┤
+│  Динамика главной метрики по времени                   │
+├───────────────────────────┬────────────────────────────┤
+│  Разрез 1: по каналам     │  Разрез 2: по категориям   │
+├───────────────────────────┴────────────────────────────┤
+│  Таблица с деталями                                    │
+└────────────────────────────────────────────────────────┘</code></pre></div>
+<p>Принцип — «от общего к частному»: сверху ответ на вопрос «всё ли в порядке», ниже — «где именно» и «почему».</p>
+<h3 id="карточка-показателя">Карточка показателя</h3>
+<p>Голое число «2,4 млн» ничего не сообщает. Много это или мало? Карточка KPI должна содержать:</p>
+<ul>
+<li><strong>значение</strong>;</li>
+<li><strong>сравнение</strong>: с прошлым периодом, с планом или с тем же периодом прошлого года;</li>
+<li><strong>направление и цвет</strong>, причём цвет зависит от смысла, а не от знака: рост оттока — красный;</li>
+<li>по возможности — <strong>маленький график тренда</strong>.</li>
+</ul>
+<p>Сравнивай сопоставимое: неделю с неделей, а неполный месяц — с тем же числом дней прошлого месяца.</p>
+<h3 id="правила">Правила</h3>
+<ul>
+<li><strong>Не больше 7–9 элементов на экране.</strong> Остальное — на отдельную вкладку.</li>
+<li><strong>Всё главное — на первом экране</strong> без прокрутки.</li>
+<li><strong>Фильтры — в одном месте</strong> и одинаково действуют на все графики.</li>
+<li><strong>Единые цвета</strong>: один и тот же канал везде одного цвета.</li>
+<li><strong>Понятные названия</strong>: «Выручка без НДС, руб.», а не <code>sum_amount_v2</code>.</li>
+<li><strong>Определения метрик</strong> — в подсказках или в блоке «Как считается».</li>
+<li><strong>Дата обновления</strong> — на видном месте: по старым данным хуже принимать решения, чем без данных.</li>
+<li><strong>Скорость</strong>: дашборд, открывающийся минуту, не открывают. Строй его на заранее агрегированной таблице.</li>
+</ul>
+<h3 id="после-запуска">После запуска</h3>
+<ul>
+<li>Покажи дашборд заказчику и попроси <strong>вслух</strong> найти ответ на его вопрос. Где он запнулся — там и нужно править.</li>
+<li>Посмотри статистику открытий через месяц. Если дашбордом не пользуются — выясни почему или удали.</li>
+<li>У дашборда должен быть владелец, который отвечает на вопросы и чинит поломки.</li>
+</ul>
+<h2 id="7а15-от-графиков-к-рассказу">7А.15. От графиков к рассказу</h2>
+<p>Отчёт аналитика — не хроника «что я делал», а ответ на вопрос. Строится он как перевёрнутая пирамида:</p>
+<ol>
+<li><strong>Вывод и рекомендация</strong> — в первом абзаце.</li>
+<li><strong>Два-три аргумента</strong>, каждый подкреплён одним графиком.</li>
+<li><strong>Детали, методика, оговорки</strong> — в конце или в приложении.</li>
+</ol>
+<p>Читатель может остановиться на любом уровне и всё равно унести главное.</p>
+<p>Формула для каждого графика в отчёте:</p>
+<div class="table"><table><thead><tr><th>Элемент</th><th>Пример</th></tr></thead><tbody><tr><td>Заголовок-вывод</td><td>«Отток новых клиентов вырос после отмены бесплатной доставки»</td></tr><tr><td>График, где вывод виден без пояснений</td><td>Линия удержания с отметкой даты изменения</td></tr><tr><td>Одна фраза «что это значит»</td><td>«Теряем около 300 клиентов в месяц»</td></tr><tr><td>Одна фраза «что делать»</td><td>«Предлагаем вернуть бесплатную доставку для первого заказа»</td></tr></tbody></table></div>
+<p>Проверка: закрой текст и посмотри только на заголовки графиков подряд. Если они складываются в связную историю — отчёт удался.</p>
+<h2 id="практика-на-github">Практика на GitHub</h2>
+<ul>
+<li><a href="https://github.com/jakevdp/PythonDataScienceHandbook" target="_blank" rel="noopener">jakevdp/PythonDataScienceHandbook</a> — в главе 4 ноутбуки про настройку легенд, цветовых шкал, делений осей, аннотации и стили оформления: это подробное продолжение разделов 7А.1–7А.5.</li>
+<li><a href="https://github.com/wesm/pydata-book" target="_blank" rel="noopener">wesm/pydata-book</a> — ноутбук <code>ch09</code>: связка pandas и Matplotlib, аннотации событий на временном ряду.</li>
+<li><a href="https://github.com/Yorko/mlcourse.ai" target="_blank" rel="noopener">Yorko/mlcourse.ai</a> — вторая тема курса: визуальный анализ с seaborn и Plotly.</li>
+<li><a href="https://github.com/Lenupcik/portfolio" target="_blank" rel="noopener">Lenupcik/portfolio</a> — дашборд в Yandex DataLens: оцени его по правилам раздела 7А.14.</li>
+<li><a href="https://github.com/AsifRashid01/DataAnalyst_PortfolioProjects" target="_blank" rel="noopener">AsifRashid01/DataAnalyst_PortfolioProjects</a> — проект с визуализацией в Tableau: повтори его в Tableau Public.</li>
+<li><a href="https://github.com/GonorAndres/data-analyst-path" target="_blank" rel="noopener">GonorAndres/data-analyst-path</a> — дашборды к каждому из шести проектов: посмотри, как KPI-отчёт выстроен от общего к частному.</li>
+<li><a href="https://github.com/noztas/DataAnalystProjects" target="_blank" rel="noopener">noztas/DataAnalystProjects</a> — дашборд в Excel: те же принципы макета работают и там.</li>
+</ul>
+<h2 id="задания">Задания</h2>
+<ol>
+<li>Заведи файл <code>style.py</code> с настройками <code>rcParams</code>, тремя цветами и функцией <code>finish</code>. Перестрой с ним три графика из главы 7.</li>
+<li>Построй график выручки по дням за квартал: ось Y в миллионах рублей, даты по месяцам, вертикальная линия и подпись в день «запуска акции», закрашенный период акции.</li>
+<li>Даны продажи восьми категорий за 12 месяцев. Покажи их двумя способами: одной панелью с акцентом на категории с максимальным ростом и сеткой малых кратных. Какой способ лучше отвечает на вопрос «какая категория растёт быстрее всех», а какой — «как ведёт себя каждая»?</li>
+<li>Построй каскадную диаграмму изменения числа активных пользователей: было 10 000, пришло 2 400 новых, вернулось 600, ушло 1 900.</li>
+<li>Для двух групп A/B-теста с логнормальными чеками построй две ECDF на одних осях. Что по ним видно, чего не видно по средним?</li>
+<li>Напиши формулы показателей для BI-инструмента (в нотации DataLens или Tableau): конверсия из визита в заказ, доля категории в выручке, выручка на клиента, доля крупных заказов.</li>
+<li>Найди ошибку. На дашборде таблица: по строкам — города, столбцы — «Покупатели» и «Средний чек». В итоговой строке «Покупатели» посчитаны как сумма по городам, «Средний чек» — как среднее по городам. Что не так с каждым числом?</li>
+<li>Спроектируй на бумаге дашборд для руководителя службы доставки: ответь на пять вопросов из раздела 7А.14, выбери 4 KPI и нарисуй макет.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Чем <code>Locator</code> отличается от <code>Formatter</code>?</li>
+<li>Какими способами можно выделить главное на графике?</li>
+<li>Чем последовательная палитра отличается от расходящейся?</li>
+<li>Когда вторая ось Y допустима?</li>
+<li>Чем ECDF лучше гистограммы?</li>
+<li>Что такое измерение и показатель?</li>
+<li>Что такое схема «звезда» и зачем нужна таблица-календарь?</li>
+<li>Почему уникальных пользователей нельзя складывать?</li>
+<li>Как правильно задать формулу среднего чека в BI и почему?</li>
+<li>Чем мера в Power BI отличается от вычисляемого столбца?</li>
+<li>С каких вопросов начинается проектирование дашборда?</li>
+</ul>
+<h2 id="решения">Решения</h2>
+<p>Общая подготовка для решений с кодом:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> matplotlib.pyplot <span class="t-kw">as</span> plt
+<span class="t-kw">import</span> matplotlib.dates <span class="t-kw">as</span> mdates
+<span class="t-kw">from</span> matplotlib.ticker <span class="t-kw">import</span> FuncFormatter, PercentFormatter
+
+rng = np.random.default_rng(<span class="t-num">7</span>)
+ACCENT, MUTED, WARNING = <span class="t-str">&quot;#1f6f5c&quot;</span>, <span class="t-str">&quot;#b5b5b5&quot;</span>, <span class="t-str">&quot;#c44e52&quot;</span></code></pre></div>
+<details class="sol"><summary>Задание 1. Файл style.py</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>STYLE_CODE = <span class="t-str">&#x27;&#x27;&#x27;
+&quot;&quot;&quot;Единое оформление графиков проекта.&quot;&quot;&quot;
+import matplotlib.pyplot as plt
+
+ACCENT = &quot;#1f6f5c&quot;
+MUTED = &quot;#b5b5b5&quot;
+WARNING = &quot;#c44e52&quot;
+
+
+def apply_style():
+    plt.rcParams.update({
+        &quot;figure.figsize&quot;: (9, 4.5),
+        &quot;font.size&quot;: 11,
+        &quot;axes.titlesize&quot;: 14,
+        &quot;axes.titleweight&quot;: &quot;bold&quot;,
+        &quot;axes.titlelocation&quot;: &quot;left&quot;,
+        &quot;axes.spines.top&quot;: False,
+        &quot;axes.spines.right&quot;: False,
+        &quot;axes.grid&quot;: True,
+        &quot;axes.grid.axis&quot;: &quot;y&quot;,
+        &quot;grid.alpha&quot;: 0.3,
+        &quot;axes.axisbelow&quot;: True,
+        &quot;legend.frameon&quot;: False,
+    })
+
+
+def finish(ax, title, subtitle=None):
+    ax.set_title(title, pad=28 if subtitle else 12)
+    if subtitle:
+        ax.text(0, 1.04, subtitle, transform=ax.transAxes, color=&quot;#666666&quot;, fontsize=10.5)
+    ax.figure.tight_layout()
+&#x27;&#x27;&#x27;</span>
+
+<span class="t-kw">from</span> pathlib <span class="t-kw">import</span> Path
+Path(<span class="t-str">&quot;style.py&quot;</span>).write_text(STYLE_CODE, encoding=<span class="t-str">&quot;utf-8&quot;</span>)</code></pre></div>
+<p>В ноутбуке после этого достаточно двух строк:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>from style import ACCENT, MUTED, WARNING, apply_style, finish
+apply_style()</code></pre></div>
+<p>Настройки вынесены в функцию <code>apply_style</code>, а не выполняются при импорте: модуль, который меняет глобальное состояние в момент импорта, преподносит сюрпризы. Явный вызов лучше неявного эффекта — принцип из главы 2В.</p></details>
+<details class="sol"><summary>Задание 2. Выручка с отметкой акции</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>days = np.arange(<span class="t-str">&quot;2026-01-01&quot;</span>, <span class="t-str">&quot;2026-04-01&quot;</span>, dtype=<span class="t-str">&quot;datetime64[D]&quot;</span>)
+revenue = <span class="t-num">2_000_000</span> + rng.normal(<span class="t-num">0</span>, <span class="t-num">120_000</span>, <span class="t-fn">len</span>(days))
+
+promo_start, promo_end = np.datetime64(<span class="t-str">&quot;2026-02-14&quot;</span>), np.datetime64(<span class="t-str">&quot;2026-02-28&quot;</span>)
+in_promo = (days &gt;= promo_start) &amp; (days &lt;= promo_end)
+revenue[in_promo] *= <span class="t-num">1.25</span>
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">10</span>, <span class="t-num">4.5</span>))
+ax.plot(days, revenue, color=ACCENT, linewidth=<span class="t-num">1.8</span>)
+ax.axvspan(promo_start, promo_end, color=ACCENT, alpha=<span class="t-num">0.1</span>)
+ax.axvline(promo_start, color=<span class="t-str">&quot;#555555&quot;</span>, linestyle=<span class="t-str">&quot;--&quot;</span>, linewidth=<span class="t-num">1</span>)
+ax.annotate(<span class="t-str">&quot;Старт акции&quot;</span>, xy=(promo_start, revenue.<span class="t-fn">max</span>() * <span class="t-num">0.98</span>),
+            xytext=(np.datetime64(<span class="t-str">&quot;2026-01-22&quot;</span>), revenue.<span class="t-fn">max</span>() * <span class="t-num">1.03</span>),
+            arrowprops={<span class="t-str">&quot;arrowstyle&quot;</span>: <span class="t-str">&quot;-&gt;&quot;</span>, <span class="t-str">&quot;color&quot;</span>: <span class="t-str">&quot;#555555&quot;</span>})
+
+ax.yaxis.set_major_formatter(FuncFormatter(<span class="t-kw">lambda</span> v, _: <span class="t-str">f&quot;{v / 1e6:.1f} млн&quot;</span>))
+ax.xaxis.set_major_locator(mdates.MonthLocator())
+ax.xaxis.set_major_formatter(mdates.DateFormatter(<span class="t-str">&quot;%d.%m&quot;</span>))
+ax.set_ylim(<span class="t-num">0</span>, revenue.<span class="t-fn">max</span>() * <span class="t-num">1.12</span>)
+
+uplift = revenue[in_promo].mean() / revenue[~in_promo].mean() - <span class="t-num">1</span>
+ax.set_title(<span class="t-str">f&quot;Во время акции дневная выручка была на {uplift:.0%} выше обычной&quot;</span>, loc=<span class="t-str">&quot;left&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>)
+fig.tight_layout()
+plt.show()</code></pre></div>
+<p>Число в заголовке вычисляется из данных, а не вписано руками: при обновлении данных заголовок останется верным.</p></details>
+<details class="sol"><summary>Задание 3. Один график или малые кратные</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>categories = [<span class="t-str">&quot;Книги&quot;</span>, <span class="t-str">&quot;Техника&quot;</span>, <span class="t-str">&quot;Одежда&quot;</span>, <span class="t-str">&quot;Обувь&quot;</span>, <span class="t-str">&quot;Игрушки&quot;</span>, <span class="t-str">&quot;Спорт&quot;</span>, <span class="t-str">&quot;Дом&quot;</span>, <span class="t-str">&quot;Красота&quot;</span>]
+x = np.arange(<span class="t-num">1</span>, <span class="t-num">13</span>)
+data = {name: <span class="t-num">100</span> + rng.normal(rng.uniform(-<span class="t-num">1</span>, <span class="t-num">5</span>), <span class="t-num">5</span>, <span class="t-num">12</span>).cumsum() <span class="t-kw">for</span> name <span class="t-kw">in</span> categories}
+
+growth = {name: values[-<span class="t-num">1</span>] / values[<span class="t-num">0</span>] - <span class="t-num">1</span> <span class="t-kw">for</span> name, values <span class="t-kw">in</span> data.items()}
+leader = <span class="t-fn">max</span>(growth, key=growth.get)
+
+<span class="t-com"># Способ 1: акцент на лидере</span>
+fig, ax = plt.subplots(figsize=(<span class="t-num">9</span>, <span class="t-num">4.5</span>))
+<span class="t-kw">for</span> name, values <span class="t-kw">in</span> data.items():
+    main = name == leader
+    ax.plot(x, values, color=ACCENT <span class="t-kw">if</span> main <span class="t-kw">else</span> MUTED, linewidth=<span class="t-num">2.6</span> <span class="t-kw">if</span> main <span class="t-kw">else</span> <span class="t-num">1.2</span>, zorder=<span class="t-num">3</span> <span class="t-kw">if</span> main <span class="t-kw">else</span> <span class="t-num">1</span>)
+ax.text(<span class="t-num">12.15</span>, data[leader][-<span class="t-num">1</span>], leader, color=ACCENT, fontweight=<span class="t-str">&quot;bold&quot;</span>, va=<span class="t-str">&quot;center&quot;</span>)
+ax.set_xlim(<span class="t-num">1</span>, <span class="t-num">13.4</span>)
+ax.set_title(<span class="t-str">f&quot;«{leader}» — самая быстрорастущая категория: {growth[leader]:+.0%} за год&quot;</span>, loc=<span class="t-str">&quot;left&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>)
+fig.tight_layout()
+plt.show()
+
+<span class="t-com"># Способ 2: малые кратные</span>
+fig, axes = plt.subplots(<span class="t-num">2</span>, <span class="t-num">4</span>, figsize=(<span class="t-num">12</span>, <span class="t-num">5</span>), sharex=<span class="t-num">True</span>, sharey=<span class="t-num">True</span>)
+<span class="t-kw">for</span> ax, (name, values) <span class="t-kw">in</span> <span class="t-fn">zip</span>(axes.flat, <span class="t-fn">sorted</span>(data.items(), key=<span class="t-kw">lambda</span> item: -growth[item[<span class="t-num">0</span>]])):
+    ax.plot(x, values, color=ACCENT <span class="t-kw">if</span> growth[name] &gt;= <span class="t-num">0</span> <span class="t-kw">else</span> WARNING, linewidth=<span class="t-num">2</span>)
+    ax.set_title(<span class="t-str">f&quot;{name}: {growth[name]:+.0%}&quot;</span>, fontsize=<span class="t-num">10.5</span>)
+fig.tight_layout()
+plt.show()</code></pre></div>
+<p>Первый способ отвечает на вопрос «кто лидер»: одна мысль, один акцент. Второй — на вопрос «как ведёт себя каждая»: панели отсортированы по росту, у всех общая шкала.</p>
+<p>Выбор зависит от того, что нужно сказать. Попытка ответить на оба вопроса одним графиком с восемью цветными линиями не отвечает ни на один.</p></details>
+<details class="sol"><summary>Задание 4. Каскадная диаграмма</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">waterfall</span>(ax, start_label, start_value, changes, end_label):
+    <span class="t-str">&quot;&quot;&quot;changes — список пар (название, изменение).&quot;&quot;&quot;</span>
+    labels = [start_label] + [name <span class="t-kw">for</span> name, _ <span class="t-kw">in</span> changes] + [end_label]
+    level = start_value
+    bottoms, heights, colors, texts = [<span class="t-num">0</span>], [start_value], [<span class="t-str">&quot;#555555&quot;</span>], [<span class="t-str">f&quot;{start_value:,.0f}&quot;</span>]
+    <span class="t-kw">for</span> _, delta <span class="t-kw">in</span> changes:
+        bottoms.append(level <span class="t-kw">if</span> delta &gt;= <span class="t-num">0</span> <span class="t-kw">else</span> level + delta)
+        heights.append(<span class="t-fn">abs</span>(delta))
+        colors.append(ACCENT <span class="t-kw">if</span> delta &gt;= <span class="t-num">0</span> <span class="t-kw">else</span> WARNING)
+        texts.append(<span class="t-str">f&quot;{delta:+,.0f}&quot;</span>)
+        level += delta
+    bottoms.append(<span class="t-num">0</span>)
+    heights.append(level)
+    colors.append(<span class="t-str">&quot;#555555&quot;</span>)
+    texts.append(<span class="t-str">f&quot;{level:,.0f}&quot;</span>)
+
+    bars = ax.bar(labels, heights, bottom=bottoms, color=colors, width=<span class="t-num">0.6</span>)
+    <span class="t-kw">for</span> bar, text <span class="t-kw">in</span> <span class="t-fn">zip</span>(bars, texts):
+        ax.text(bar.get_x() + bar.get_width() / <span class="t-num">2</span>, bar.get_y() + bar.get_height(), text,
+                ha=<span class="t-str">&quot;center&quot;</span>, va=<span class="t-str">&quot;bottom&quot;</span>, fontsize=<span class="t-num">10</span>)
+    <span class="t-kw">return</span> level
+
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">8.5</span>, <span class="t-num">4.5</span>))
+end = waterfall(ax, <span class="t-str">&quot;Начало\nмесяца&quot;</span>, <span class="t-num">10_000</span>, [(<span class="t-str">&quot;Новые&quot;</span>, <span class="t-num">2400</span>), (<span class="t-str">&quot;Вернулись&quot;</span>, <span class="t-num">600</span>), (<span class="t-str">&quot;Ушли&quot;</span>, -<span class="t-num">1900</span>)], <span class="t-str">&quot;Конец\nмесяца&quot;</span>)
+ax.set_ylim(<span class="t-num">0</span>, <span class="t-num">14_500</span>)
+ax.set_title(<span class="t-str">f&quot;Аудитория выросла до {end:,.0f}: приток перекрыл отток&quot;</span>.replace(<span class="t-str">&quot;,&quot;</span>, <span class="t-str">&quot; &quot;</span>), loc=<span class="t-str">&quot;left&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>)
+fig.tight_layout()
+plt.show()</code></pre></div>
+<p>Логика вынесена в функцию — её можно использовать для любой метрики. Проверка расчёта: 10 000 + 2 400 + 600 − 1 900 = 11 100.</p></details>
+<details class="sol"><summary>Задание 5. Две ECDF</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>group_a = rng.lognormal(<span class="t-num">7.6</span>, <span class="t-num">0.8</span>, <span class="t-num">4000</span>)
+group_b = rng.lognormal(<span class="t-num">7.6</span>, <span class="t-num">0.8</span>, <span class="t-num">4000</span>)
+threshold = np.quantile(group_b, <span class="t-num">0.9</span>)
+group_b = np.where(group_b &gt; threshold, group_b * <span class="t-num">1.6</span>, group_b)     <span class="t-com"># в группе B крупные чеки стали ещё крупнее</span>
+
+
+<span class="t-kw">def</span> <span class="t-def">plot_ecdf</span>(ax, values, **kwargs):
+    ordered = np.sort(values)
+    ax.plot(ordered, np.arange(<span class="t-num">1</span>, <span class="t-fn">len</span>(ordered) + <span class="t-num">1</span>) / <span class="t-fn">len</span>(ordered), **kwargs)
+
+
+fig, ax = plt.subplots(figsize=(<span class="t-num">8.5</span>, <span class="t-num">4.5</span>))
+plot_ecdf(ax, group_a, color=MUTED, linewidth=<span class="t-num">2.2</span>, label=<span class="t-str">f&quot;A: среднее {group_a.mean():,.0f}, медиана {np.median(group_a):,.0f}&quot;</span>)
+plot_ecdf(ax, group_b, color=ACCENT, linewidth=<span class="t-num">2.2</span>, label=<span class="t-str">f&quot;B: среднее {group_b.mean():,.0f}, медиана {np.median(group_b):,.0f}&quot;</span>)
+ax.set_xscale(<span class="t-str">&quot;log&quot;</span>)
+ax.yaxis.set_major_formatter(PercentFormatter(xmax=<span class="t-num">1</span>))
+ax.set_xlabel(<span class="t-str">&quot;Сумма чека, руб. (логарифмическая шкала)&quot;</span>)
+ax.legend(loc=<span class="t-str">&quot;lower right&quot;</span>)
+ax.set_title(<span class="t-str">&quot;Группы различаются только в верхних 10 % чеков&quot;</span>, loc=<span class="t-str">&quot;left&quot;</span>, fontweight=<span class="t-str">&quot;bold&quot;</span>)
+fig.tight_layout()
+plt.show()</code></pre></div>
+<p>Среднее в группе B заметно выше, медианы почти равны. Средние говорят «B лучше», но не говорят как. По ECDF видно: до 90-го перцентиля кривые совпадают, а расходятся только в верхней части. Значит, изменение не повлияло на обычных покупателей — эффект дали крупные чеки небольшой группы. Это меняет и вывод, и то, как проверять результат: с такой метрикой нужен тест, устойчивый к хвосту (глава 9А).</p></details>
+<details class="sol"><summary>Задание 6. Формулы показателей</summary><p>В нотации DataLens и Tableau они записываются почти одинаково:</p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>Конверсия визит → заказ    COUNTD([order_id]) / COUNTD([visit_id])
+
+Доля категории в выручке   SUM([amount]) / SUM([amount] TOTAL)            -- DataLens
+                           SUM([Amount]) / TOTAL(SUM([Amount]))            -- Tableau
+
+Выручка на клиента         SUM([amount]) / COUNTD([user_id])
+
+Доля крупных заказов       COUNTD(IF [amount] &gt;= 5000 THEN [order_id] END) / COUNTD([order_id])</code></pre></div>
+<p>Общий принцип: числитель и знаменатель агрегируются по отдельности. В последней формуле использована условная агрегация — та же, что <code>COUNT(DISTINCT CASE WHEN ...)</code> в SQL: <code>IF</code> без <code>ELSE</code> даёт пустое значение, которое не считается.</p>
+<p>Оговорка к первой формуле: она верна, только если визиты и заказы лежат в одной таблице или корректно связаны. Если у визита может быть несколько заказов и таблицы соединены, проверь, что число визитов не размножилось.</p></details>
+<details class="sol"><summary>Задание 7. Найди ошибку</summary><p><strong>«Покупатели» как сумма по городам.</strong> Уникальные пользователи — неаддитивный показатель. Человек, покупавший и в Москве, и в Казани, посчитан дважды, и итог завышен. Правильно: <code>COUNTD([user_id])</code> по всем данным. Итог может быть <strong>меньше</strong> суммы строк, и это нормально.</p>
+<p><strong>«Средний чек» как среднее по городам.</strong> Это среднее средних: город с десятью заказами весит столько же, сколько город с десятью тысячами. Правильно: общая выручка, делённая на общее число заказов.</p>
+<p>Обе ошибки возникают, когда итог вычисляется из уже посчитанных строк таблицы, а не из исходных данных. В настройках итогов в BI-инструментах обычно есть выбор: «сумма», «среднее» или «вычислить по формуле показателя». Нужен последний вариант.</p></details>
+<details class="sol"><summary>Задание 8. Дашборд для службы доставки</summary><p>Образец ответа.</p>
+<p><strong>Пять вопросов:</strong></p>
+<ol>
+<li>Кто: руководитель службы доставки.</li>
+<li>Какое решение: куда направить курьеров, с какими партнёрами разбираться, где менять зоны и интервалы.</li>
+<li>Как часто: каждое утро и несколько раз в течение дня.</li>
+<li>Что понять за 10 секунд: укладываемся ли мы в обещанные сроки сегодня.</li>
+<li>Что сделает при плохом числе: откроет разрез по районам и партнёрам, свяжется с проблемным.</li>
+</ol>
+<p>Частота «несколько раз в день» означает, что дашборд <strong>операционный</strong>: свежие данные важнее глубокой аналитики.</p>
+<p><strong>Четыре KPI:</strong></p>
+<div class="table"><table><thead><tr><th>Показатель</th><th>Определение</th><th>Сравнение</th></tr></thead><tbody><tr><td>Доля доставок в срок</td><td>Доставлено в обещанный интервал / все доставленные</td><td>С целью 95 % и со вчера</td></tr><tr><td>Медианное время доставки</td><td>От оформления до вручения</td><td>С тем же днём прошлой недели</td></tr><tr><td>Доля неудачных доставок</td><td>Отмены и возвраты по вине доставки / все отправления</td><td>С прошлой неделей</td></tr><tr><td>Заказов в работе сейчас</td><td>Принятые, но не вручённые</td><td>С мощностью службы</td></tr></tbody></table></div>
+<p>Время доставки — медиана, а не среднее: несколько потерянных заказов исказили бы картину. Рядом стоит показать и 90-й перцентиль — «как долго ждут невезучие».</p>
+<p><strong>Макет:</strong></p>
+<div class="code"><button class="copy" type="button">Копировать</button><pre><code>┌───────────────────────────────────────────────────────────────┐
+│ Доставка · сегодня · обновлено 10:42      [Город] [Партнёр]   │
+├──────────────┬──────────────┬───────────────┬─────────────────┤
+│ В срок       │ Время        │ Неудачные     │ В работе        │
+│ 93,1 %       │ 47 мин       │ 2,4 %         │ 318             │
+│ цель 95 % ▼  │ ▲ 4 мин      │ ▼ 0,3 п. п.   │ из 400          │
+├──────────────┴──────────────┴───────────────┴─────────────────┤
+│ Доля доставок в срок по часам: сегодня против прошлой недели  │
+├───────────────────────────────┬───────────────────────────────┤
+│ В срок по районам (столбцы,   │ В срок по партнёрам           │
+│ худшие сверху)                │ (столбцы, худшие сверху)      │
+├───────────────────────────────┴───────────────────────────────┤
+│ Заказы с опозданием больше 30 минут: список для разбора       │
+└───────────────────────────────────────────────────────────────┘</code></pre></div>
+<p>Разрезы отсортированы «худшие сверху» — руководителю нужны проблемы, а не лидеры. Нижняя таблица превращает дашборд из «посмотреть» в «сделать»: это список конкретных заказов, с которыми нужно разобраться.</p></details><nav class="nav "><a class="prev" href="07-vizualizaciya.html" id=prev><small>← Назад</small><b>Глава 7. Визуализация</b></a><a class="next" href="08-statistika.html" id=next><small>Вперёд →</small><b>Глава 8. Описательная статистика и EDA</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>

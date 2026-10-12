@@ -84,10 +84,10 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
 </head>
 <body>
 <header class="bar"><div class="bar-in">
-<a class="home" href="index.html">☰ Содержание</a><span class="where">8 из 19 · Глава 3. SQL</span>
-</div><div class="progress"><i style="width:42%"></i></div></header>
+<a class="home" href="index.html">☰ Содержание</a><span class="where">8 из 23 · Глава 3. SQL</span>
+</div><div class="progress"><i style="width:35%"></i></div></header>
 <main>
-<nav class="nav top"><a class="prev" href="02c-chistyj-kod.html"><small>← Назад</small><b>Глава 2В. Красивый код и паттерны</b></a><a class="next" href="04-numpy.html"><small>Вперёд →</small><b>Глава 4. NumPy</b></a></nav><h1 id="глава-3-sql">Глава 3. SQL</h1>
+<nav class="nav top"><a class="prev" href="02c-chistyj-kod.html"><small>← Назад</small><b>Глава 2В. Красивый код и паттерны</b></a><a class="next" href="03a-sql-priemy.html"><small>Вперёд →</small><b>Глава 3А. SQL: приёмы и трюки</b></a></nav><h1 id="глава-3-sql">Глава 3. SQL</h1>
 <p>SQL — язык запросов к базам данных. Почти все данные компании лежат в базах, поэтому любой анализ начинается с SQL-запроса. На собеседовании junior-аналитика его спрашивают всегда.</p>
 <h2 id="31-учебная-база-chinook">3.1. Учебная база Chinook</h2>
 <p>Вся глава построена на базе из репозитория <a href="https://github.com/lerocha/chinook-database" target="_blank" rel="noopener">lerocha/chinook-database</a>. Это данные вымышленного магазина цифровой музыки: исполнители, альбомы, треки, клиенты и счета.</p>
@@ -379,6 +379,8 @@ df = pd.read_sql(query, conn)
 <span class="t-fn">print</span>(df.head())
 conn.close()</code></pre></div>
 <p>Правило разделения труда: отбор, соединение и группировку больших таблиц делай в SQL (база справится быстрее), а расчёты, статистику и графики — в pandas.</p>
+<h2 id="что-дальше">Что дальше</h2>
+<p>Когда освоишься с материалом этой главы, переходи к углублённой: <a href="03a-sql-priemy.html">Глава 3А. SQL: приёмы и трюки</a>.</p>
 <h2 id="практика-на-github">Практика на GitHub</h2>
 <ol>
 <li><a href="https://github.com/lerocha/chinook-database" target="_blank" rel="noopener">lerocha/chinook-database</a> — выполни все запросы главы и задания ниже.</li>
@@ -504,7 +506,7 @@ ranked <span class="t-kw">AS</span> (
 <span class="t-kw">JOIN</span> Invoice  <span class="t-kw">AS</span> i <span class="t-kw">ON</span> i.CustomerId = c.CustomerId
 <span class="t-kw">GROUP</span> <span class="t-kw">BY</span> e.EmployeeId, e.FirstName, e.LastName
 <span class="t-kw">ORDER</span> <span class="t-kw">BY</span> revenue <span class="t-kw">DESC</span>;</code></pre></div>
-<p>Здесь обязателен <code>COUNT(DISTINCT ...)</code>. После соединения с <code>Invoice</code> каждый клиент повторяется столько раз, сколько у него счетов, и обычный <code>COUNT(*)</code> посчитал бы счета, а не клиентов. Это та самая ловушка размножения строк из раздела 3.5.</p></details><nav class="nav "><a class="prev" href="02c-chistyj-kod.html" id=prev><small>← Назад</small><b>Глава 2В. Красивый код и паттерны</b></a><a class="next" href="04-numpy.html" id=next><small>Вперёд →</small><b>Глава 4. NumPy</b></a></nav>
+<p>Здесь обязателен <code>COUNT(DISTINCT ...)</code>. После соединения с <code>Invoice</code> каждый клиент повторяется столько раз, сколько у него счетов, и обычный <code>COUNT(*)</code> посчитал бы счета, а не клиентов. Это та самая ловушка размножения строк из раздела 3.5.</p></details><nav class="nav "><a class="prev" href="02c-chistyj-kod.html" id=prev><small>← Назад</small><b>Глава 2В. Красивый код и паттерны</b></a><a class="next" href="03a-sql-priemy.html" id=next><small>Вперёд →</small><b>Глава 3А. SQL: приёмы и трюки</b></a></nav>
 </main>
 <footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
 <script>

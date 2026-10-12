@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глава 5А. pandas: приёмы и рецепты</title>
+<style>
+:root{--bg:#fbfaf7;--panel:#fff;--text:#22262b;--muted:#6b7280;--line:#e4e1d9;--accent:#1f6f5c;
+--accent-soft:#e4f1ed;--code-bg:#f3f1eb;--pre-bg:#1e242b;--pre-text:#e6e9ee}
+@media(prefers-color-scheme:dark){:root{--bg:#15191e;--panel:#1c2128;--text:#e3e6ea;--muted:#9aa3ad;
+--line:#2e353e;--accent:#5fc4a8;--accent-soft:#1d332e;--code-bg:#262c34;--pre-bg:#0f1317;--pre-text:#dfe3e8}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar .home{font-weight:600;text-decoration:none;white-space:nowrap}
+.bar .where{flex:1;color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent)}
+main{max-width:860px;margin:0 auto;padding:8px 16px 40px}
+h1{font-size:2em;line-height:1.2;margin:1.1em 0 .6em;text-wrap:balance}
+h2{font-size:1.4em;line-height:1.3;margin:2em 0 .6em;padding-top:.5em;border-top:1px solid var(--line)}
+h3{font-size:1.12em;margin:1.6em 0 .4em}
+h1,h2,h3{scroll-margin-top:64px}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+code{font:.88em/1.5 Consolas,"Cascadia Code",Menlo,monospace;background:var(--code-bg);
+padding:.12em .35em;border-radius:4px;overflow-wrap:anywhere}
+.code{position:relative;margin:1em 0}
+.code pre{margin:0;background:var(--pre-bg);color:var(--pre-text);padding:16px;border-radius:8px;overflow-x:auto}
+.code pre code{background:none;padding:0;color:inherit;font-size:14.5px;overflow-wrap:normal}
+.code .lang{position:absolute;top:6px;right:10px;font-size:11px;color:#8b95a1;text-transform:uppercase;
+letter-spacing:.05em;pointer-events:none}
+.code .copy{position:absolute;top:6px;right:8px;font:12px/1 inherit;color:#aeb7c2;background:#2b333c;
+border:1px solid #3a444f;border-radius:6px;padding:5px 8px;cursor:pointer;opacity:0;transition:opacity .15s}
+.code:hover .copy,.code .copy:focus-visible{opacity:1}
+.code:hover .lang{opacity:0}
+.t-kw{color:#c792ea}.t-str{color:#c3e88d}.t-com{color:#8791a0;font-style:italic}.t-num{color:#f78c6c}
+.t-fn{color:#82aaff}.t-def{color:#ffcb6b}
+details.sol{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0;padding:0 16px}
+details.sol summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}
+details.sol[open]{padding-bottom:8px}
+details.sol[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.table{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}
+.nav a{display:block;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.nav a:focus-visible,.toc a:focus-visible,.cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nav small{display:block;color:var(--muted);font-size:13px}
+.nav b{font-weight:600;color:var(--accent)}
+.nav .next{text-align:right;grid-column:2}
+.nav.top{margin:16px 0 0}
+.nav.top a{padding:8px 14px}
+.hero{padding:36px 0 8px}
+.hero h1{font-size:2.4em;margin:0 0 .3em}
+.hero p{font-size:1.1em;color:var(--muted);max-width:60ch;margin:0 0 1.2em}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none;
+padding:11px 20px;border-radius:10px}
+.toc{list-style:none;padding:0;margin:1em 0;display:grid;gap:8px}
+.toc a{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;
+border:1px solid var(--line);border-radius:10px;background:var(--panel);text-decoration:none;color:var(--text);
+transition:border-color .15s}
+.toc a:hover{border-color:var(--accent)}
+.toc .num{width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toc b{display:block;font-weight:600}
+.toc small{color:var(--muted);font-size:14px;line-height:1.4;display:block}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:0 16px 32px}
+@media(max-width:560px){body{font-size:16px}.hero h1{font-size:1.9em}.nav{grid-template-columns:1fr}
+.nav .next{grid-column:1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{.bar,.nav,footer{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+<a class="home" href="index.html">☰ Содержание</a><span class="where">12 из 23 · Глава 5А. pandas: приёмы и рецепты</span>
+</div><div class="progress"><i style="width:52%"></i></div></header>
+<main>
+<nav class="nav top"><a class="prev" href="05-pandas.html"><small>← Назад</small><b>Глава 5. pandas</b></a><a class="next" href="06-sbor-i-ochistka.html"><small>Вперёд →</small><b>Глава 6. Сбор и очистка данных</b></a></nav><h1 id="глава-5а-pandas-приёмы-и-рецепты">Глава 5А. pandas: приёмы и рецепты</h1>
+<p>Глава 5 научила основам. Здесь — то, чем пользуются каждый день после первого месяца работы: рецепты для типовых задач, приёмы для больших таблиц и ловушки, из-за которых получаются неверные числа.</p>
+<p>Данные для главы — таблица заказов из раздела 5.1 и небольшой справочник пользователей:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+
+df = pd.read_csv(<span class="t-str">&quot;orders.csv&quot;</span>, parse_dates=[<span class="t-str">&quot;date&quot;</span>])
+
+rng = np.random.default_rng(<span class="t-num">7</span>)
+users = pd.DataFrame({
+    <span class="t-str">&quot;user_id&quot;</span>: np.arange(<span class="t-num">1</span>, <span class="t-num">121</span>),
+    <span class="t-str">&quot;source&quot;</span>: rng.choice([<span class="t-str">&quot;реклама&quot;</span>, <span class="t-str">&quot;поиск&quot;</span>, <span class="t-str">&quot;друзья&quot;</span>], <span class="t-num">120</span>, p=[<span class="t-num">0.5</span>, <span class="t-num">0.3</span>, <span class="t-num">0.2</span>]),
+    <span class="t-str">&quot;signup&quot;</span>: pd.Timestamp(<span class="t-str">&quot;2025-12-01&quot;</span>) + pd.to_timedelta(rng.integers(<span class="t-num">0</span>, <span class="t-num">60</span>, <span class="t-num">120</span>), unit=<span class="t-str">&quot;D&quot;</span>),
+})</code></pre></div>
+<h2 id="5а1-типы-данных-и-память">5А.1. Типы данных и память</h2>
+<p>Правильные типы — это не аккуратность ради аккуратности: от них зависят скорость, память и корректность расчётов.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df.info(memory_usage=<span class="t-str">&quot;deep&quot;</span>)
+<span class="t-fn">print</span>(df.memory_usage(deep=<span class="t-num">True</span>))        <span class="t-com"># байт на каждый столбец</span></code></pre></div>
+<p>Столбцы типа <code>object</code> (обычные строки) — самые тяжёлые. Если уникальных значений мало, преврати столбец в <strong>категорию</strong>: значения хранятся один раз, а в таблице лежат короткие числовые коды.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>before = df.memory_usage(deep=<span class="t-num">True</span>).<span class="t-fn">sum</span>()
+
+df[<span class="t-str">&quot;city&quot;</span>] = df[<span class="t-str">&quot;city&quot;</span>].astype(<span class="t-str">&quot;category&quot;</span>)
+df[<span class="t-str">&quot;category&quot;</span>] = df[<span class="t-str">&quot;category&quot;</span>].astype(<span class="t-str">&quot;category&quot;</span>)
+df[<span class="t-str">&quot;user_id&quot;</span>] = pd.to_numeric(df[<span class="t-str">&quot;user_id&quot;</span>], downcast=<span class="t-str">&quot;integer&quot;</span>)
+df[<span class="t-str">&quot;amount&quot;</span>] = pd.to_numeric(df[<span class="t-str">&quot;amount&quot;</span>], downcast=<span class="t-str">&quot;float&quot;</span>)
+
+after = df.memory_usage(deep=<span class="t-num">True</span>).<span class="t-fn">sum</span>()
+<span class="t-fn">print</span>(<span class="t-str">f&quot;было {before / 1024:.0f} КБ, стало {after / 1024:.0f} КБ&quot;</span>)</code></pre></div>
+<p>Что даёт тип <code>category</code>:</p>
+<ul>
+<li>память сокращается в разы, группировки ускоряются;</li>
+<li>можно задать <strong>порядок</strong> значений — он будет использоваться при сортировке и на графиках:</li>
+</ul>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>sizes = pd.Categorical(
+    [<span class="t-str">&quot;средний&quot;</span>, <span class="t-str">&quot;мелкий&quot;</span>, <span class="t-str">&quot;крупный&quot;</span>, <span class="t-str">&quot;мелкий&quot;</span>],
+    categories=[<span class="t-str">&quot;мелкий&quot;</span>, <span class="t-str">&quot;средний&quot;</span>, <span class="t-str">&quot;крупный&quot;</span>],
+    ordered=<span class="t-num">True</span>,
+)
+<span class="t-fn">print</span>(pd.Series(sizes).sort_values().tolist())     <span class="t-com"># по смыслу, а не по алфавиту</span>
+<span class="t-fn">print</span>(pd.Series(sizes).<span class="t-fn">max</span>())</code></pre></div>
+<p>Обратная сторона: при группировке по категории pandas может показать и те значения, которых в данных нет. Пиши <code>groupby(..., observed=True)</code>, чтобы видеть только встретившиеся.</p>
+<h3 id="типы-сразу-при-чтении">Типы сразу при чтении</h3>
+<p>Быстрее всего задать типы прямо в <code>read_csv</code> — таблица не будет создаваться дважды:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df = pd.read_csv(
+    <span class="t-str">&quot;orders.csv&quot;</span>,
+    parse_dates=[<span class="t-str">&quot;date&quot;</span>],
+    dtype={<span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;category&quot;</span>, <span class="t-str">&quot;category&quot;</span>: <span class="t-str">&quot;category&quot;</span>, <span class="t-str">&quot;user_id&quot;</span>: <span class="t-str">&quot;int32&quot;</span>},
+    usecols=[<span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;category&quot;</span>, <span class="t-str">&quot;amount&quot;</span>],
+)</code></pre></div>
+<h3 id="parquet-вместо-csv">Parquet вместо CSV</h3>
+<p>CSV — текстовый формат: он большой, медленный и не хранит типы (даты приходится разбирать при каждом чтении). Для промежуточных результатов используй <strong>Parquet</strong>:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df.to_parquet(<span class="t-str">&quot;orders.parquet&quot;</span>)              <span class="t-com"># нужна библиотека: pip install pyarrow</span>
+df = pd.read_parquet(<span class="t-str">&quot;orders.parquet&quot;</span>)
+<span class="t-fn">print</span>(df.dtypes)                             <span class="t-com"># типы, включая даты и категории, сохранились</span></code></pre></div>
+<div class="table"><table><thead><tr><th></th><th>CSV</th><th>Parquet</th></tr></thead><tbody><tr><td>Размер</td><td>Большой</td><td>В 5–10 раз меньше</td></tr><tr><td>Скорость чтения</td><td>Медленно</td><td>Быстро</td></tr><tr><td>Типы столбцов</td><td>Теряются</td><td>Сохраняются</td></tr><tr><td>Чтение части столбцов</td><td>Читает всё</td><td><code>columns=[...]</code> читает только нужные</td></tr><tr><td>Открыть глазами</td><td>Можно</td><td>Нельзя</td></tr></tbody></table></div>
+<p>Правило: сырые данные оставляй как получил, обмен с людьми — CSV или Excel, всё промежуточное — Parquet.</p>
+<h2 id="5а2-условная-логика-без-циклов">5А.2. Условная логика без циклов</h2>
+<p>Пять способов создать столбец по условию — от простого к сложному.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com"># 1. Два варианта — np.where</span>
+df[<span class="t-str">&quot;segment&quot;</span>] = np.where(df[<span class="t-str">&quot;amount&quot;</span>] &gt;= <span class="t-num">5000</span>, <span class="t-str">&quot;крупный&quot;</span>, <span class="t-str">&quot;обычный&quot;</span>)
+
+<span class="t-com"># 2. Несколько условий — np.select: условия проверяются по порядку, берётся первое истинное</span>
+conditions = [
+    df[<span class="t-str">&quot;amount&quot;</span>] &gt;= <span class="t-num">10000</span>,
+    df[<span class="t-str">&quot;amount&quot;</span>] &gt;= <span class="t-num">5000</span>,
+    df[<span class="t-str">&quot;amount&quot;</span>] &gt;= <span class="t-num">1000</span>,
+]
+df[<span class="t-str">&quot;tier&quot;</span>] = np.select(conditions, [<span class="t-str">&quot;vip&quot;</span>, <span class="t-str">&quot;крупный&quot;</span>, <span class="t-str">&quot;средний&quot;</span>], default=<span class="t-str">&quot;мелкий&quot;</span>)
+
+<span class="t-com"># 3. Числовые интервалы — pd.cut (границы задаёшь сам)</span>
+df[<span class="t-str">&quot;bucket&quot;</span>] = pd.cut(df[<span class="t-str">&quot;amount&quot;</span>], bins=[<span class="t-num">0</span>, <span class="t-num">1000</span>, <span class="t-num">5000</span>, <span class="t-num">10000</span>, np.inf],
+                      labels=[<span class="t-str">&quot;до 1 тыс.&quot;</span>, <span class="t-str">&quot;1–5 тыс.&quot;</span>, <span class="t-str">&quot;5–10 тыс.&quot;</span>, <span class="t-str">&quot;от 10 тыс.&quot;</span>], right=<span class="t-num">False</span>)
+
+<span class="t-com"># 4. Равные по числу строк группы — pd.qcut</span>
+df[<span class="t-str">&quot;quartile&quot;</span>] = pd.qcut(df[<span class="t-str">&quot;amount&quot;</span>], q=<span class="t-num">4</span>, labels=[<span class="t-str">&quot;Q1&quot;</span>, <span class="t-str">&quot;Q2&quot;</span>, <span class="t-str">&quot;Q3&quot;</span>, <span class="t-str">&quot;Q4&quot;</span>])
+
+<span class="t-com"># 5. Замена значений по словарю — map</span>
+region = {<span class="t-str">&quot;Москва&quot;</span>: <span class="t-str">&quot;Центр&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>: <span class="t-str">&quot;Поволжье&quot;</span>, <span class="t-str">&quot;Самара&quot;</span>: <span class="t-str">&quot;Поволжье&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>: <span class="t-str">&quot;Урал&quot;</span>}
+df[<span class="t-str">&quot;region&quot;</span>] = df[<span class="t-str">&quot;city&quot;</span>].astype(<span class="t-fn">str</span>).<span class="t-fn">map</span>(region)
+
+<span class="t-fn">print</span>(df[[<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;segment&quot;</span>, <span class="t-str">&quot;tier&quot;</span>, <span class="t-str">&quot;bucket&quot;</span>, <span class="t-str">&quot;quartile&quot;</span>, <span class="t-str">&quot;region&quot;</span>]].head())</code></pre></div>
+<p>Тонкости:</p>
+<ul>
+<li><code>map</code> возвращает <code>NaN</code> для значений, которых нет в словаре. Это удобно: <code>df[&quot;region&quot;].isna().sum()</code> сразу покажет, что в справочнике чего-то не хватает.</li>
+<li><code>right=False</code> в <code>pd.cut</code> означает, что левая граница входит в интервал, правая — нет: <code>[0, 1000)</code>. Всегда проверяй, куда попадают значения ровно на границе.</li>
+<li><code>np.select</code> — аналог <code>CASE WHEN</code> из SQL, с той же логикой «первое подошедшее условие».</li>
+</ul>
+<p>Ещё два полезных метода:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df[<span class="t-str">&quot;amount_capped&quot;</span>] = df[<span class="t-str">&quot;amount&quot;</span>].clip(upper=df[<span class="t-str">&quot;amount&quot;</span>].quantile(<span class="t-num">0.99</span>))   <span class="t-com"># обрезать хвост</span>
+df[<span class="t-str">&quot;big_amount&quot;</span>] = df[<span class="t-str">&quot;amount&quot;</span>].where(df[<span class="t-str">&quot;amount&quot;</span>] &gt;= <span class="t-num">5000</span>)                  <span class="t-com"># остальное → NaN</span>
+df[<span class="t-str">&quot;repeat_amount&quot;</span>] = df[<span class="t-str">&quot;amount&quot;</span>].mask(df[<span class="t-str">&quot;amount&quot;</span>] &lt; <span class="t-num">1000</span>, <span class="t-num">0</span>)              <span class="t-com"># заменить по условию</span></code></pre></div>
+<p><code>where</code> <strong>оставляет</strong> значения, где условие истинно; <code>mask</code> — наоборот, <strong>заменяет</strong> их.</p>
+<h2 id="5а3-группировка-всё-что-нужно-знать">5А.3. Группировка: всё, что нужно знать</h2>
+<h3 id="четыре-вида-операций-над-группами">Четыре вида операций над группами</h3>
+<div class="table"><table><thead><tr><th>Операция</th><th>Что возвращает</th><th>Пример</th></tr></thead><tbody><tr><td><code>agg</code></td><td>Одну строку на группу</td><td>Выручка по городам</td></tr><tr><td><code>transform</code></td><td>Столбец исходной длины</td><td>Доля заказа в выручке города</td></tr><tr><td><code>filter</code></td><td>Исходные строки, но только из подходящих групп</td><td>Заказы пользователей с 5+ заказами</td></tr><tr><td><code>apply</code></td><td>Что угодно</td><td>Нестандартная логика; медленно</td></tr></tbody></table></div>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com"># agg: несколько функций и собственная функция</span>
+stats = df.groupby(<span class="t-str">&quot;city&quot;</span>, observed=<span class="t-num">True</span>).agg(
+    orders=(<span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;count&quot;</span>),
+    buyers=(<span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;nunique&quot;</span>),
+    revenue=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;sum&quot;</span>),
+    median_check=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;median&quot;</span>),
+    p90=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-kw">lambda</span> s: s.quantile(<span class="t-num">0.9</span>)),
+    big_share=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-kw">lambda</span> s: (s &gt;= <span class="t-num">5000</span>).mean()),
+)
+<span class="t-fn">print</span>(stats.<span class="t-fn">round</span>(<span class="t-num">2</span>))
+
+<span class="t-com"># transform: значение группы возвращается на каждую строку</span>
+df[<span class="t-str">&quot;city_revenue&quot;</span>] = df.groupby(<span class="t-str">&quot;city&quot;</span>, observed=<span class="t-num">True</span>)[<span class="t-str">&quot;amount&quot;</span>].transform(<span class="t-str">&quot;sum&quot;</span>)
+df[<span class="t-str">&quot;share_in_city&quot;</span>] = df[<span class="t-str">&quot;amount&quot;</span>] / df[<span class="t-str">&quot;city_revenue&quot;</span>]
+df[<span class="t-str">&quot;vs_city_median&quot;</span>] = df[<span class="t-str">&quot;amount&quot;</span>] / df.groupby(<span class="t-str">&quot;city&quot;</span>, observed=<span class="t-num">True</span>)[<span class="t-str">&quot;amount&quot;</span>].transform(<span class="t-str">&quot;median&quot;</span>)
+
+<span class="t-com"># filter: оставить строки только активных пользователей</span>
+active = df.groupby(<span class="t-str">&quot;user_id&quot;</span>).<span class="t-fn">filter</span>(<span class="t-kw">lambda</span> g: <span class="t-fn">len</span>(g) &gt;= <span class="t-num">5</span>)
+<span class="t-fn">print</span>(<span class="t-fn">len</span>(df), <span class="t-fn">len</span>(active), active[<span class="t-str">&quot;user_id&quot;</span>].nunique())</code></pre></div>
+<h3 id="доля-от-итога">Доля от итога</h3>
+<p>Одна из самых частых задач. Три варианта:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>revenue = df.groupby(<span class="t-str">&quot;city&quot;</span>, observed=<span class="t-num">True</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>()
+
+<span class="t-fn">print</span>((revenue / revenue.<span class="t-fn">sum</span>()).<span class="t-fn">round</span>(<span class="t-num">3</span>))                      <span class="t-com"># доля в общем итоге</span>
+
+by_month_city = (
+    df.assign(month=df[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;M&quot;</span>))
+      .groupby([<span class="t-str">&quot;month&quot;</span>, <span class="t-str">&quot;city&quot;</span>], observed=<span class="t-num">True</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>()
+)
+share_in_month = by_month_city / by_month_city.groupby(level=<span class="t-str">&quot;month&quot;</span>).transform(<span class="t-str">&quot;sum&quot;</span>)
+<span class="t-fn">print</span>(share_in_month.<span class="t-fn">round</span>(<span class="t-num">3</span>).head(<span class="t-num">8</span>))                          <span class="t-com"># доля города внутри месяца</span>
+
+<span class="t-fn">print</span>(pd.crosstab(df[<span class="t-str">&quot;city&quot;</span>], df[<span class="t-str">&quot;category&quot;</span>], values=df[<span class="t-str">&quot;amount&quot;</span>],
+                  aggfunc=<span class="t-str">&quot;sum&quot;</span>, normalize=<span class="t-str">&quot;index&quot;</span>).<span class="t-fn">round</span>(<span class="t-num">3</span>))   <span class="t-com"># доли по строкам</span></code></pre></div>
+<p>Параметр <code>normalize</code> у <code>crosstab</code> и <code>value_counts</code> избавляет от ручного деления: <code>&quot;index&quot;</code> — доли по строкам, <code>&quot;columns&quot;</code> — по столбцам, <code>&quot;all&quot;</code> — от общего итога.</p>
+<h3 id="топ-n-в-каждой-группе">Топ-N в каждой группе</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>top2 = (
+    df.sort_values(<span class="t-str">&quot;amount&quot;</span>, ascending=<span class="t-num">False</span>)
+      .groupby(<span class="t-str">&quot;city&quot;</span>, observed=<span class="t-num">True</span>)
+      .head(<span class="t-num">2</span>)
+      [[<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;amount&quot;</span>]]
+      .sort_values([<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;amount&quot;</span>], ascending=[<span class="t-num">True</span>, <span class="t-num">False</span>])
+)
+<span class="t-fn">print</span>(top2)</code></pre></div>
+<p><code>groupby().head(n)</code> возвращает первые <code>n</code> строк каждой группы в текущем порядке сортировки. Это аналог <code>ROW_NUMBER() ... WHERE rn &lt;= n</code>.</p>
+<h3 id="первое-последнее-и-строка-с-максимумом">Первое, последнее и «строка с максимумом»</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>ordered = df.sort_values([<span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;order_id&quot;</span>])
+
+first_last = ordered.groupby(<span class="t-str">&quot;user_id&quot;</span>).agg(
+    first_date=(<span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;first&quot;</span>),
+    last_date=(<span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;last&quot;</span>),
+    first_amount=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;first&quot;</span>),
+    last_amount=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;last&quot;</span>),
+    orders=(<span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;count&quot;</span>),
+)
+<span class="t-fn">print</span>(first_last.head())
+
+<span class="t-com"># Целая строка с максимальной суммой у каждого пользователя</span>
+best_order = df.loc[df.groupby(<span class="t-str">&quot;user_id&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].idxmax()]
+<span class="t-fn">print</span>(best_order[[<span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;amount&quot;</span>]].head())</code></pre></div>
+<p><code>idxmax</code> возвращает индекс строки с максимумом, а <code>loc</code> достаёт по этим индексам строки целиком.</p>
+<h3 id="номера-накопления-и-сдвиги-внутри-группы">Номера, накопления и сдвиги внутри группы</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>ordered = df.sort_values([<span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;order_id&quot;</span>]).copy()
+g = ordered.groupby(<span class="t-str">&quot;user_id&quot;</span>)
+
+ordered[<span class="t-str">&quot;order_num&quot;</span>] = g.cumcount() + <span class="t-num">1</span>                    <span class="t-com"># номер заказа</span>
+ordered[<span class="t-str">&quot;cum_amount&quot;</span>] = g[<span class="t-str">&quot;amount&quot;</span>].cumsum()               <span class="t-com"># накопительная сумма</span>
+ordered[<span class="t-str">&quot;prev_date&quot;</span>] = g[<span class="t-str">&quot;date&quot;</span>].shift(<span class="t-num">1</span>)                  <span class="t-com"># дата предыдущего заказа</span>
+ordered[<span class="t-str">&quot;days_since_prev&quot;</span>] = (ordered[<span class="t-str">&quot;date&quot;</span>] - ordered[<span class="t-str">&quot;prev_date&quot;</span>]).dt.days
+ordered[<span class="t-str">&quot;amount_change&quot;</span>] = g[<span class="t-str">&quot;amount&quot;</span>].diff()              <span class="t-com"># разница с предыдущим</span>
+ordered[<span class="t-str">&quot;rank_in_user&quot;</span>] = g[<span class="t-str">&quot;amount&quot;</span>].rank(method=<span class="t-str">&quot;dense&quot;</span>, ascending=<span class="t-num">False</span>)
+ordered[<span class="t-str">&quot;is_last&quot;</span>] = g.cumcount(ascending=<span class="t-num">False</span>) == <span class="t-num">0</span>      <span class="t-com"># последний заказ пользователя</span>
+
+<span class="t-fn">print</span>(ordered[[<span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;order_num&quot;</span>, <span class="t-str">&quot;cum_amount&quot;</span>, <span class="t-str">&quot;days_since_prev&quot;</span>]].head(<span class="t-num">8</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;Медианный интервал между заказами:&quot;</span>, ordered[<span class="t-str">&quot;days_since_prev&quot;</span>].median())</code></pre></div>
+<p>Перед любыми операциями «по порядку» таблицу нужно <strong>отсортировать</strong>: <code>cumcount</code>, <code>shift</code>, <code>diff</code>, <code>first</code> и <code>last</code> работают в том порядке, в каком лежат строки.</p>
+<h3 id="ловушки-группировки">Ловушки группировки</h3>
+<ul>
+<li><strong>Пропуски в ключе пропадают.</strong> По умолчанию строки с <code>NaN</code> в столбце группировки молча исключаются. Чтобы увидеть их отдельной группой, пиши <code>groupby(..., dropna=False)</code>.</li>
+<li><strong><code>count</code> против <code>size</code>.</strong> <code>size()</code> считает строки, <code>count()</code> — непустые значения. Числа различаются, если в столбце есть пропуски.</li>
+<li><strong>Среднее средних.</strong> Средний чек по городам и среднее из этих средних — разные числа: города с малым числом заказов получают тот же вес, что и крупные. Усредняй исходные строки или считай взвешенное среднее.</li>
+</ul>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>by_city = df.groupby(<span class="t-str">&quot;city&quot;</span>, observed=<span class="t-num">True</span>)[<span class="t-str">&quot;amount&quot;</span>].agg([<span class="t-str">&quot;mean&quot;</span>, <span class="t-str">&quot;size&quot;</span>])
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(by_city[<span class="t-str">&quot;mean&quot;</span>].mean(), <span class="t-num">1</span>))                                   <span class="t-com"># среднее средних — неверно</span>
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(df[<span class="t-str">&quot;amount&quot;</span>].mean(), <span class="t-num">1</span>))                                      <span class="t-com"># настоящее среднее</span>
+<span class="t-fn">print</span>(<span class="t-fn">round</span>(np.average(by_city[<span class="t-str">&quot;mean&quot;</span>], weights=by_city[<span class="t-str">&quot;size&quot;</span>]), <span class="t-num">1</span>))     <span class="t-com"># взвешенное — совпадает</span></code></pre></div>
+<h2 id="5а4-индексы-и-multiindex">5А.4. Индексы и MultiIndex</h2>
+<p>Индекс — подписи строк. Обычно это просто номера, но после группировки по нескольким столбцам появляется <strong>многоуровневый</strong> индекс, и с ним нужно уметь обращаться.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>multi = (
+    df.assign(month=df[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;M&quot;</span>).astype(<span class="t-fn">str</span>))
+      .groupby([<span class="t-str">&quot;month&quot;</span>, <span class="t-str">&quot;city&quot;</span>], observed=<span class="t-num">True</span>)[<span class="t-str">&quot;amount&quot;</span>]
+      .<span class="t-fn">sum</span>()
+)
+<span class="t-fn">print</span>(multi.head(<span class="t-num">6</span>))
+
+<span class="t-fn">print</span>(multi.loc[<span class="t-str">&quot;2026-01&quot;</span>])                       <span class="t-com"># срез по первому уровню</span>
+<span class="t-fn">print</span>(multi.loc[(<span class="t-str">&quot;2026-01&quot;</span>, <span class="t-str">&quot;Москва&quot;</span>)])           <span class="t-com"># одно значение</span>
+<span class="t-fn">print</span>(multi.xs(<span class="t-str">&quot;Москва&quot;</span>, level=<span class="t-str">&quot;city&quot;</span>))           <span class="t-com"># срез по второму уровню</span>
+
+wide = multi.unstack(<span class="t-str">&quot;city&quot;</span>)                      <span class="t-com"># уровень индекса → столбцы</span>
+<span class="t-fn">print</span>(wide)
+<span class="t-fn">print</span>(wide.stack().head(<span class="t-num">4</span>))                       <span class="t-com"># обратно в длинный вид</span></code></pre></div>
+<p><code>unstack</code> и <code>stack</code> — пара взаимно обратных операций: первая разворачивает уровень индекса в столбцы (получается сводная таблица), вторая сворачивает обратно.</p>
+<p>Практический совет: если MultiIndex мешает, избавляйся от него сразу — <code>reset_index()</code> или <code>groupby(..., as_index=False)</code>. С плоской таблицей работать проще.</p>
+<p>После <code>agg</code> с несколькими функциями многоуровневыми становятся <strong>названия столбцов</strong>. Их удобно «сплющить»:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>flat = df.pivot_table(index=<span class="t-str">&quot;city&quot;</span>, columns=<span class="t-str">&quot;category&quot;</span>, values=<span class="t-str">&quot;amount&quot;</span>,
+                      aggfunc=[<span class="t-str">&quot;sum&quot;</span>, <span class="t-str">&quot;count&quot;</span>], observed=<span class="t-num">True</span>)
+flat.columns = [<span class="t-str">f&quot;{func}_{category}&quot;</span> <span class="t-kw">for</span> func, category <span class="t-kw">in</span> flat.columns]
+<span class="t-fn">print</span>(flat.head())</code></pre></div>
+<p>Именованная агрегация из главы 5 (<code>имя=(&quot;столбец&quot;, &quot;функция&quot;)</code>) хороша как раз тем, что не создаёт многоуровневых названий.</p>
+<h2 id="5а5-соединения-приёмы-и-ловушки">5А.5. Соединения: приёмы и ловушки</h2>
+<h3 id="проверка-соединения-indicator">Проверка соединения: indicator</h3>
+<p>Параметр <code>indicator=True</code> добавляет столбец <code>_merge</code>, который говорит, откуда строка: из обеих таблиц, только из левой или только из правой.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>users_part = users[users[<span class="t-str">&quot;user_id&quot;</span>] &lt;= <span class="t-num">100</span>]           <span class="t-com"># сделаем справочник неполным</span>
+
+checked = df.merge(users_part, on=<span class="t-str">&quot;user_id&quot;</span>, how=<span class="t-str">&quot;outer&quot;</span>, indicator=<span class="t-num">True</span>)
+<span class="t-fn">print</span>(checked[<span class="t-str">&quot;_merge&quot;</span>].value_counts())</code></pre></div>
+<p>Это лучшая диагностика перед любым анализом: сразу видно, сколько заказов осталось без пользователя и сколько пользователей без заказов.</p>
+<h3 id="антисоединение">Антисоединение</h3>
+<p>Строки левой таблицы, которым не нашлось пары, — аналог <code>LEFT JOIN ... WHERE right.id IS NULL</code>:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>orphans = (
+    df.merge(users_part[[<span class="t-str">&quot;user_id&quot;</span>]], on=<span class="t-str">&quot;user_id&quot;</span>, how=<span class="t-str">&quot;left&quot;</span>, indicator=<span class="t-num">True</span>)
+      .query(<span class="t-str">&quot;_merge == &#x27;left_only&#x27;&quot;</span>)
+      .drop(columns=<span class="t-str">&quot;_merge&quot;</span>)
+)
+<span class="t-fn">print</span>(<span class="t-fn">len</span>(orphans), <span class="t-str">&quot;заказов без пользователя в справочнике&quot;</span>)
+
+<span class="t-com"># То же проще, если нужен только фильтр</span>
+orphans_simple = df[~df[<span class="t-str">&quot;user_id&quot;</span>].isin(users_part[<span class="t-str">&quot;user_id&quot;</span>])]
+<span class="t-kw">assert</span> <span class="t-fn">len</span>(orphans) == <span class="t-fn">len</span>(orphans_simple)</code></pre></div>
+<p><code>isin</code> и <code>~isin</code> — самый быстрый способ отфильтровать таблицу по списку значений из другой таблицы.</p>
+<h3 id="validate">validate</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>merged = df.merge(users, on=<span class="t-str">&quot;user_id&quot;</span>, how=<span class="t-str">&quot;left&quot;</span>, validate=<span class="t-str">&quot;many_to_one&quot;</span>)
+<span class="t-kw">assert</span> <span class="t-fn">len</span>(merged) == <span class="t-fn">len</span>(df)</code></pre></div>
+<p>Четыре значения <code>validate</code>: <code>&quot;one_to_one&quot;</code>, <code>&quot;one_to_many&quot;</code>, <code>&quot;many_to_one&quot;</code>, <code>&quot;many_to_many&quot;</code>. Указывай всегда: если в справочнике окажутся дубликаты ключа, получишь ошибку сразу, а не завышенную выручку через неделю.</p>
+<h3 id="соединение-по-ближайшему-значению-merge_asof">Соединение по ближайшему значению: merge_asof</h3>
+<p>Задача: к каждому заказу подтянуть курс валюты, <strong>действовавший на момент заказа</strong>, хотя курс обновлялся не каждый день. Обычный <code>merge</code> требует точного совпадения, <code>merge_asof</code> берёт ближайшее предыдущее значение.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>rates = pd.DataFrame({
+    <span class="t-str">&quot;date&quot;</span>: pd.to_datetime([<span class="t-str">&quot;2026-01-01&quot;</span>, <span class="t-str">&quot;2026-01-20&quot;</span>, <span class="t-str">&quot;2026-02-10&quot;</span>, <span class="t-str">&quot;2026-03-05&quot;</span>]),
+    <span class="t-str">&quot;usd_rate&quot;</span>: [<span class="t-num">90.0</span>, <span class="t-num">92.5</span>, <span class="t-num">89.0</span>, <span class="t-num">91.2</span>],
+})
+
+with_rate = pd.merge_asof(
+    df.sort_values(<span class="t-str">&quot;date&quot;</span>),
+    rates.sort_values(<span class="t-str">&quot;date&quot;</span>),
+    on=<span class="t-str">&quot;date&quot;</span>,
+    direction=<span class="t-str">&quot;backward&quot;</span>,          <span class="t-com"># последнее значение не позже даты заказа</span>
+)
+with_rate[<span class="t-str">&quot;amount_usd&quot;</span>] = with_rate[<span class="t-str">&quot;amount&quot;</span>] / with_rate[<span class="t-str">&quot;usd_rate&quot;</span>]
+<span class="t-fn">print</span>(with_rate[[<span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;usd_rate&quot;</span>, <span class="t-str">&quot;amount_usd&quot;</span>]].iloc[::<span class="t-num">100</span>].<span class="t-fn">round</span>(<span class="t-num">2</span>))</code></pre></div>
+<p>Обе таблицы должны быть отсортированы по ключу. Тем же приёмом находят последнюю цену, действовавший тариф, ближайшее предшествующее событие. Параметр <code>by=&quot;user_id&quot;</code> ищет ближайшее значение отдельно для каждого пользователя.</p>
+<h3 id="все-комбинации-cross-join">Все комбинации: cross join</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>cities = pd.DataFrame({<span class="t-str">&quot;city&quot;</span>: [<span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;Казань&quot;</span>, <span class="t-str">&quot;Уфа&quot;</span>, <span class="t-str">&quot;Самара&quot;</span>]})
+months = pd.DataFrame({<span class="t-str">&quot;month&quot;</span>: [<span class="t-str">&quot;2026-01&quot;</span>, <span class="t-str">&quot;2026-02&quot;</span>, <span class="t-str">&quot;2026-03&quot;</span>]})
+
+grid = cities.merge(months, how=<span class="t-str">&quot;cross&quot;</span>)
+<span class="t-fn">print</span>(<span class="t-fn">len</span>(grid))                                  <span class="t-com"># 12 — каждая пара «город, месяц»</span></code></pre></div>
+<p>Зачем это нужно: в отчёте должны быть <strong>все</strong> комбинации, включая те, где продаж не было. Строим полную сетку, присоединяем к ней факты через <code>left</code> и заполняем пропуски нулями.</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>facts = (
+    df.assign(month=df[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;M&quot;</span>).astype(<span class="t-fn">str</span>), city=df[<span class="t-str">&quot;city&quot;</span>].astype(<span class="t-fn">str</span>))
+      .groupby([<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;month&quot;</span>], as_index=<span class="t-num">False</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>()
+)
+report = grid.merge(facts, on=[<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;month&quot;</span>], how=<span class="t-str">&quot;left&quot;</span>).fillna({<span class="t-str">&quot;amount&quot;</span>: <span class="t-num">0</span>})
+<span class="t-fn">print</span>(report.head())</code></pre></div>
+<h3 id="склейка-с-пометкой-источника">Склейка с пометкой источника</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>jan = df[df[<span class="t-str">&quot;date&quot;</span>].dt.month == <span class="t-num">1</span>]
+feb = df[df[<span class="t-str">&quot;date&quot;</span>].dt.month == <span class="t-num">2</span>]
+
+combined = pd.concat([jan, feb], keys=[<span class="t-str">&quot;январь&quot;</span>, <span class="t-str">&quot;февраль&quot;</span>], names=[<span class="t-str">&quot;source&quot;</span>]).reset_index(level=<span class="t-str">&quot;source&quot;</span>)
+<span class="t-fn">print</span>(combined[<span class="t-str">&quot;source&quot;</span>].value_counts())</code></pre></div>
+<p>Типичный рабочий сценарий — собрать много файлов в одну таблицу:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> pathlib <span class="t-kw">import</span> Path
+
+frames = [
+    pd.read_csv(path).assign(source_file=path.name)
+    <span class="t-kw">for</span> path <span class="t-kw">in</span> <span class="t-fn">sorted</span>(Path(<span class="t-str">&quot;.&quot;</span>).glob(<span class="t-str">&quot;orders_2026-*.csv&quot;</span>))
+]
+all_orders = pd.concat(frames, ignore_index=<span class="t-num">True</span>) <span class="t-kw">if</span> frames <span class="t-kw">else</span> pd.DataFrame()</code></pre></div>
+<p>Столбец с именем файла позволяет потом найти, откуда пришла подозрительная строка.</p>
+<h2 id="5а6-изменение-формы-таблицы">5А.6. Изменение формы таблицы</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>monthly = (
+    df.assign(month=df[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;M&quot;</span>).astype(<span class="t-fn">str</span>), city=df[<span class="t-str">&quot;city&quot;</span>].astype(<span class="t-fn">str</span>))
+      .groupby([<span class="t-str">&quot;month&quot;</span>, <span class="t-str">&quot;city&quot;</span>], as_index=<span class="t-num">False</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>()
+)
+
+wide = monthly.pivot(index=<span class="t-str">&quot;month&quot;</span>, columns=<span class="t-str">&quot;city&quot;</span>, values=<span class="t-str">&quot;amount&quot;</span>)       <span class="t-com"># длинная → широкая</span>
+<span class="t-fn">print</span>(wide.<span class="t-fn">round</span>(<span class="t-num">0</span>))
+
+long = wide.reset_index().melt(id_vars=<span class="t-str">&quot;month&quot;</span>, var_name=<span class="t-str">&quot;city&quot;</span>, value_name=<span class="t-str">&quot;amount&quot;</span>)  <span class="t-com"># обратно</span>
+<span class="t-fn">print</span>(long.head())</code></pre></div>
+<div class="table"><table><thead><tr><th>Метод</th><th>Что делает</th><th>Особенность</th></tr></thead><tbody><tr><td><code>pivot</code></td><td>Длинная → широкая</td><td>Без агрегации: упадёт, если пара «индекс, столбец» повторяется</td></tr><tr><td><code>pivot_table</code></td><td>Длинная → широкая</td><td>С агрегацией: дубликаты сворачивает функцией</td></tr><tr><td><code>melt</code></td><td>Широкая → длинная</td><td>Обратная операция</td></tr><tr><td><code>stack</code> / <code>unstack</code></td><td>То же через индекс</td><td>Удобны после <code>groupby</code></td></tr><tr><td><code>explode</code></td><td>Список в ячейке → отдельные строки</td><td>Для вложенных данных</td></tr></tbody></table></div>
+<h3 id="explode">explode</h3>
+<p>Когда в ячейке лежит список — теги, товары в заказе, ответы с множественным выбором:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>survey = pd.DataFrame({
+    <span class="t-str">&quot;user_id&quot;</span>: [<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">3</span>],
+    <span class="t-str">&quot;interests&quot;</span>: [<span class="t-str">&quot;книги, техника&quot;</span>, <span class="t-str">&quot;одежда&quot;</span>, <span class="t-str">&quot;техника, одежда, книги&quot;</span>],
+})
+
+exploded = (
+    survey.assign(interests=survey[<span class="t-str">&quot;interests&quot;</span>].<span class="t-fn">str</span>.split(<span class="t-str">&quot;, &quot;</span>))
+          .explode(<span class="t-str">&quot;interests&quot;</span>)
+)
+<span class="t-fn">print</span>(exploded)
+<span class="t-fn">print</span>(exploded[<span class="t-str">&quot;interests&quot;</span>].value_counts())</code></pre></div>
+<p>Вложенный JSON из API разворачивают функцией <code>pd.json_normalize(data, record_path=..., meta=[...])</code>.</p>
+<h2 id="5а7-даты-и-время">5А.7. Даты и время</h2>
+<h3 id="что-можно-достать-из-даты">Что можно достать из даты</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>d = df[<span class="t-str">&quot;date&quot;</span>]
+
+parts = pd.DataFrame({
+    <span class="t-str">&quot;date&quot;</span>: d,
+    <span class="t-str">&quot;year&quot;</span>: d.dt.year,
+    <span class="t-str">&quot;month&quot;</span>: d.dt.month,
+    <span class="t-str">&quot;day&quot;</span>: d.dt.day,
+    <span class="t-str">&quot;weekday&quot;</span>: d.dt.dayofweek,                <span class="t-com"># 0 — понедельник</span>
+    <span class="t-str">&quot;weekday_name&quot;</span>: d.dt.day_name(),
+    <span class="t-str">&quot;is_weekend&quot;</span>: d.dt.dayofweek &gt;= <span class="t-num">5</span>,
+    <span class="t-str">&quot;week&quot;</span>: d.dt.isocalendar().week,
+    <span class="t-str">&quot;quarter&quot;</span>: d.dt.quarter,
+    <span class="t-str">&quot;month_start&quot;</span>: d.dt.to_period(<span class="t-str">&quot;M&quot;</span>).dt.start_time,
+    <span class="t-str">&quot;week_start&quot;</span>: d.dt.to_period(<span class="t-str">&quot;W&quot;</span>).dt.start_time,
+})
+<span class="t-fn">print</span>(parts.head(<span class="t-num">3</span>).T)</code></pre></div>
+<p>Столбец «начало периода» (<code>month_start</code>, <code>week_start</code>) — самый удобный ключ группировки по времени: это настоящая дата, она правильно сортируется и корректно ложится на ось графика.</p>
+<h3 id="арифметика-дат">Арифметика дат</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>today = pd.Timestamp(<span class="t-str">&quot;2026-04-01&quot;</span>)
+
+<span class="t-fn">print</span>((today - df[<span class="t-str">&quot;date&quot;</span>]).dt.days.head(<span class="t-num">3</span>))                        <span class="t-com"># дней назад</span>
+<span class="t-fn">print</span>((df[<span class="t-str">&quot;date&quot;</span>] + pd.Timedelta(days=<span class="t-num">30</span>)).head(<span class="t-num">3</span>))                <span class="t-com"># плюс 30 дней</span>
+<span class="t-fn">print</span>((df[<span class="t-str">&quot;date&quot;</span>] + pd.DateOffset(months=<span class="t-num">1</span>)).head(<span class="t-num">3</span>))              <span class="t-com"># плюс календарный месяц</span>
+<span class="t-fn">print</span>(pd.date_range(<span class="t-str">&quot;2026-01-01&quot;</span>, <span class="t-str">&quot;2026-01-10&quot;</span>, freq=<span class="t-str">&quot;D&quot;</span>))         <span class="t-com"># ряд дат</span>
+<span class="t-fn">print</span>(pd.date_range(<span class="t-str">&quot;2026-01-01&quot;</span>, periods=<span class="t-num">4</span>, freq=<span class="t-str">&quot;W-MON&quot;</span>))        <span class="t-com"># четыре понедельника</span></code></pre></div>
+<p><code>Timedelta</code> прибавляет фиксированное число дней, <code>DateOffset</code> — календарные единицы: к 31 января плюс месяц получится последний день февраля.</p>
+<h3 id="ресемплинг-и-окна">Ресемплинг и окна</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>daily = df.set_index(<span class="t-str">&quot;date&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].resample(<span class="t-str">&quot;D&quot;</span>).<span class="t-fn">sum</span>()
+
+frame = pd.DataFrame({
+    <span class="t-str">&quot;revenue&quot;</span>: daily,
+    <span class="t-str">&quot;ma_7&quot;</span>: daily.rolling(<span class="t-num">7</span>).mean(),                       <span class="t-com"># скользящее среднее за 7 дней</span>
+    <span class="t-str">&quot;ma_7_min3&quot;</span>: daily.rolling(<span class="t-num">7</span>, min_periods=<span class="t-num">3</span>).mean(),   <span class="t-com"># считать, если есть хотя бы 3 значения</span>
+    <span class="t-str">&quot;cumulative&quot;</span>: daily.cumsum(),                          <span class="t-com"># накопительный итог</span>
+    <span class="t-str">&quot;expanding_mean&quot;</span>: daily.expanding().mean(),            <span class="t-com"># среднее с начала ряда</span>
+    <span class="t-str">&quot;ewm&quot;</span>: daily.ewm(span=<span class="t-num">7</span>).mean(),                       <span class="t-com"># экспоненциальное сглаживание</span>
+    <span class="t-str">&quot;wow&quot;</span>: daily.pct_change(<span class="t-num">7</span>),                            <span class="t-com"># изменение к тому же дню прошлой недели</span>
+})
+<span class="t-fn">print</span>(frame.<span class="t-fn">round</span>(<span class="t-num">1</span>).tail(<span class="t-num">5</span>))</code></pre></div>
+<ul>
+<li><code>rolling(n)</code> — окно фиксированной ширины;</li>
+<li><code>expanding()</code> — окно от начала до текущей строки;</li>
+<li><code>ewm</code> — недавние значения весят больше; быстрее реагирует на изменения, чем обычное скользящее среднее;</li>
+<li><code>pct_change(7)</code> на дневных данных сравнивает с тем же днём недели — честнее, чем сравнение со вчерашним днём.</li>
+</ul>
+<p>Окно можно задать и в единицах времени — <code>rolling(&quot;7D&quot;)</code>. Тогда оно корректно работает даже при пропущенных днях.</p>
+<h3 id="сравнение-периодов">Сравнение периодов</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>monthly = df.set_index(<span class="t-str">&quot;date&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].resample(<span class="t-str">&quot;MS&quot;</span>).<span class="t-fn">sum</span>().to_frame(<span class="t-str">&quot;revenue&quot;</span>)
+monthly[<span class="t-str">&quot;prev_month&quot;</span>] = monthly[<span class="t-str">&quot;revenue&quot;</span>].shift(<span class="t-num">1</span>)
+monthly[<span class="t-str">&quot;mom&quot;</span>] = monthly[<span class="t-str">&quot;revenue&quot;</span>].pct_change()
+monthly[<span class="t-str">&quot;share_of_quarter&quot;</span>] = monthly[<span class="t-str">&quot;revenue&quot;</span>] / monthly[<span class="t-str">&quot;revenue&quot;</span>].<span class="t-fn">sum</span>()
+<span class="t-fn">print</span>(monthly.<span class="t-fn">round</span>(<span class="t-num">3</span>))</code></pre></div>
+<p>Для сравнения с прошлым годом на месячных данных используют <code>shift(12)</code> и <code>pct_change(12)</code>.</p>
+<p>Последний месяц или неделя в данных почти всегда <strong>неполные</strong>. Сравнивать неполный период с полным нельзя — либо отбрось его, либо сравнивай одинаковое число дней.</p>
+<h3 id="часовые-пояса">Часовые пояса</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>moment = pd.Series(pd.to_datetime([<span class="t-str">&quot;2026-03-01 22:30&quot;</span>, <span class="t-str">&quot;2026-03-01 23:45&quot;</span>]))
+
+utc = moment.dt.tz_localize(<span class="t-str">&quot;UTC&quot;</span>)                      <span class="t-com"># «это время в UTC»</span>
+moscow = utc.dt.tz_convert(<span class="t-str">&quot;Europe/Moscow&quot;</span>)             <span class="t-com"># перевести в московское</span>
+<span class="t-fn">print</span>(moscow.dt.date.tolist())                          <span class="t-com"># уже 2 марта</span></code></pre></div>
+<p>События в базах обычно хранятся в UTC. Если группировать по дням, не переведя время в нужный пояс, вечерние события уедут на другой день, и дневные метрики не сойдутся с отчётами коллег. Источник половины вопросов «почему у нас разные цифры».</p>
+<h2 id="5а8-строки-и-регулярные-выражения">5А.8. Строки и регулярные выражения</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>raw = pd.DataFrame({
+    <span class="t-str">&quot;contact&quot;</span>: [<span class="t-str">&quot;Иван Петров &lt;ivan@mail.ru&gt;&quot;</span>, <span class="t-str">&quot;anna.s@yandex.ru&quot;</span>, <span class="t-str">&quot;Пётр (тел. +7 999 123-45-67)&quot;</span>, <span class="t-num">None</span>],
+    <span class="t-str">&quot;sku&quot;</span>: [<span class="t-str">&quot;BK-2024-0015&quot;</span>, <span class="t-str">&quot;TC-2025-0107&quot;</span>, <span class="t-str">&quot;bk-2024-0020&quot;</span>, <span class="t-str">&quot;CL-2023-0003&quot;</span>],
+})
+
+raw[<span class="t-str">&quot;email&quot;</span>] = raw[<span class="t-str">&quot;contact&quot;</span>].<span class="t-fn">str</span>.extract(<span class="t-str">r&quot;([\w.+-]+@[\w-]+\.[\w.]+)&quot;</span>)
+raw[<span class="t-str">&quot;has_phone&quot;</span>] = raw[<span class="t-str">&quot;contact&quot;</span>].<span class="t-fn">str</span>.contains(<span class="t-str">r&quot;\+7&quot;</span>, na=<span class="t-num">False</span>)
+raw[<span class="t-str">&quot;digits&quot;</span>] = raw[<span class="t-str">&quot;contact&quot;</span>].<span class="t-fn">str</span>.replace(<span class="t-str">r&quot;\D&quot;</span>, <span class="t-str">&quot;&quot;</span>, regex=<span class="t-num">True</span>)
+
+raw[[<span class="t-str">&quot;sku_type&quot;</span>, <span class="t-str">&quot;sku_year&quot;</span>, <span class="t-str">&quot;sku_num&quot;</span>]] = raw[<span class="t-str">&quot;sku&quot;</span>].<span class="t-fn">str</span>.upper().<span class="t-fn">str</span>.split(<span class="t-str">&quot;-&quot;</span>, expand=<span class="t-num">True</span>)
+raw[<span class="t-str">&quot;sku_year&quot;</span>] = raw[<span class="t-str">&quot;sku_year&quot;</span>].astype(<span class="t-fn">int</span>)
+
+<span class="t-fn">print</span>(raw[[<span class="t-str">&quot;email&quot;</span>, <span class="t-str">&quot;has_phone&quot;</span>, <span class="t-str">&quot;sku_type&quot;</span>, <span class="t-str">&quot;sku_year&quot;</span>, <span class="t-str">&quot;sku_num&quot;</span>]])</code></pre></div>
+<ul>
+<li><code>str.extract</code> достаёт часть строки по шаблону; то, что в круглых скобках, становится столбцом;</li>
+<li><code>str.contains(..., na=False)</code> — проверка наличия; <code>na=False</code> говорит считать пропуски как «не содержит», иначе в фильтре будет ошибка;</li>
+<li><code>str.split(..., expand=True)</code> разносит части по отдельным столбцам.</li>
+</ul>
+<p>Минимум регулярных выражений, которого хватает на 90 % задач:</p>
+<div class="table"><table><thead><tr><th>Шаблон</th><th>Значение</th><th>Шаблон</th><th>Значение</th></tr></thead><tbody><tr><td><code>\d</code></td><td>Цифра</td><td><code>+</code></td><td>Один или больше</td></tr><tr><td><code>\D</code></td><td>Не цифра</td><td><code>*</code></td><td>Ноль или больше</td></tr><tr><td><code>\w</code></td><td>Буква, цифра или <code>_</code></td><td><code>?</code></td><td>Ноль или один</td></tr><tr><td><code>\s</code></td><td>Пробельный символ</td><td><code>{4}</code></td><td>Ровно четыре</td></tr><tr><td><code>.</code></td><td>Любой символ</td><td><code>^</code> и <code>$</code></td><td>Начало и конец строки</td></tr><tr><td><code>[абв]</code></td><td>Один из символов</td><td><code>(...)</code></td><td>Группа для извлечения</td></tr><tr><td><code>[^абв]</code></td><td>Любой, кроме этих</td><td><code>\|</code></td><td>Или</td></tr></tbody></table></div>
+<p>Шаблоны пиши в «сырых» строках — с буквой <code>r</code> перед кавычками, как в примере.</p>
+<h2 id="5а9-пропуски-продвинутые-приёмы">5А.9. Пропуски: продвинутые приёмы</h2>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>series = pd.Series([<span class="t-num">10.0</span>, np.nan, np.nan, <span class="t-num">40.0</span>, np.nan, <span class="t-num">60.0</span>],
+                   index=pd.date_range(<span class="t-str">&quot;2026-01-01&quot;</span>, periods=<span class="t-num">6</span>))
+
+<span class="t-fn">print</span>(pd.DataFrame({
+    <span class="t-str">&quot;исходный&quot;</span>: series,
+    <span class="t-str">&quot;ffill&quot;</span>: series.ffill(),                       <span class="t-com"># протянуть последнее известное значение</span>
+    <span class="t-str">&quot;bfill&quot;</span>: series.bfill(),                       <span class="t-com"># взять следующее известное</span>
+    <span class="t-str">&quot;ffill_limit&quot;</span>: series.ffill(limit=<span class="t-num">1</span>),          <span class="t-com"># не дальше чем на один шаг</span>
+    <span class="t-str">&quot;interpolate&quot;</span>: series.interpolate(),           <span class="t-com"># линейно между соседями</span>
+}))</code></pre></div>
+<ul>
+<li><code>ffill</code> подходит для состояний, которые сохраняются до изменения: цена, статус, остаток на складе.</li>
+<li><code>interpolate</code> — для плавно меняющихся величин: температура, курс.</li>
+<li>Для событий и денег (заказы, выручка) пропуск обычно означает <strong>ноль</strong>, а не «как вчера».</li>
+</ul>
+<p>Заполнение внутри групп — чтобы значения одного пользователя не перетекали к другому:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>panel = pd.DataFrame({
+    <span class="t-str">&quot;user_id&quot;</span>: [<span class="t-num">1</span>, <span class="t-num">1</span>, <span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">2</span>, <span class="t-num">2</span>],
+    <span class="t-str">&quot;plan&quot;</span>: [<span class="t-str">&quot;basic&quot;</span>, <span class="t-num">None</span>, <span class="t-num">None</span>, <span class="t-num">None</span>, <span class="t-str">&quot;pro&quot;</span>, <span class="t-num">None</span>],
+})
+panel[<span class="t-str">&quot;plan_filled&quot;</span>] = panel.groupby(<span class="t-str">&quot;user_id&quot;</span>)[<span class="t-str">&quot;plan&quot;</span>].ffill()
+<span class="t-fn">print</span>(panel)</code></pre></div>
+<p>У второго пользователя первая строка осталась пустой: до неё у него не было известных значений, и это правильно.</p>
+<h2 id="5а10-скорость">5А.10. Скорость</h2>
+<h3 id="иерархия-способов">Иерархия способов</h3>
+<p>От быстрого к медленному:</p>
+<ol>
+<li><strong>Векторные операции</strong> pandas и NumPy — <code>df[&quot;a&quot;] * df[&quot;b&quot;]</code>, <code>np.where</code>, методы <code>.str</code> и <code>.dt</code>.</li>
+<li><strong><code>map</code></strong> со словарём.</li>
+<li><strong><code>apply</code></strong> по столбцу.</li>
+<li><strong><code>apply(axis=1)</code></strong> по строкам — медленно.</li>
+<li><strong><code>iterrows()</code></strong> и цикл <code>for</code> — очень медленно.</li>
+</ol>
+<p>Разница не в процентах, а в сотни раз:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> time
+
+big = pd.DataFrame({
+    <span class="t-str">&quot;price&quot;</span>: np.random.default_rng(<span class="t-num">0</span>).uniform(<span class="t-num">100</span>, <span class="t-num">1000</span>, <span class="t-num">200_000</span>),
+    <span class="t-str">&quot;qty&quot;</span>: np.random.default_rng(<span class="t-num">1</span>).integers(<span class="t-num">1</span>, <span class="t-num">10</span>, <span class="t-num">200_000</span>),
+})
+
+<span class="t-kw">def</span> <span class="t-def">timed</span>(label, func):
+    start = time.perf_counter()
+    func()
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;{label:&lt;28} {time.perf_counter() - start:.4f} с&quot;</span>)
+
+timed(<span class="t-str">&quot;векторно&quot;</span>, <span class="t-kw">lambda</span>: big[<span class="t-str">&quot;price&quot;</span>] * big[<span class="t-str">&quot;qty&quot;</span>])
+timed(<span class="t-str">&quot;apply по строкам&quot;</span>, <span class="t-kw">lambda</span>: big.head(<span class="t-num">20_000</span>).apply(<span class="t-kw">lambda</span> r: r[<span class="t-str">&quot;price&quot;</span>] * r[<span class="t-str">&quot;qty&quot;</span>], axis=<span class="t-num">1</span>))
+timed(<span class="t-str">&quot;iterrows&quot;</span>, <span class="t-kw">lambda</span>: [r[<span class="t-str">&quot;price&quot;</span>] * r[<span class="t-str">&quot;qty&quot;</span>] <span class="t-kw">for</span> _, r <span class="t-kw">in</span> big.head(<span class="t-num">20_000</span>).iterrows()])</code></pre></div>
+<p>Два последних замера сделаны на таблице в десять раз меньше — и всё равно они намного медленнее.</p>
+<p>Как переписать типичный <code>apply(axis=1)</code>:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com"># Медленно</span>
+<span class="t-com"># df[&quot;label&quot;] = df.apply(lambda r: &quot;крупный в Москве&quot; if r[&quot;city&quot;] == &quot;Москва&quot; and r[&quot;amount&quot;] &gt; 5000 else &quot;прочее&quot;, axis=1)</span>
+
+<span class="t-com"># Быстро</span>
+df[<span class="t-str">&quot;label&quot;</span>] = np.where((df[<span class="t-str">&quot;city&quot;</span>] == <span class="t-str">&quot;Москва&quot;</span>) &amp; (df[<span class="t-str">&quot;amount&quot;</span>] &gt; <span class="t-num">5000</span>), <span class="t-str">&quot;крупный в Москве&quot;</span>, <span class="t-str">&quot;прочее&quot;</span>)</code></pre></div>
+<h3 id="большие-файлы">Большие файлы</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-com"># 1. Читать только нужные столбцы и строки</span>
+sample = pd.read_csv(<span class="t-str">&quot;orders.csv&quot;</span>, usecols=[<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;amount&quot;</span>], nrows=<span class="t-num">1000</span>)
+
+<span class="t-com"># 2. Читать по частям и сразу агрегировать</span>
+totals = {}
+<span class="t-kw">for</span> chunk <span class="t-kw">in</span> pd.read_csv(<span class="t-str">&quot;orders.csv&quot;</span>, usecols=[<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;amount&quot;</span>], chunksize=<span class="t-num">200</span>):
+    <span class="t-kw">for</span> city, value <span class="t-kw">in</span> chunk.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>().items():
+        totals[city] = totals.get(city, <span class="t-num">0</span>) + value
+<span class="t-fn">print</span>(pd.Series(totals).<span class="t-fn">round</span>(<span class="t-num">0</span>))</code></pre></div>
+<p>Обработка по частям работает для операций, которые можно сложить: суммы, количества, минимумы и максимумы. Для медианы и числа уникальных значений она не годится.</p>
+<h3 id="когда-pandas-уже-мало">Когда pandas уже мало</h3>
+<ul>
+<li>Данные лежат в базе — агрегируй в SQL и забирай готовый результат (раздел 3.9).</li>
+<li>Файл не помещается в память — <strong>DuckDB</strong> позволяет писать SQL прямо к файлам CSV и Parquet на диске, а <strong>Polars</strong> — библиотека с похожими на pandas идеями, но намного быстрее.</li>
+<li>Данных терабайты — это уже Spark и хранилища из главы 11.</li>
+</ul>
+<p>Сначала проверь простое: нужные ли столбцы ты читаешь, правильные ли типы, нет ли <code>apply</code> по строкам. Обычно этого хватает.</p>
+<h2 id="5а11-ловушки-из-за-которых-получаются-неверные-числа">5А.11. Ловушки, из-за которых получаются неверные числа</h2>
+<h3 id="изменение-копии">Изменение копии</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>moscow = df[df[<span class="t-str">&quot;city&quot;</span>] == <span class="t-str">&quot;Москва&quot;</span>]
+<span class="t-com"># moscow[&quot;discount&quot;] = 0.1            # предупреждение SettingWithCopyWarning: меняем копию или оригинал?</span>
+
+moscow = df[df[<span class="t-str">&quot;city&quot;</span>] == <span class="t-str">&quot;Москва&quot;</span>].copy()      <span class="t-com"># явно говорим: это отдельная таблица</span>
+moscow[<span class="t-str">&quot;discount&quot;</span>] = <span class="t-num">0.1</span>
+
+df.loc[df[<span class="t-str">&quot;city&quot;</span>] == <span class="t-str">&quot;Москва&quot;</span>, <span class="t-str">&quot;discount&quot;</span>] = <span class="t-num">0.1</span>    <span class="t-com"># а так меняется исходная таблица</span></code></pre></div>
+<p>Правило: вырезал часть таблицы и собираешься её менять — добавь <code>.copy()</code>. Хочешь изменить исходную таблицу по условию — используй <code>df.loc[условие, столбец] = значение</code>.</p>
+<h3 id="выравнивание-по-индексу">Выравнивание по индексу</h3>
+<p>pandas совмещает данные <strong>по подписям индекса</strong>, а не по порядку строк. Обычно это удобно, но иногда даёт неожиданный результат:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>a = pd.Series([<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">3</span>], index=[<span class="t-num">0</span>, <span class="t-num">1</span>, <span class="t-num">2</span>])
+b = pd.Series([<span class="t-num">10</span>, <span class="t-num">20</span>, <span class="t-num">30</span>], index=[<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">3</span>])
+<span class="t-fn">print</span>(a + b)                 <span class="t-com"># NaN, 12, 23, NaN — сложились только совпавшие подписи</span></code></pre></div>
+<p>Отсюда типичная ошибка: отфильтровал или отсортировал таблицу, потом присвоил столбец из другой — и значения встали не на свои места или превратились в <code>NaN</code>. Лекарство — <code>reset_index(drop=True)</code> после фильтрации либо присваивание через <code>.to_numpy()</code>, когда нужно именно «по порядку».</p>
+<h3 id="сравнение-с-nan">Сравнение с NaN</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>s = pd.Series([<span class="t-num">1.0</span>, np.nan, <span class="t-num">3.0</span>])
+
+<span class="t-fn">print</span>((s == np.nan).<span class="t-fn">sum</span>())      <span class="t-com"># 0 — так пропуски не найти</span>
+<span class="t-fn">print</span>(s.isna().<span class="t-fn">sum</span>())           <span class="t-com"># 1</span>
+<span class="t-fn">print</span>((s &gt; <span class="t-num">2</span>).<span class="t-fn">sum</span>(), (s &lt;= <span class="t-num">2</span>).<span class="t-fn">sum</span>())   <span class="t-com"># 1 и 1: пропуск не попал никуда</span></code></pre></div>
+<p>Строка с пропуском не проходит ни условие, ни его отрицание. Если доли «больше порога» и «не больше порога» не дают в сумме 100 % — ищи пропуски.</p>
+<h3 id="сравнение-дробных-чисел">Сравнение дробных чисел</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-fn">print</span>(<span class="t-num">0.1</span> + <span class="t-num">0.2</span> == <span class="t-num">0.3</span>)                    <span class="t-com"># False</span>
+<span class="t-fn">print</span>(np.isclose(<span class="t-num">0.1</span> + <span class="t-num">0.2</span>, <span class="t-num">0.3</span>))          <span class="t-com"># True</span></code></pre></div>
+<p>Дробные числа хранятся приближённо. Для сравнений используй <code>np.isclose</code>, для денег — храни суммы в копейках целыми числами или округляй перед сравнением.</p>
+<h3 id="inplace">inplace</h3>
+<p>Параметр <code>inplace=True</code> (<code>df.drop(..., inplace=True)</code>) не ускоряет код и ломает цепочки методов. Пиши <code>df = df.drop(...)</code>.</p>
+<h3 id="дубликаты-в-индексе">Дубликаты в индексе</h3>
+<p>После <code>concat</code> без <code>ignore_index=True</code> подписи строк повторяются, и <code>df.loc[0]</code> внезапно возвращает несколько строк. Проверка: <code>df.index.is_unique</code>.</p>
+<h3 id="тихое-изменение-типа">Тихое изменение типа</h3>
+<p>Целочисленный столбец после появления пропусков становится дробным: <code>user_id</code> превращается в <code>101.0</code>, и соединение по нему с целочисленным ключом может не сработать. Используй тип <code>&quot;Int64&quot;</code> (с заглавной буквы) — он умеет хранить пропуски в целых числах:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>ids = pd.Series([<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">None</span>])
+<span class="t-fn">print</span>(ids.dtype, ids.astype(<span class="t-str">&quot;Int64&quot;</span>).dtype)     <span class="t-com"># float64 Int64</span></code></pre></div>
+<h2 id="5а12-рецепты-аналитика">5А.12. Рецепты аналитика</h2>
+<h3 id="парето-и-abc-анализ">Парето и ABC-анализ</h3>
+<p>Какие клиенты дают основную выручку:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>abc = (
+    df.groupby(<span class="t-str">&quot;user_id&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>()
+      .sort_values(ascending=<span class="t-num">False</span>)
+      .to_frame(<span class="t-str">&quot;revenue&quot;</span>)
+)
+abc[<span class="t-str">&quot;cum_share&quot;</span>] = abc[<span class="t-str">&quot;revenue&quot;</span>].cumsum() / abc[<span class="t-str">&quot;revenue&quot;</span>].<span class="t-fn">sum</span>()
+abc[<span class="t-str">&quot;group&quot;</span>] = np.select([abc[<span class="t-str">&quot;cum_share&quot;</span>] &lt;= <span class="t-num">0.8</span>, abc[<span class="t-str">&quot;cum_share&quot;</span>] &lt;= <span class="t-num">0.95</span>], [<span class="t-str">&quot;A&quot;</span>, <span class="t-str">&quot;B&quot;</span>], default=<span class="t-str">&quot;C&quot;</span>)
+
+summary = abc.groupby(<span class="t-str">&quot;group&quot;</span>).agg(users=(<span class="t-str">&quot;revenue&quot;</span>, <span class="t-str">&quot;count&quot;</span>), revenue=(<span class="t-str">&quot;revenue&quot;</span>, <span class="t-str">&quot;sum&quot;</span>))
+summary[<span class="t-str">&quot;users_share&quot;</span>] = summary[<span class="t-str">&quot;users&quot;</span>] / summary[<span class="t-str">&quot;users&quot;</span>].<span class="t-fn">sum</span>()
+summary[<span class="t-str">&quot;revenue_share&quot;</span>] = summary[<span class="t-str">&quot;revenue&quot;</span>] / summary[<span class="t-str">&quot;revenue&quot;</span>].<span class="t-fn">sum</span>()
+<span class="t-fn">print</span>(summary.<span class="t-fn">round</span>(<span class="t-num">3</span>))</code></pre></div>
+<p>Группа A — клиенты, дающие первые 80 % выручки, B — следующие 15 %, C — оставшиеся 5 %.</p>
+<h3 id="топ-n-и-прочие">Топ-N и «Прочие»</h3>
+<p>Чтобы на графике не было двадцати мелких столбцов:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">top_n_with_other</span>(series: pd.Series, n: <span class="t-fn">int</span> = <span class="t-num">3</span>, other: <span class="t-fn">str</span> = <span class="t-str">&quot;Прочие&quot;</span>) -&gt; pd.Series:
+    <span class="t-str">&quot;&quot;&quot;Оставляет n самых частых значений, остальные заменяет на «Прочие».&quot;&quot;&quot;</span>
+    top = series.value_counts().nlargest(n).index
+    <span class="t-kw">return</span> series.where(series.isin(top), other)
+
+<span class="t-fn">print</span>(top_n_with_other(df[<span class="t-str">&quot;city&quot;</span>].astype(<span class="t-fn">str</span>), n=<span class="t-num">2</span>).value_counts())</code></pre></div>
+<h3 id="первая-и-повторная-покупка">Первая и повторная покупка</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>first_date = df.groupby(<span class="t-str">&quot;user_id&quot;</span>)[<span class="t-str">&quot;date&quot;</span>].transform(<span class="t-str">&quot;min&quot;</span>)
+df[<span class="t-str">&quot;is_first_order&quot;</span>] = df[<span class="t-str">&quot;date&quot;</span>] == first_date
+df[<span class="t-str">&quot;days_from_first&quot;</span>] = (df[<span class="t-str">&quot;date&quot;</span>] - first_date).dt.days
+
+<span class="t-fn">print</span>(df.groupby(<span class="t-str">&quot;is_first_order&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].agg([<span class="t-str">&quot;count&quot;</span>, <span class="t-str">&quot;mean&quot;</span>, <span class="t-str">&quot;median&quot;</span>]).<span class="t-fn">round</span>(<span class="t-num">0</span>))</code></pre></div>
+<p><code>transform(&quot;min&quot;)</code> раздаёт дату первой покупки на каждую строку — после этого возраст клиента на момент заказа считается одним вычитанием.</p>
+<h3 id="сравнение-двух-периодов">Сравнение двух периодов</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>period_a = df[df[<span class="t-str">&quot;date&quot;</span>].between(<span class="t-str">&quot;2026-01-01&quot;</span>, <span class="t-str">&quot;2026-01-31&quot;</span>)]
+period_b = df[df[<span class="t-str">&quot;date&quot;</span>].between(<span class="t-str">&quot;2026-02-01&quot;</span>, <span class="t-str">&quot;2026-02-28&quot;</span>)]
+
+<span class="t-kw">def</span> <span class="t-def">metrics</span>(data: pd.DataFrame) -&gt; pd.Series:
+    <span class="t-kw">return</span> pd.Series({
+        <span class="t-str">&quot;выручка&quot;</span>: data[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>(),
+        <span class="t-str">&quot;заказы&quot;</span>: <span class="t-fn">len</span>(data),
+        <span class="t-str">&quot;покупатели&quot;</span>: data[<span class="t-str">&quot;user_id&quot;</span>].nunique(),
+        <span class="t-str">&quot;средний чек&quot;</span>: data[<span class="t-str">&quot;amount&quot;</span>].mean(),
+        <span class="t-str">&quot;заказов на покупателя&quot;</span>: <span class="t-fn">len</span>(data) / data[<span class="t-str">&quot;user_id&quot;</span>].nunique(),
+    })
+
+comparison = pd.DataFrame({<span class="t-str">&quot;январь&quot;</span>: metrics(period_a), <span class="t-str">&quot;февраль&quot;</span>: metrics(period_b)})
+comparison[<span class="t-str">&quot;изменение, %&quot;</span>] = (comparison[<span class="t-str">&quot;февраль&quot;</span>] / comparison[<span class="t-str">&quot;январь&quot;</span>] - <span class="t-num">1</span>) * <span class="t-num">100</span>
+<span class="t-fn">print</span>(comparison.<span class="t-fn">round</span>(<span class="t-num">1</span>))</code></pre></div>
+<p>Функция <code>metrics</code> — единое определение метрик: одинаковый расчёт для любого среза данных. Это приём из главы 2В, и он же готовит к разложению «выручка = покупатели × заказов на покупателя × средний чек».</p>
+<h3 id="сессии-из-лога-событий">Сессии из лога событий</h3>
+<p>Приём «флаг начала + накопительная сумма» из раздела 3А.10, только в pandas:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>log = pd.DataFrame({
+    <span class="t-str">&quot;user_id&quot;</span>: [<span class="t-num">1</span>, <span class="t-num">1</span>, <span class="t-num">1</span>, <span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">2</span>],
+    <span class="t-str">&quot;time&quot;</span>: pd.to_datetime([<span class="t-str">&quot;2026-03-01 10:00&quot;</span>, <span class="t-str">&quot;2026-03-01 10:05&quot;</span>, <span class="t-str">&quot;2026-03-01 15:30&quot;</span>,
+                            <span class="t-str">&quot;2026-03-01 15:32&quot;</span>, <span class="t-str">&quot;2026-03-01 11:00&quot;</span>, <span class="t-str">&quot;2026-03-01 11:50&quot;</span>]),
+}).sort_values([<span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;time&quot;</span>])
+
+gap = log.groupby(<span class="t-str">&quot;user_id&quot;</span>)[<span class="t-str">&quot;time&quot;</span>].diff()
+log[<span class="t-str">&quot;new_session&quot;</span>] = gap.isna() | (gap &gt; pd.Timedelta(minutes=<span class="t-num">30</span>))
+log[<span class="t-str">&quot;session_id&quot;</span>] = log.groupby(<span class="t-str">&quot;user_id&quot;</span>)[<span class="t-str">&quot;new_session&quot;</span>].cumsum()
+
+<span class="t-fn">print</span>(log)
+<span class="t-fn">print</span>(log.groupby([<span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;session_id&quot;</span>])[<span class="t-str">&quot;time&quot;</span>].agg([<span class="t-str">&quot;min&quot;</span>, <span class="t-str">&quot;max&quot;</span>, <span class="t-str">&quot;count&quot;</span>]))</code></pre></div>
+<h3 id="проверки-качества-одной-функцией">Проверки качества одной функцией</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">def</span> <span class="t-def">check_table</span>(data: pd.DataFrame, key: <span class="t-fn">str</span>) -&gt; <span class="t-num">None</span>:
+    <span class="t-str">&quot;&quot;&quot;Быстрая диагностика таблицы перед анализом.&quot;&quot;&quot;</span>
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;Строк: {len(data):,}, столбцов: {data.shape[1]}&quot;</span>)
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;Ключ «{key}» уникален: {data[key].is_unique}&quot;</span>)
+    <span class="t-fn">print</span>(<span class="t-str">f&quot;Полных дубликатов: {data.duplicated().sum()}&quot;</span>)
+    missing = data.isna().mean()
+    <span class="t-kw">if</span> missing.<span class="t-fn">any</span>():
+        <span class="t-fn">print</span>(<span class="t-str">&quot;Доля пропусков:&quot;</span>)
+        <span class="t-fn">print</span>(missing[missing &gt; <span class="t-num">0</span>].<span class="t-fn">round</span>(<span class="t-num">3</span>).to_string())
+    <span class="t-kw">for</span> column <span class="t-kw">in</span> data.select_dtypes(<span class="t-str">&quot;datetime&quot;</span>).columns:
+        <span class="t-fn">print</span>(<span class="t-str">f&quot;{column}: от {data[column].min().date()} до {data[column].max().date()}&quot;</span>)
+
+check_table(df, key=<span class="t-str">&quot;order_id&quot;</span>)</code></pre></div>
+<p>Заведи такую функцию в своём модуле и запускай на каждой новой таблице.</p>
+<h2 id="5а13-вывод-и-экспорт">5А.13. Вывод и экспорт</h2>
+<h3 id="оформление-таблицы-в-ноутбуке">Оформление таблицы в ноутбуке</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>report = df.groupby(<span class="t-str">&quot;city&quot;</span>, observed=<span class="t-num">True</span>).agg(
+    orders=(<span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;count&quot;</span>), revenue=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;sum&quot;</span>), avg_check=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;mean&quot;</span>),
+)
+report[<span class="t-str">&quot;share&quot;</span>] = report[<span class="t-str">&quot;revenue&quot;</span>] / report[<span class="t-str">&quot;revenue&quot;</span>].<span class="t-fn">sum</span>()
+
+styled = (
+    report.sort_values(<span class="t-str">&quot;revenue&quot;</span>, ascending=<span class="t-num">False</span>)
+          .style
+          .<span class="t-fn">format</span>({<span class="t-str">&quot;revenue&quot;</span>: <span class="t-str">&quot;{:,.0f}&quot;</span>, <span class="t-str">&quot;avg_check&quot;</span>: <span class="t-str">&quot;{:,.0f}&quot;</span>, <span class="t-str">&quot;share&quot;</span>: <span class="t-str">&quot;{:.1%}&quot;</span>})
+          .background_gradient(subset=[<span class="t-str">&quot;revenue&quot;</span>], cmap=<span class="t-str">&quot;Greens&quot;</span>)
+          .bar(subset=[<span class="t-str">&quot;share&quot;</span>], color=<span class="t-str">&quot;#b8d8cf&quot;</span>)
+)
+styled          <span class="t-com"># отобразится оформленной таблицей в Jupyter</span></code></pre></div>
+<p>Форматирование через <code>.style</code> меняет только отображение: числа в таблице остаются числами. Не превращай их в строки вручную ради красивого вывода — с такими столбцами потом нельзя считать.</p>
+<p>Настройки отображения:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>pd.set_option(<span class="t-str">&quot;display.max_columns&quot;</span>, <span class="t-num">50</span>)            <span class="t-com"># показывать до 50 столбцов</span>
+pd.set_option(<span class="t-str">&quot;display.float_format&quot;</span>, <span class="t-str">&quot;{:,.2f}&quot;</span>.<span class="t-fn">format</span>)
+pd.reset_option(<span class="t-str">&quot;display.float_format&quot;</span>)             <span class="t-com"># вернуть как было</span></code></pre></div>
+<h3 id="экспорт">Экспорт</h3>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>report.to_csv(<span class="t-str">&quot;report.csv&quot;</span>, encoding=<span class="t-str">&quot;utf-8-sig&quot;</span>)     <span class="t-com"># utf-8-sig — чтобы Excel правильно показал кириллицу</span>
+
+<span class="t-kw">with</span> pd.ExcelWriter(<span class="t-str">&quot;report.xlsx&quot;</span>) <span class="t-kw">as</span> writer:         <span class="t-com"># нужна библиотека: pip install openpyxl</span>
+    report.to_excel(writer, sheet_name=<span class="t-str">&quot;По городам&quot;</span>)
+    df.head(<span class="t-num">100</span>).to_excel(writer, sheet_name=<span class="t-str">&quot;Примеры заказов&quot;</span>, index=<span class="t-num">False</span>)
+
+<span class="t-fn">print</span>(report.<span class="t-fn">round</span>(<span class="t-num">2</span>).to_markdown())                  <span class="t-com"># таблица для README; pip install tabulate</span></code></pre></div>
+<h2 id="практика-на-github">Практика на GitHub</h2>
+<ul>
+<li><a href="https://github.com/guipsamora/pandas_exercises" target="_blank" rel="noopener">guipsamora/pandas_exercises</a> — разделы про группировку, <code>apply</code>, соединения и временные ряды: решай их, сознательно выбирая векторный способ вместо <code>apply</code>.</li>
+<li><a href="https://github.com/jakevdp/PythonDataScienceHandbook" target="_blank" rel="noopener">jakevdp/PythonDataScienceHandbook</a> — в главе 3 ноутбуки про иерархическую индексацию, сводные таблицы, векторные строковые операции, временные ряды и высокопроизводительные <code>eval</code> и <code>query</code>.</li>
+<li><a href="https://github.com/wesm/pydata-book" target="_blank" rel="noopener">wesm/pydata-book</a> — ноутбуки <code>ch07</code> (очистка и строки), <code>ch08</code> (соединения и изменение формы), <code>ch10</code> (группировка), <code>ch11</code> (временные ряды), <code>ch12</code> (категориальные данные и цепочки методов).</li>
+<li><a href="https://github.com/jvns/pandas-cookbook" target="_blank" rel="noopener">jvns/pandas-cookbook</a> — главы про строковые операции и даты на реальных данных.</li>
+<li><a href="https://github.com/Yorko/mlcourse.ai" target="_blank" rel="noopener">Yorko/mlcourse.ai</a> — в первой теме курса много приёмов группировки и сводных таблиц на задаче анализа оттока.</li>
+</ul>
+<h2 id="задания">Задания</h2>
+<p>На <code>orders.csv</code>, если не сказано иное:</p>
+<ol>
+<li>Приведи столбцы к экономным типам и сохрани таблицу в Parquet. Во сколько раз сократилась память? Сравни размеры файлов CSV и Parquet.</li>
+<li>Через <code>np.select</code> раздели заказы на четыре группы по сумме и посчитай для каждой долю в числе заказов и долю в выручке.</li>
+<li>Для каждого города найди три категории-лидера по выручке и долю каждой в выручке города.</li>
+<li>Для каждого пользователя посчитай число заказов, средний интервал между заказами в днях и число дней с последнего заказа до 1 апреля 2026 года.</li>
+<li>Построй отчёт «город × месяц» с выручкой так, чтобы в нём были все комбинации, включая отсутствующие. Проверь, что итог совпадает с общей выручкой.</li>
+<li>Посчитай выручку по дням, скользящее среднее за 7 дней и изменение к тому же дню предыдущей недели. В какой день недели выручка в среднем максимальна?</li>
+<li>Проведи ABC-анализ по пользователям. Какую долю клиентов составляет группа A?</li>
+<li>Дан столбец строк вида <code>&quot;Заказ №1047 от 15.03.2026, сумма 12 450 руб.&quot;</code>. Извлеки номер, дату (как дату) и сумму (как число).</li>
+<li>Перепиши без <code>apply</code>: <code>df.apply(lambda r: r[&quot;amount&quot;] * 0.9 if r[&quot;category&quot;] == &quot;Книги&quot; and r[&quot;amount&quot;] &gt; 3000 else r[&quot;amount&quot;], axis=1)</code>.</li>
+<li>Присоедини к заказам справочник <code>users</code> и найди канал привлечения с самым высоким средним числом заказов на пользователя. Убедись, что соединение не изменило число строк.</li>
+</ol>
+<h2 id="проверь-себя">Проверь себя</h2>
+<ul>
+<li>Что даёт тип <code>category</code> и какая у него особенность при группировке?</li>
+<li>Чем <code>agg</code>, <code>transform</code> и <code>filter</code> отличаются друг от друга?</li>
+<li>Почему «среднее средних» даёт неверный результат?</li>
+<li>Что показывает <code>indicator=True</code> в <code>merge</code>?</li>
+<li>Когда нужен <code>merge_asof</code>?</li>
+<li>Чем <code>pivot</code> отличается от <code>pivot_table</code>?</li>
+<li>Чем <code>rolling</code> отличается от <code>expanding</code>?</li>
+<li>Почему <code>apply(axis=1)</code> медленный и чем его заменять?</li>
+<li>Что такое выравнивание по индексу и как оно может испортить результат?</li>
+<li>Как найти пропуски и почему <code>== np.nan</code> не работает?</li>
+</ul>
+<h2 id="решения">Решения</h2>
+<p>Во всех решениях данные загружаются так:</p>
+<div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">import</span> numpy <span class="t-kw">as</span> np
+<span class="t-kw">import</span> pandas <span class="t-kw">as</span> pd
+
+df = pd.read_csv(<span class="t-str">&quot;orders.csv&quot;</span>, parse_dates=[<span class="t-str">&quot;date&quot;</span>])</code></pre></div>
+<details class="sol"><summary>Задание 1. Типы и Parquet</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code><span class="t-kw">from</span> pathlib <span class="t-kw">import</span> Path
+
+before = df.memory_usage(deep=<span class="t-num">True</span>).<span class="t-fn">sum</span>()
+
+compact = df.astype({<span class="t-str">&quot;city&quot;</span>: <span class="t-str">&quot;category&quot;</span>, <span class="t-str">&quot;category&quot;</span>: <span class="t-str">&quot;category&quot;</span>})
+compact[<span class="t-str">&quot;order_id&quot;</span>] = pd.to_numeric(compact[<span class="t-str">&quot;order_id&quot;</span>], downcast=<span class="t-str">&quot;integer&quot;</span>)
+compact[<span class="t-str">&quot;user_id&quot;</span>] = pd.to_numeric(compact[<span class="t-str">&quot;user_id&quot;</span>], downcast=<span class="t-str">&quot;integer&quot;</span>)
+compact[<span class="t-str">&quot;amount&quot;</span>] = pd.to_numeric(compact[<span class="t-str">&quot;amount&quot;</span>], downcast=<span class="t-str">&quot;float&quot;</span>)
+
+after = compact.memory_usage(deep=<span class="t-num">True</span>).<span class="t-fn">sum</span>()
+<span class="t-fn">print</span>(<span class="t-str">f&quot;Память: {before / 1024:.0f} → {after / 1024:.0f} КБ, в {before / after:.1f} раза меньше&quot;</span>)
+
+compact.to_parquet(<span class="t-str">&quot;orders.parquet&quot;</span>)
+csv_size = Path(<span class="t-str">&quot;orders.csv&quot;</span>).stat().st_size
+parquet_size = Path(<span class="t-str">&quot;orders.parquet&quot;</span>).stat().st_size
+<span class="t-fn">print</span>(<span class="t-str">f&quot;Файлы: CSV {csv_size / 1024:.0f} КБ, Parquet {parquet_size / 1024:.0f} КБ&quot;</span>)</code></pre></div>
+<p>Основную экономию памяти дают два текстовых столбца. На таблице в 500 строк Parquet может выиграть у CSV немного или даже проиграть: у формата есть служебные данные фиксированного размера. Преимущество проявляется на сотнях тысяч строк.</p></details>
+<details class="sol"><summary>Задание 2. Группы по сумме</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>conditions = [df[<span class="t-str">&quot;amount&quot;</span>] &gt;= <span class="t-num">10000</span>, df[<span class="t-str">&quot;amount&quot;</span>] &gt;= <span class="t-num">5000</span>, df[<span class="t-str">&quot;amount&quot;</span>] &gt;= <span class="t-num">1000</span>]
+df[<span class="t-str">&quot;tier&quot;</span>] = np.select(conditions, [<span class="t-str">&quot;от 10 тыс.&quot;</span>, <span class="t-str">&quot;5–10 тыс.&quot;</span>, <span class="t-str">&quot;1–5 тыс.&quot;</span>], default=<span class="t-str">&quot;до 1 тыс.&quot;</span>)
+
+order = [<span class="t-str">&quot;до 1 тыс.&quot;</span>, <span class="t-str">&quot;1–5 тыс.&quot;</span>, <span class="t-str">&quot;5–10 тыс.&quot;</span>, <span class="t-str">&quot;от 10 тыс.&quot;</span>]
+tiers = df.groupby(<span class="t-str">&quot;tier&quot;</span>).agg(orders=(<span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;count&quot;</span>), revenue=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;sum&quot;</span>)).reindex(order)
+tiers[<span class="t-str">&quot;orders_share&quot;</span>] = tiers[<span class="t-str">&quot;orders&quot;</span>] / tiers[<span class="t-str">&quot;orders&quot;</span>].<span class="t-fn">sum</span>()
+tiers[<span class="t-str">&quot;revenue_share&quot;</span>] = tiers[<span class="t-str">&quot;revenue&quot;</span>] / tiers[<span class="t-str">&quot;revenue&quot;</span>].<span class="t-fn">sum</span>()
+<span class="t-fn">print</span>(tiers.<span class="t-fn">round</span>(<span class="t-num">3</span>))</code></pre></div>
+<p>Условия в <code>np.select</code> идут от самого строгого к самому мягкому: берётся первое истинное. Обычно выясняется, что небольшая доля крупных заказов даёт непропорционально большую долю выручки — с этого наблюдения начинается разговор о сегментации.</p></details>
+<details class="sol"><summary>Задание 3. Категории-лидеры по городам</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>by_city_category = df.groupby([<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;category&quot;</span>], as_index=<span class="t-num">False</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>()
+by_city_category[<span class="t-str">&quot;share&quot;</span>] = (
+    by_city_category[<span class="t-str">&quot;amount&quot;</span>] / by_city_category.groupby(<span class="t-str">&quot;city&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].transform(<span class="t-str">&quot;sum&quot;</span>)
+)
+
+top3 = (
+    by_city_category.sort_values([<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;amount&quot;</span>], ascending=[<span class="t-num">True</span>, <span class="t-num">False</span>])
+                    .groupby(<span class="t-str">&quot;city&quot;</span>)
+                    .head(<span class="t-num">3</span>)
+)
+<span class="t-fn">print</span>(top3.<span class="t-fn">round</span>(<span class="t-num">3</span>))</code></pre></div>
+<p>Долю считаем <strong>до</strong> отбора лидеров: иначе знаменателем стала бы сумма только по трём категориям. В наших данных категорий всего три, поэтому в результат попадут все — на настоящих данных список будет длиннее.</p></details>
+<details class="sol"><summary>Задание 4. Профиль пользователя</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>REPORT_DATE = pd.Timestamp(<span class="t-str">&quot;2026-04-01&quot;</span>)
+
+ordered = df.sort_values([<span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;order_id&quot;</span>]).copy()
+ordered[<span class="t-str">&quot;gap_days&quot;</span>] = ordered.groupby(<span class="t-str">&quot;user_id&quot;</span>)[<span class="t-str">&quot;date&quot;</span>].diff().dt.days
+
+profile = ordered.groupby(<span class="t-str">&quot;user_id&quot;</span>).agg(
+    orders=(<span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;count&quot;</span>),
+    avg_gap_days=(<span class="t-str">&quot;gap_days&quot;</span>, <span class="t-str">&quot;mean&quot;</span>),
+    last_order=(<span class="t-str">&quot;date&quot;</span>, <span class="t-str">&quot;max&quot;</span>),
+)
+profile[<span class="t-str">&quot;days_since_last&quot;</span>] = (REPORT_DATE - profile[<span class="t-str">&quot;last_order&quot;</span>]).dt.days
+<span class="t-fn">print</span>(profile.<span class="t-fn">round</span>(<span class="t-num">1</span>).head())
+
+at_risk = profile[profile[<span class="t-str">&quot;days_since_last&quot;</span>] &gt; <span class="t-num">2</span> * profile[<span class="t-str">&quot;avg_gap_days&quot;</span>]]
+<span class="t-fn">print</span>(<span class="t-str">f&quot;Не покупали дольше двух своих обычных интервалов: {len(at_risk)}&quot;</span>)</code></pre></div>
+<p>У пользователя с одним заказом <code>avg_gap_days</code> — <code>NaN</code>: интервала не существует. В сравнение для <code>at_risk</code> такие пользователи не попадут, и это корректно — для них нужен отдельный критерий.</p></details>
+<details class="sol"><summary>Задание 5. Полная сетка «город × месяц»</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>df[<span class="t-str">&quot;month&quot;</span>] = df[<span class="t-str">&quot;date&quot;</span>].dt.to_period(<span class="t-str">&quot;M&quot;</span>).astype(<span class="t-fn">str</span>)
+
+grid = (
+    pd.DataFrame({<span class="t-str">&quot;city&quot;</span>: df[<span class="t-str">&quot;city&quot;</span>].unique()})
+      .merge(pd.DataFrame({<span class="t-str">&quot;month&quot;</span>: <span class="t-fn">sorted</span>(df[<span class="t-str">&quot;month&quot;</span>].unique())}), how=<span class="t-str">&quot;cross&quot;</span>)
+)
+facts = df.groupby([<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;month&quot;</span>], as_index=<span class="t-num">False</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>()
+
+report = grid.merge(facts, on=[<span class="t-str">&quot;city&quot;</span>, <span class="t-str">&quot;month&quot;</span>], how=<span class="t-str">&quot;left&quot;</span>, validate=<span class="t-str">&quot;one_to_one&quot;</span>).fillna({<span class="t-str">&quot;amount&quot;</span>: <span class="t-num">0</span>})
+
+<span class="t-kw">assert</span> <span class="t-fn">len</span>(report) == df[<span class="t-str">&quot;city&quot;</span>].nunique() * df[<span class="t-str">&quot;month&quot;</span>].nunique()
+<span class="t-kw">assert</span> np.isclose(report[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>(), df[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>())
+<span class="t-fn">print</span>(report.pivot(index=<span class="t-str">&quot;city&quot;</span>, columns=<span class="t-str">&quot;month&quot;</span>, values=<span class="t-str">&quot;amount&quot;</span>).<span class="t-fn">round</span>(<span class="t-num">0</span>))</code></pre></div>
+<p>Две проверки в конце: число строк равно произведению числа городов на число месяцев, а сумма совпадает с исходной. Сравнение через <code>np.isclose</code>, а не <code>==</code>: суммы дробных чисел, посчитанные в разном порядке, могут отличаться на погрешность.</p></details>
+<details class="sol"><summary>Задание 6. Дневная динамика</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>daily = df.set_index(<span class="t-str">&quot;date&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].resample(<span class="t-str">&quot;D&quot;</span>).<span class="t-fn">sum</span>().to_frame(<span class="t-str">&quot;revenue&quot;</span>)
+daily[<span class="t-str">&quot;ma_7&quot;</span>] = daily[<span class="t-str">&quot;revenue&quot;</span>].rolling(<span class="t-num">7</span>).mean()
+daily[<span class="t-str">&quot;wow&quot;</span>] = daily[<span class="t-str">&quot;revenue&quot;</span>].pct_change(<span class="t-num">7</span>)
+<span class="t-fn">print</span>(daily.<span class="t-fn">round</span>(<span class="t-num">2</span>).tail(<span class="t-num">7</span>))
+
+weekday_order = [<span class="t-str">&quot;Monday&quot;</span>, <span class="t-str">&quot;Tuesday&quot;</span>, <span class="t-str">&quot;Wednesday&quot;</span>, <span class="t-str">&quot;Thursday&quot;</span>, <span class="t-str">&quot;Friday&quot;</span>, <span class="t-str">&quot;Saturday&quot;</span>, <span class="t-str">&quot;Sunday&quot;</span>]
+by_weekday = daily.groupby(daily.index.day_name())[<span class="t-str">&quot;revenue&quot;</span>].mean().reindex(weekday_order)
+<span class="t-fn">print</span>(by_weekday.<span class="t-fn">round</span>(<span class="t-num">0</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;Максимум:&quot;</span>, by_weekday.idxmax())</code></pre></div>
+<p>Средняя выручка по дням недели считается от <strong>дневного ряда</strong>, а не от исходных заказов: нам нужна средняя сумма за день, а не средний чек. <code>resample</code> добавил дни без заказов с нулевой выручкой — без него они бы выпали, и среднее оказалось бы завышенным.</p>
+<p>В наших данных дни недели различаются только случайно: в генераторе нет недельной сезонности.</p></details>
+<details class="sol"><summary>Задание 7. ABC-анализ</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>abc = df.groupby(<span class="t-str">&quot;user_id&quot;</span>)[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">sum</span>().sort_values(ascending=<span class="t-num">False</span>).to_frame(<span class="t-str">&quot;revenue&quot;</span>)
+abc[<span class="t-str">&quot;cum_share&quot;</span>] = abc[<span class="t-str">&quot;revenue&quot;</span>].cumsum() / abc[<span class="t-str">&quot;revenue&quot;</span>].<span class="t-fn">sum</span>()
+abc[<span class="t-str">&quot;group&quot;</span>] = np.select([abc[<span class="t-str">&quot;cum_share&quot;</span>] &lt;= <span class="t-num">0.8</span>, abc[<span class="t-str">&quot;cum_share&quot;</span>] &lt;= <span class="t-num">0.95</span>], [<span class="t-str">&quot;A&quot;</span>, <span class="t-str">&quot;B&quot;</span>], default=<span class="t-str">&quot;C&quot;</span>)
+
+summary = abc.groupby(<span class="t-str">&quot;group&quot;</span>).agg(users=(<span class="t-str">&quot;revenue&quot;</span>, <span class="t-str">&quot;count&quot;</span>), revenue=(<span class="t-str">&quot;revenue&quot;</span>, <span class="t-str">&quot;sum&quot;</span>))
+summary[<span class="t-str">&quot;users_share&quot;</span>] = summary[<span class="t-str">&quot;users&quot;</span>] / summary[<span class="t-str">&quot;users&quot;</span>].<span class="t-fn">sum</span>()
+summary[<span class="t-str">&quot;revenue_share&quot;</span>] = summary[<span class="t-str">&quot;revenue&quot;</span>] / summary[<span class="t-str">&quot;revenue&quot;</span>].<span class="t-fn">sum</span>()
+<span class="t-fn">print</span>(summary.<span class="t-fn">round</span>(<span class="t-num">3</span>))</code></pre></div>
+<p>Сортировка по убыванию перед <code>cumsum</code> обязательна — накопленная доля имеет смысл только в порядке от крупнейшего клиента.</p>
+<p>В учебных данных группа A окажется большой — около половины клиентов или больше. Суммы и число заказов сгенерированы без «китов», поэтому выручка распределена довольно равномерно. В настоящем бизнесе группа A обычно составляет 20–30 % клиентов.</p></details>
+<details class="sol"><summary>Задание 8. Разбор строк</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>lines = pd.Series([
+    <span class="t-str">&quot;Заказ №1047 от 15.03.2026, сумма 12 450 руб.&quot;</span>,
+    <span class="t-str">&quot;Заказ №1048 от 16.03.2026, сумма 980 руб.&quot;</span>,
+    <span class="t-str">&quot;Заказ №1050 от 02.04.2026, сумма 1 205 300 руб.&quot;</span>,
+])
+
+parsed = lines.<span class="t-fn">str</span>.extract(<span class="t-str">r&quot;№(?P&lt;number&gt;\d+) от (?P&lt;date&gt;[\d.]+), сумма (?P&lt;amount&gt;[\d ]+) руб&quot;</span>)
+parsed[<span class="t-str">&quot;number&quot;</span>] = parsed[<span class="t-str">&quot;number&quot;</span>].astype(<span class="t-fn">int</span>)
+parsed[<span class="t-str">&quot;date&quot;</span>] = pd.to_datetime(parsed[<span class="t-str">&quot;date&quot;</span>], <span class="t-fn">format</span>=<span class="t-str">&quot;%d.%m.%Y&quot;</span>)
+parsed[<span class="t-str">&quot;amount&quot;</span>] = parsed[<span class="t-str">&quot;amount&quot;</span>].<span class="t-fn">str</span>.replace(<span class="t-str">&quot; &quot;</span>, <span class="t-str">&quot;&quot;</span>, regex=<span class="t-num">False</span>).astype(<span class="t-fn">int</span>)
+
+<span class="t-fn">print</span>(parsed)
+<span class="t-fn">print</span>(parsed.dtypes)</code></pre></div>
+<p>Запись <code>(?P&lt;имя&gt;...)</code> даёт группе имя — оно становится названием столбца. Формат даты указан явно: строку <code>02.04.2026</code> без подсказки можно прочитать и как 2 апреля, и как 4 февраля.</p>
+<p>Проверка после разбора: <code>parsed.isna().sum()</code>. Если шаблон не подошёл к какой-то строке, в ней будут пропуски — их нужно посмотреть глазами.</p></details>
+<details class="sol"><summary>Задание 9. Без apply</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>is_discounted = (df[<span class="t-str">&quot;category&quot;</span>] == <span class="t-str">&quot;Книги&quot;</span>) &amp; (df[<span class="t-str">&quot;amount&quot;</span>] &gt; <span class="t-num">3000</span>)
+df[<span class="t-str">&quot;final_amount&quot;</span>] = np.where(is_discounted, df[<span class="t-str">&quot;amount&quot;</span>] * <span class="t-num">0.9</span>, df[<span class="t-str">&quot;amount&quot;</span>])
+
+<span class="t-com"># Проверка: результат совпадает с медленным вариантом</span>
+slow = df.apply(<span class="t-kw">lambda</span> r: r[<span class="t-str">&quot;amount&quot;</span>] * <span class="t-num">0.9</span> <span class="t-kw">if</span> r[<span class="t-str">&quot;category&quot;</span>] == <span class="t-str">&quot;Книги&quot;</span> <span class="t-kw">and</span> r[<span class="t-str">&quot;amount&quot;</span>] &gt; <span class="t-num">3000</span> <span class="t-kw">else</span> r[<span class="t-str">&quot;amount&quot;</span>], axis=<span class="t-num">1</span>)
+<span class="t-kw">assert</span> np.allclose(df[<span class="t-str">&quot;final_amount&quot;</span>], slow)
+<span class="t-fn">print</span>(is_discounted.<span class="t-fn">sum</span>(), <span class="t-str">&quot;заказов со скидкой&quot;</span>)</code></pre></div>
+<p>Условие вынесено в отдельную переменную с говорящим именем: его можно проверить отдельно и использовать повторно. Три отличия от версии с <code>apply</code>: <code>and</code> заменён на <code>&amp;</code>, каждое условие в скобках, вместо <code>if / else</code> — <code>np.where</code>.</p></details>
+<details class="sol"><summary>Задание 10. Каналы привлечения</summary><div class="code"><span class="lang">python</span><button class="copy" type="button">Копировать</button><pre><code>rng = np.random.default_rng(<span class="t-num">7</span>)
+users = pd.DataFrame({
+    <span class="t-str">&quot;user_id&quot;</span>: np.arange(<span class="t-num">1</span>, <span class="t-num">121</span>),
+    <span class="t-str">&quot;source&quot;</span>: rng.choice([<span class="t-str">&quot;реклама&quot;</span>, <span class="t-str">&quot;поиск&quot;</span>, <span class="t-str">&quot;друзья&quot;</span>], <span class="t-num">120</span>, p=[<span class="t-num">0.5</span>, <span class="t-num">0.3</span>, <span class="t-num">0.2</span>]),
+})
+
+merged = df.merge(users, on=<span class="t-str">&quot;user_id&quot;</span>, how=<span class="t-str">&quot;left&quot;</span>, validate=<span class="t-str">&quot;many_to_one&quot;</span>, indicator=<span class="t-num">True</span>)
+<span class="t-kw">assert</span> <span class="t-fn">len</span>(merged) == <span class="t-fn">len</span>(df)
+<span class="t-fn">print</span>(merged[<span class="t-str">&quot;_merge&quot;</span>].value_counts())
+
+by_source = merged.groupby(<span class="t-str">&quot;source&quot;</span>).agg(
+    users=(<span class="t-str">&quot;user_id&quot;</span>, <span class="t-str">&quot;nunique&quot;</span>),
+    orders=(<span class="t-str">&quot;order_id&quot;</span>, <span class="t-str">&quot;count&quot;</span>),
+    revenue=(<span class="t-str">&quot;amount&quot;</span>, <span class="t-str">&quot;sum&quot;</span>),
+)
+by_source[<span class="t-str">&quot;orders_per_user&quot;</span>] = by_source[<span class="t-str">&quot;orders&quot;</span>] / by_source[<span class="t-str">&quot;users&quot;</span>]
+by_source[<span class="t-str">&quot;revenue_per_user&quot;</span>] = by_source[<span class="t-str">&quot;revenue&quot;</span>] / by_source[<span class="t-str">&quot;users&quot;</span>]
+<span class="t-fn">print</span>(by_source.<span class="t-fn">round</span>(<span class="t-num">2</span>))
+<span class="t-fn">print</span>(<span class="t-str">&quot;Лидер:&quot;</span>, by_source[<span class="t-str">&quot;orders_per_user&quot;</span>].idxmax())</code></pre></div>
+<p>Три страховки сразу: <code>validate</code> проверяет уникальность ключа в справочнике, <code>assert</code> — что число строк не изменилось, <code>indicator</code> — что всем заказам нашёлся пользователь.</p>
+<p>«Среднее число заказов на пользователя» посчитано как отношение сумм: все заказы канала делятся на всех его покупателей. В знаменателе — только те пользователи, у кого есть хотя бы один заказ. Если нужно учесть и тех, кто не купил ничего, знаменатель берётся из справочника: <code>users[&quot;source&quot;].value_counts()</code>.</p></details><nav class="nav "><a class="prev" href="05-pandas.html" id=prev><small>← Назад</small><b>Глава 5. pandas</b></a><a class="next" href="06-sbor-i-ochistka.html" id=next><small>Вперёд →</small><b>Глава 6. Сбор и очистка данных</b></a></nav>
+</main>
+<footer>Аналитик данных: от нуля до первой работы · стрелки ← → на клавиатуре листают главы</footer>
+<script>
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea/i.test(e.target.tagName)) return;
+  var id = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : null;
+  var link = id && document.getElementById(id);
+  if (link) location.href = link.href;
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.classList.contains('copy')) return;
+  var btn = e.target, code = btn.parentNode.querySelector('code').innerText;
+  function done() {
+    btn.textContent = 'Скопировано';
+    setTimeout(function () { btn.textContent = 'Копировать'; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done);
+  } else {
+    var area = document.createElement('textarea');
+    area.value = code;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+    done();
+  }
+});
+</script>
+</body>
+</html>
